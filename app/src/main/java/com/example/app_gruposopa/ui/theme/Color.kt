@@ -2,10 +2,15 @@ package com.example.app_gruposopa.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Purple80 = Color(0xFFD0BCFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
+/**
+ * Colores oficiales Master Martini
+ */
+val VerdeFondo = Color(0xFF004D42)           // #004D42 (Verde oficial)
+val Blanco = Color(0xFFFFFFFF)               // #FFFFFF (Blanco)
+val Dorado = Color(0xFFB69F58)               // #B69F58 (Dorado)
+val VerdeLetras = Color(0xFF004D42)          // #004D42 (Verde para textos)
+val LetrasEnFondoVerde = Color(0x99FFFFFF)   // #FFFFFF99 (Letras sobre fondo verde)
+val NegroLetra = Color(0xFF141617)           // #141617 (Negro letra principal)
 
-val Purple40 = Color(0xFF6650a4)
-val PurpleGrey40 = Color(0xFF625b71)
-val Pink40 = Color(0xFF7D5260)
+// Accesorios
+val GrisFondoSuave = Color(0xFFF6F8F7)       // Fondo sutil para tarjetas y contrastes
