@@ -42,7 +42,7 @@ private val LightColorScheme = lightColorScheme(
 @Composable
 fun App_GrupoSoPaTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Siempre false para no alterar los colores oficiales de Master Martini
+    // Siempre false para no alterar los colores
     dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
