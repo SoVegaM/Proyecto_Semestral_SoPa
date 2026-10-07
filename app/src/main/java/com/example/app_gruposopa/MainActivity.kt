@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import com.example.app_gruposopa.ui.screens.BienvenidaScreen
+import com.example.app_gruposopa.ui.screens.CursosScreen
 import com.example.app_gruposopa.ui.theme.App_GrupoSoPaTheme
 
 class MainActivity : ComponentActivity() {
@@ -13,7 +13,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             App_GrupoSoPaTheme {
-                BienvenidaScreen()
+                CursosScreen()
             }
         }
     }
