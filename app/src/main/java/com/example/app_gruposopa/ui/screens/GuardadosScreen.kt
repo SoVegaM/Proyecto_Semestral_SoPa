@@ -14,7 +14,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -61,11 +60,19 @@ fun GuardadosScreen(
 
     // Si hay videos reales guardados, los adaptamos; si no, mostramos ejemplos base del wireframe
     var listaWireframe by remember {
-        mutableStateOf(
+        mutableStateOf<List<ContenidoGuardado>>(
+            listOf(
+                ContenidoGuardado(1, "Leche Asada", "Video", "1:16"),
+                ContenidoGuardado(2, "Mousse de Frutilla", "Receta", "0:38"),
+                ContenidoGuardado(3, "Torta Chocolate Avellana", "Video", "1:17")
+            )
+        )
+    }
+
     // Si hay videos reales guardados en el repositorio, los usamos prioritariamente
-    val guardadosFiltrados = remember(filtroSeleccionado, videosReales, listaWireframe) {
+    val listaGuardados = remember(videosReales, listaWireframe) {
         if (videosReales.isNotEmpty()) {
-            val elementos = videosReales.map { v ->
+            videosReales.map { v ->
                 ContenidoGuardado(
                     id = v.id.replace("v", "").toIntOrNull() ?: 1,
                     titulo = v.titulo,
@@ -73,17 +80,16 @@ fun GuardadosScreen(
                     duracion = v.duracion
                 )
             }
-            when (filtroSeleccionado) {
-                "Recetas" -> emptyList()
-                "Videos" -> elementos
-                else -> elementos
-            }
         } else {
-            when (filtroSeleccionado) {
-                "Recetas" -> listaWireframe.filter { it.tipo.equals("Receta", ignoreCase = true) }
-                "Videos" -> listaWireframe.filter { it.tipo.equals("Video", ignoreCase = true) }
-                else -> listaWireframe
-            }
+            listaWireframe
+        }
+    }
+
+    val guardadosFiltrados = remember(filtroSeleccionado, listaGuardados) {
+        when (filtroSeleccionado) {
+            "Recetas" -> listaGuardados.filter { it.tipo.equals("Receta", ignoreCase = true) }
+            "Videos" -> listaGuardados.filter { it.tipo.equals("Video", ignoreCase = true) }
+            else -> listaGuardados
         }
     }
 

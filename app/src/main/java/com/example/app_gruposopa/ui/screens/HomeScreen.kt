@@ -2,6 +2,7 @@ package com.example.app_gruposopa.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -98,6 +99,21 @@ fun HomeScreen(
                                 .fillMaxWidth(),
                             contentScale = ContentScale.Fit
                         )
+
+                        // Acceso directo a Vista 10 · Mis guardados (Persona A)
+                        IconButton(
+                            onClick = { onNavigateTab("guardados") },
+                            modifier = Modifier
+                                .align(Alignment.CenterEnd)
+                                .padding(end = 8.dp)
+                                .size(48.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Bookmark,
+                                contentDescription = "Mis guardados",
+                                tint = Dorado
+                            )
+                        }
                     }
                 }
             }
