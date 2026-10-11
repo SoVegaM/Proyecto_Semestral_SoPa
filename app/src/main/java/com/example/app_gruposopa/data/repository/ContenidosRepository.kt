@@ -168,6 +168,15 @@ class ContenidosRepository {
     fun esVisto(videoId: String): Boolean {
         return _videosVistos.value.contains(videoId)
     }
+
+    fun obtenerCursoPorVideoId(videoId: String): Curso? {
+        return LISTA_CURSOS.find { it.videoIds.contains(videoId) }
+    }
+
+    fun obtenerVideosGuardados(): List<ContenidoMasterMartini> {
+        val guardadosIds = _guardados.value
+        return LISTA_VIDEOS.filter { guardadosIds.contains(it.id) }
+    }
 }
 
 /**

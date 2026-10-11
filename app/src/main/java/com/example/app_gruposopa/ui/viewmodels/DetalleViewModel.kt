@@ -43,4 +43,9 @@ class DetalleViewModel(
             repository.toggleGuardado(id)
         }
     }
+
+    fun obtenerCursoAsociado(): com.example.app_gruposopa.domain.model.Curso? {
+        val id = _videoIdActual.value
+        return if (id.isNotEmpty()) repository.obtenerCursoPorVideoId(id) else null
+    }
 }

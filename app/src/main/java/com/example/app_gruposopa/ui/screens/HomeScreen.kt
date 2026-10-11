@@ -194,6 +194,65 @@ fun HomeScreen(
                     lineHeight = 18.sp
                 )
 
+                // Banner destacado hacia Vista 6: Cursos (Escuela Única)
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(10.dp))
+                        .clickable { onNavigateTab("cursos") },
+                    colors = CardDefaults.cardColors(containerColor = VerdeFondo),
+                    shape = RoundedCornerShape(10.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 14.dp, vertical = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Row(
+                            modifier = Modifier.weight(1f),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.School,
+                                contentDescription = null,
+                                tint = Dorado,
+                                modifier = Modifier.size(26.dp)
+                            )
+                            Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                                Text(
+                                    text = "ESCUELA ÚNICA",
+                                    color = Dorado,
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    letterSpacing = 0.5.sp
+                                )
+                                Text(
+                                    text = "6 cursos de formación profesional",
+                                    color = Blanco,
+                                    fontSize = 13.sp,
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                            }
+                        }
+                        Surface(
+                            shape = RoundedCornerShape(16.dp),
+                            color = Dorado
+                        ) {
+                            Text(
+                                text = "Ver Cursos →",
+                                color = NegroLetra,
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
+                            )
+                        }
+                    }
+                }
+
                 // Buscador por texto (filtra por título y producto)
                 OutlinedTextField(
                     value = textoBusqueda,
@@ -393,14 +452,27 @@ fun HomeScreen(
                                         color = GrisFondoSuave
                                     )
 
-                                    // Insumo destacado
-                                    Text(
-                                        text = "Insumo destacado: ${item.producto}",
-                                        fontSize = 12.sp,
-                                        fontWeight = FontWeight.SemiBold,
-                                        color = VerdeLetras,
-                                        maxLines = 1
-                                    )
+                                    // Insumo destacado y acción
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            text = "Insumo: ${item.producto}",
+                                            fontSize = 12.sp,
+                                            fontWeight = FontWeight.SemiBold,
+                                            color = VerdeLetras,
+                                            maxLines = 1,
+                                            modifier = Modifier.weight(1f)
+                                        )
+                                        Text(
+                                            text = "Ver video ▶",
+                                            fontSize = 11.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = Dorado
+                                        )
+                                    }
                                 }
                             }
                         }

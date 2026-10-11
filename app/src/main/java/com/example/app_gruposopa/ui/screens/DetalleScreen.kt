@@ -51,7 +51,8 @@ fun DetalleScreen(
     viewModel: DetalleViewModel = remember { DetalleViewModel() },
     modifier: Modifier = Modifier,
     onVolverClick: () -> Unit = {},
-    onConsultarClick: ((ContenidoMasterMartini?) -> Unit)? = null
+    onConsultarClick: ((ContenidoMasterMartini?) -> Unit)? = null,
+    onVerCursoClick: ((String) -> Unit)? = null
 ) {
     val context = LocalContext.current
     val scrollState = rememberScrollState()
@@ -374,6 +375,57 @@ fun DetalleScreen(
                                 color = NegroLetra.copy(alpha = 0.75f),
                                 lineHeight = 18.sp
                             )
+                        }
+                    }
+
+                    // 4. Tarjeta de Curso asociado en Escuela Única
+                    val cursoAsociado = viewModel.obtenerCursoAsociado()
+                    if (cursoAsociado != null) {
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(10.dp))
+                                .clickable { onVerCursoClick?.invoke(cursoAsociado.id) },
+                            shape = RoundedCornerShape(10.dp),
+                            colors = CardDefaults.cardColors(containerColor = GrisFondoSuave)
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(14.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column(
+                                    modifier = Modifier.weight(1f),
+                                    verticalArrangement = Arrangement.spacedBy(2.dp)
+                                ) {
+                                    Text(
+                                        text = "MÓDULO DE ESCUELA ÚNICA",
+                                        fontSize = 11.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = Dorado
+                                    )
+                                    Text(
+                                        text = cursoAsociado.titulo,
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = VerdeLetras
+                                    )
+                                    Text(
+                                        text = cursoAsociado.descripcion,
+                                        fontSize = 12.sp,
+                                        color = NegroLetra.copy(alpha = 0.7f),
+                                        maxLines = 1
+                                    )
+                                }
+                                Text(
+                                    text = "Ver curso →",
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Dorado
+                                )
+                            }
                         }
                     }
                 }
