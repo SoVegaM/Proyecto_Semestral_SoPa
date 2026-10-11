@@ -36,6 +36,7 @@ import com.example.app_gruposopa.ui.viewmodels.HomeViewModel
  */
 @Composable
 fun HomeScreen(
+    modifier: Modifier = Modifier,
     viewModel: HomeViewModel = remember { HomeViewModel() },
     onContenidoClick: (ContenidoMasterMartini) -> Unit = {},
     onNavigateTab: (String) -> Unit = {}
@@ -45,6 +46,7 @@ fun HomeScreen(
     val textoBusqueda by viewModel.textoBusqueda.collectAsState()
 
     Scaffold(
+        modifier = modifier,
         topBar = {
             Column {
                 // Barra superior verde
