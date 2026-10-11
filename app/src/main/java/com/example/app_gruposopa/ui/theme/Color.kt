@@ -3,7 +3,7 @@ package com.example.app_gruposopa.ui.theme
 import androidx.compose.ui.graphics.Color
 
 /**
- * Colores oficiales Master Martini
+ * Colores
  */
 val VerdeFondo = Color(0xFF004D42)           // #004D42 (Verde oficial)
 val Blanco = Color(0xFFFFFFFF)               // #FFFFFF (Blanco)

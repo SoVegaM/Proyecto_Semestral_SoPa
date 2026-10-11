@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 /**
- * ViewModel que gestiona el estado de presentación para la Vista 4 · Inicio (Centro técnico).
+ * ViewModel, gestiona el estado de presentación para la Vista 4 - Inicio (Centro técnico).
  * Permite listar contenidos, filtrar por categorías y buscar por texto de forma combinada.
  */
 class HomeViewModel(

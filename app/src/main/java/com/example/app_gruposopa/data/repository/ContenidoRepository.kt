@@ -4,7 +4,7 @@ import com.example.app_gruposopa.domain.model.ContenidoMasterMartini
 import com.example.app_gruposopa.domain.model.TipoContenido
 
 /**
- * Repositorio con los contenidos técnicos, cursos y recetas oficiales de Master Martini Chile / Unigrà.
+ * Repositorio con los contenidos técnicos, cursos y recetas.
  */
 class ContenidoRepository {
 

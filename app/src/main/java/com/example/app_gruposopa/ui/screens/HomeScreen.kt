@@ -2,11 +2,11 @@ package com.example.app_gruposopa.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Clear
@@ -14,6 +14,7 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.School
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -31,14 +32,7 @@ import com.example.app_gruposopa.ui.theme.*
 import com.example.app_gruposopa.ui.viewmodels.HomeViewModel
 
 /**
- * Vista 4 · Inicio (Centro técnico)
- * Diseño para celular compacto según el wireframe oficial:
- * - Cabecera institucional con Logo Master Martini
- * - Título y descripción del Centro Técnico Gastronómico
- * - Buscador interactivo por texto ("Buscar receta o curso")
- * - Chips de categorías con contador "N encontrados"
- * - Lista de tarjetas con categoría, duración, insumo destacado
- * - Barra de navegación inferior activa en "Inicio"
+ * Vista 4 - Inicio (Centro técnico)
  */
 @Composable
 fun HomeScreen(
@@ -49,33 +43,19 @@ fun HomeScreen(
     val contenidos by viewModel.contenidosFiltrados.collectAsState()
     val categoriaSeleccionada by viewModel.categoriaSeleccionada.collectAsState()
     val textoBusqueda by viewModel.textoBusqueda.collectAsState()
-    val scrollState = rememberScrollState()
 
     Scaffold(
         topBar = {
             Column {
-                // 1. Barra superior verde corporativa
-                Surface(
-                    modifier = Modifier.fillMaxWidth(),
-                    color = VerdeFondo
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .statusBarsPadding()
-                            .padding(horizontal = 14.dp, vertical = 6.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "Master Martini",
-                            color = LetrasEnFondoVerde,
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Medium
-                        )
-                    }
-                }
+                // Barra superior verde
+                Spacer(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(VerdeFondo)
+                        .statusBarsPadding()
+                )
 
-                // 2. Barra blanca con logo Master Martini
+                // Barra blanca con logo Master Martini
                 Surface(
                     modifier = Modifier.fillMaxWidth(),
                     color = Blanco,
@@ -91,7 +71,7 @@ fun HomeScreen(
                             painter = painterResource(id = R.drawable.logo),
                             contentDescription = "Logo Master Martini",
                             modifier = Modifier
-                                .height(34.dp)
+                                .height(45.dp)
                                 .fillMaxWidth(),
                             contentScale = ContentScale.Fit
                         )
@@ -100,7 +80,6 @@ fun HomeScreen(
             }
         },
         bottomBar = {
-            // Barra de navegación inferior (Inicio, Cursos, Eventos, Perfil)
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -114,7 +93,7 @@ fun HomeScreen(
                 ) {
                     NavigationBarItem(
                         selected = true,
-                        onClick = { /* Ya en Inicio */ },
+                        onClick = { /* Ya está en Inicio */ },
                         icon = { Icon(Icons.Default.Home, contentDescription = "Inicio") },
                         label = { Text("Inicio", fontSize = 11.sp, fontWeight = FontWeight.Bold) },
                         colors = NavigationBarItemDefaults.colors(
@@ -157,146 +136,149 @@ fun HomeScreen(
             }
         }
     ) { innerPadding ->
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
-                .verticalScroll(scrollState)
-                .background(GrisFondoSuave)
-                .padding(16.dp),
+                .background(GrisFondoSuave),
+            contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
-            // Título institucional
-            Text(
-                text = "Centro Técnico Gastronómico",
-                color = VerdeLetras,
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold
-            )
-
-            Text(
-                text = "Cursos, recetas y asesoría técnica en materias primas para panaderías, pastelerías y chocolaterías.",
-                fontSize = 13.sp,
-                color = NegroLetra,
-                lineHeight = 18.sp
-            )
-
-            // Buscador por texto (según wireframe oficial)
-            OutlinedTextField(
-                value = textoBusqueda,
-                onValueChange = { viewModel.onTextoBusquedaChange(it) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(min = 52.dp),
-                placeholder = {
+            // Encabezado y controles
+            item {
+                Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
                     Text(
-                        text = "Buscar receta o curso...",
+                        text = "Centro Técnico Gastronómico",
+                        color = VerdeLetras,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+
+                    Text(
+                        text = "Cursos, recetas y asesoría técnica en materias primas para panaderías, pastelerías y chocolaterías.",
                         fontSize = 13.sp,
-                        color = NegroLetra.copy(alpha = 0.5f)
+                        color = NegroLetra,
+                        lineHeight = 18.sp
                     )
-                },
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Default.Search,
-                        contentDescription = "Buscar",
-                        tint = VerdeLetras
-                    )
-                },
-                trailingIcon = {
-                    if (textoBusqueda.isNotEmpty()) {
-                        IconButton(onClick = { viewModel.onTextoBusquedaChange("") }) {
+
+                    // Buscador
+                    OutlinedTextField(
+                        value = textoBusqueda,
+                        onValueChange = { viewModel.onTextoBusquedaChange(it) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(min = 52.dp),
+                        placeholder = {
+                            Text(
+                                text = "Buscar receta o curso",
+                                fontSize = 13.sp,
+                                color = NegroLetra.copy(alpha = 0.5f)
+                            )
+                        },
+                        leadingIcon = {
                             Icon(
-                                imageVector = Icons.Default.Clear,
-                                contentDescription = "Limpiar búsqueda",
-                                tint = NegroLetra.copy(alpha = 0.6f)
+                                imageVector = Icons.Default.Search,
+                                contentDescription = "Buscar",
+                                tint = VerdeLetras
+                            )
+                        },
+                        trailingIcon = {
+                            if (textoBusqueda.isNotEmpty()) {
+                                IconButton(onClick = { viewModel.onTextoBusquedaChange("") }) {
+                                    Icon(
+                                        imageVector = Icons.Default.Clear,
+                                        contentDescription = "Limpiar búsqueda",
+                                        tint = NegroLetra.copy(alpha = 0.6f)
+                                    )
+                                }
+                            }
+                        },
+                        singleLine = true,
+                        shape = RoundedCornerShape(8.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedContainerColor = Blanco,
+                            unfocusedContainerColor = Blanco,
+                            focusedBorderColor = VerdeFondo,
+                            unfocusedBorderColor = GrisFondoSuave
+                        )
+                    )
+
+                    Text(
+                        text = "Especialidades",
+                        color = VerdeLetras,
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+
+                    // Chips de filtro por Categoría
+                    LazyRow(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        items(viewModel.categorias) { cat ->
+                            FilterChip(
+                                selected = (cat == categoriaSeleccionada),
+                                onClick = { viewModel.seleccionarCategoria(cat) },
+                                label = {
+                                    Text(
+                                        text = cat,
+                                        fontSize = 12.sp,
+                                        color = if (cat == categoriaSeleccionada) Blanco else NegroLetra
+                                    )
+                                },
+                                colors = FilterChipDefaults.filterChipColors(
+                                    selectedContainerColor = VerdeFondo,
+                                    containerColor = Blanco
+                                )
                             )
                         }
                     }
-                },
-                singleLine = true,
-                shape = RoundedCornerShape(8.dp),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedContainerColor = Blanco,
-                    unfocusedContainerColor = Blanco,
-                    focusedBorderColor = VerdeFondo,
-                    unfocusedBorderColor = GrisFondoSuave
-                )
-            )
 
-            // Chips interactivos por Categoría
-            Text(
-                text = "Especialidades",
-                color = VerdeLetras,
-                fontSize = 15.sp,
-                fontWeight = FontWeight.Bold
-            )
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .horizontalScroll(rememberScrollState()),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                viewModel.categorias.forEach { cat ->
-                    FilterChip(
-                        selected = (cat == categoriaSeleccionada),
-                        onClick = { viewModel.seleccionarCategoria(cat) },
-                        label = {
-                            Text(
-                                text = cat,
-                                fontSize = 12.sp,
-                                color = if (cat == categoriaSeleccionada) Blanco else NegroLetra
-                            )
-                        },
-                        colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = VerdeFondo,
-                            containerColor = Blanco
-                        )
-                    )
-                }
-            }
-
-            // Encabezado del catálogo con contador
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Contenidos Disponibles",
-                    color = VerdeLetras,
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    text = "${contenidos.size} encontrados",
-                    color = NegroLetra.copy(alpha = 0.6f),
-                    fontSize = 12.sp
-                )
-            }
-
-            // Lista de tarjetas
-            if (contenidos.isEmpty()) {
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(containerColor = Blanco),
-                    shape = RoundedCornerShape(8.dp)
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(24.dp),
-                        contentAlignment = Alignment.Center
+                    // Contador de resultados
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "No se encontraron contenidos para tu búsqueda.",
-                            color = NegroLetra.copy(alpha = 0.7f),
-                            fontSize = 13.sp
+                            text = "Contenidos Disponibles",
+                            color = VerdeLetras,
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = "${contenidos.size} encontrados",
+                            color = NegroLetra.copy(alpha = 0.6f),
+                            fontSize = 12.sp
                         )
                     }
                 }
+            }
+
+            // Caso sin resultados
+            if (contenidos.isEmpty()) {
+                item {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(containerColor = Blanco),
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(24.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "No se encontraron contenidos para tu búsqueda.",
+                                color = NegroLetra.copy(alpha = 0.7f),
+                                fontSize = 13.sp
+                            )
+                        }
+                    }
+                }
             } else {
-                contenidos.forEach { item ->
+                // Lista de tarjetas
+                items(contenidos, key = { it.titulo }) { item ->
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         colors = CardDefaults.cardColors(containerColor = Blanco),
@@ -326,13 +308,23 @@ fun HomeScreen(
                                         maxLines = 1
                                     )
                                 }
-                                Text(
-                                    text = "⏱ ${item.duracionOPreparacion}",
-                                    color = NegroLetra.copy(alpha = 0.6f),
-                                    fontSize = 11.sp,
-                                    softWrap = false,
-                                    maxLines = 1
-                                )
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Outlined.Schedule,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(14.dp),
+                                        tint = NegroLetra.copy(alpha = 0.6f)
+                                    )
+                                    Text(
+                                        text = item.duracionOPreparacion,
+                                        color = NegroLetra.copy(alpha = 0.6f),
+                                        fontSize = 11.sp,
+                                        maxLines = 1
+                                    )
+                                }
                             }
 
                             Text(
@@ -365,25 +357,27 @@ fun HomeScreen(
                 }
             }
 
-            // Pie de página con el sello Hecho en Italia
-            Surface(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(8.dp)),
-                color = VerdeFondo
-            ) {
-                Box(
+            // Pie de página con logo
+            item {
+                Surface(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 12.dp),
-                    contentAlignment = Alignment.Center
+                        .clip(RoundedCornerShape(8.dp)),
+                    color = VerdeFondo
                 ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.italia),
-                        contentDescription = "Sello Hecho en Italia",
-                        modifier = Modifier.height(38.dp),
-                        contentScale = ContentScale.Fit
-                    )
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 12.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.italia),
+                            contentDescription = "Sello Hecho en Italia",
+                            modifier = Modifier.height(38.dp),
+                            contentScale = ContentScale.Fit
+                        )
+                    }
                 }
             }
         }

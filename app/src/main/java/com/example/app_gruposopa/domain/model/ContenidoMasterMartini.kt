@@ -1,7 +1,7 @@
 package com.example.app_gruposopa.domain.model
 
 /**
- * Representa el tipo de contenido técnico ofrecido por Master Martini.
+ *tipo de contenido ofrecido
  */
 enum class TipoContenido {
     RECETA,
@@ -10,7 +10,7 @@ enum class TipoContenido {
 }
 
 /**
- * Modelo de datos para cursos, recetas y contenidos técnicos de Master Martini.
+ * Modelo de datos para cursos, recetas y contenidos.
  */
 data class ContenidoMasterMartini(
     val id: Int,
