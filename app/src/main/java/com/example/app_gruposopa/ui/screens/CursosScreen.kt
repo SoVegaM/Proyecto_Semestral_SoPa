@@ -1,5 +1,8 @@
 package com.example.app_gruposopa.ui.screens
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -9,96 +12,42 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.School
+import androidx.compose.material.icons.outlined.PlayCircleOutline
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.app_gruposopa.domain.model.Curso
 import com.example.app_gruposopa.ui.theme.*
-
-/**
- * Estado de avance del curso para el MVP.
- */
-enum class EstadoCurso(val etiqueta: String) {
-    EN_CURSO("En curso"),
-    SIN_INICIAR("Sin iniciar"),
-    COMPLETADO("Completado")
-}
-
-/**
- * Modelo de datos de presentación para los Cursos de Escuela Única.
- */
-data class CursoItem(
-    val id: Int,
-    val titulo: String,
-    val modulosTotales: Int,
-    val modulosCompletados: Int,
-    val categoria: String = "Escuela Única"
-) {
-    val progreso: Float
-        get() = if (modulosTotales > 0) modulosCompletados.toFloat() / modulosTotales else 0f
-
-    val estado: EstadoCurso
-        get() = when {
-            modulosCompletados == 0 -> EstadoCurso.SIN_INICIAR
-            modulosCompletados >= modulosTotales -> EstadoCurso.COMPLETADO
-            else -> EstadoCurso.EN_CURSO
-        }
-}
+import com.example.app_gruposopa.ui.viewmodels.CursosViewModel
 
 /**
  * Vista 6 · Cursos (Escuela Única)
- * Maqueta para celular compacto según el wireframe oficial:
- * - Barra superior: "Escuela Única" (#004D42)
- * - Subtítulo: "Formación profesional con metodología Hecho en Italia."
- * - Tarjetas de cursos con nombre, cantidad de módulos y barra de progreso dorada
- * - Barra de navegación inferior activa en "Cursos"
+ * Conectada al repositorio central en memoria:
+ * - 6 cursos oficiales con sus IDs de videos reales
+ * - Progreso calculado dinámicamente desde los videos vistos
+ * - Al tocar una tarjeta se expande para listar sus módulos
+ * - Al tocar un módulo navega a "detalle/{videoId}"
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CursosScreen(
-    onCursoClick: (CursoItem) -> Unit = {},
+    viewModel: CursosViewModel = remember { CursosViewModel() },
+    onModuloClick: (String) -> Unit = {},
     onNavigateTab: (String) -> Unit = {}
 ) {
-    // Datos ficticios representativos del caso oficial
-    val cursos = remember {
-        listOf(
-            CursoItem(
-                id = 1,
-                titulo = "Chocolatería profesional",
-                modulosTotales = 6,
-                modulosCompletados = 4
-            ),
-            CursoItem(
-                id = 2,
-                titulo = "Pastelería de vitrina",
-                modulosTotales = 5,
-                modulosCompletados = 1
-            ),
-            CursoItem(
-                id = 3,
-                titulo = "Bollería y masas de hoja",
-                modulosTotales = 4,
-                modulosCompletados = 0
-            ),
-            CursoItem(
-                id = 4,
-                titulo = "Gelatería artesanal italiana",
-                modulosTotales = 5,
-                modulosCompletados = 5
-            )
-        )
-    }
-
+    val videosVistos by viewModel.videosVistos.collectAsState()
+    val cursosExpandidos by viewModel.cursosExpandidos.collectAsState()
     val scrollState = rememberScrollState()
 
     Scaffold(
@@ -118,7 +67,7 @@ fun CursosScreen(
             )
         },
         bottomBar = {
-            // Barra de navegación inferior compartida (Inicio, Cursos, Eventos, Perfil)
+            // Barra de navegación inferior
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -184,7 +133,7 @@ fun CursosScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
-            // Banner / Subtítulo oficial
+            // Tarjeta institucional de encabezado
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(containerColor = Blanco),
@@ -210,21 +159,33 @@ fun CursosScreen(
                 }
             }
 
-            // Título de la sección
+            // Título de la sección con contador real de cursos
             Text(
-                text = "Cursos disponibles (${cursos.size})",
+                text = "Cursos disponibles (${viewModel.cursos.size})",
                 fontSize = 15.sp,
                 fontWeight = FontWeight.Bold,
                 color = VerdeLetras,
                 modifier = Modifier.padding(top = 4.dp, start = 2.dp)
             )
 
-            // Lista de Cursos
-            cursos.forEach { curso ->
+            // Lista de los 6 cursos reales
+            viewModel.cursos.forEach { curso ->
+                val modulos = viewModel.obtenerModulos(curso)
+                val totales = curso.videoIds.size
+                val completados = curso.videoIds.count { videosVistos.contains(it) }
+                val progreso = if (totales > 0) completados.toFloat() / totales else 0f
+                val estado = when {
+                    completados == 0 -> "Sin iniciar"
+                    completados >= totales -> "Completado"
+                    else -> "En curso"
+                }
+                val expandido = cursosExpandidos.contains(curso.id)
+
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { onCursoClick(curso) },
+                        .clip(RoundedCornerShape(10.dp))
+                        .clickable { viewModel.toggleExpandido(curso.id) },
                     shape = RoundedCornerShape(10.dp),
                     colors = CardDefaults.cardColors(containerColor = Blanco),
                     elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
@@ -235,7 +196,7 @@ fun CursosScreen(
                             .padding(16.dp),
                         verticalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
-                        // Fila superior: Título del curso y estado
+                        // Fila superior: Título del curso, etiqueta de estado y flecha
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
@@ -249,11 +210,11 @@ fun CursosScreen(
                                 modifier = Modifier.weight(1f)
                             )
 
-                            // Chip del Estado
-                            val (colorFondo, colorTexto) = when (curso.estado) {
-                                EstadoCurso.COMPLETADO -> Pair(VerdeFondo.copy(alpha = 0.12f), VerdeLetras)
-                                EstadoCurso.EN_CURSO -> Pair(Dorado.copy(alpha = 0.18f), Dorado)
-                                EstadoCurso.SIN_INICIAR -> Pair(GrisFondoSuave, NegroLetra.copy(alpha = 0.6f))
+                            // Chip del Estado (Sin iniciar / En curso / Completado)
+                            val (colorFondo, colorTexto) = when (estado) {
+                                "Completado" -> Pair(VerdeFondo.copy(alpha = 0.12f), VerdeLetras)
+                                "En curso" -> Pair(Dorado.copy(alpha = 0.18f), Dorado)
+                                else -> Pair(GrisFondoSuave, NegroLetra.copy(alpha = 0.6f))
                             }
 
                             Surface(
@@ -261,28 +222,45 @@ fun CursosScreen(
                                 color = colorFondo
                             ) {
                                 Text(
-                                    text = curso.estado.etiqueta,
+                                    text = estado,
                                     fontSize = 11.sp,
                                     fontWeight = FontWeight.SemiBold,
                                     color = colorTexto,
                                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
                                 )
                             }
+
+                            Spacer(modifier = Modifier.width(6.dp))
+
+                            Icon(
+                                imageVector = if (expandido) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                                contentDescription = if (expandido) "Colapsar módulos" else "Ver módulos",
+                                tint = NegroLetra.copy(alpha = 0.5f),
+                                modifier = Modifier.size(22.dp)
+                            )
                         }
 
-                        // Módulos
+                        // Descripción breve del curso
+                        Text(
+                            text = curso.descripcion,
+                            fontSize = 12.sp,
+                            color = NegroLetra.copy(alpha = 0.75f),
+                            lineHeight = 16.sp
+                        )
+
+                        // Módulos y completados
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = "${curso.modulosTotales} módulos",
+                                text = "$totales módulos",
                                 fontSize = 13.sp,
                                 color = NegroLetra.copy(alpha = 0.65f)
                             )
                             Text(
-                                text = "${curso.modulosCompletados} de ${curso.modulosTotales} completados",
+                                text = "$completados de $totales completados",
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.Medium,
                                 color = NegroLetra.copy(alpha = 0.7f)
@@ -291,7 +269,7 @@ fun CursosScreen(
 
                         // Barra de progreso dorada
                         LinearProgressIndicator(
-                            progress = { curso.progreso },
+                            progress = { progreso },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(6.dp)
@@ -299,6 +277,80 @@ fun CursosScreen(
                             color = Dorado,
                             trackColor = GrisFondoSuave
                         )
+
+                        // Módulos expandidos
+                        AnimatedVisibility(
+                            visible = expandido,
+                            enter = expandVertically(),
+                            exit = shrinkVertically()
+                        ) {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 8.dp),
+                                verticalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                HorizontalDivider(color = GrisFondoSuave)
+
+                                Text(
+                                    text = "Módulos del curso (toca para ver):",
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = VerdeLetras
+                                )
+
+                                modulos.forEachIndexed { index, modulo ->
+                                    val visto = videosVistos.contains(modulo.id)
+                                    Surface(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .clip(RoundedCornerShape(6.dp))
+                                            .clickable { onModuloClick(modulo.id) },
+                                        color = if (visto) VerdeFondo.copy(alpha = 0.05f) else GrisFondoSuave
+                                    ) {
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(horizontal = 10.dp, vertical = 10.dp),
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.SpaceBetween
+                                        ) {
+                                            Row(
+                                                modifier = Modifier.weight(1f),
+                                                verticalAlignment = Alignment.CenterVertically,
+                                                horizontalArrangement = Arrangement.spacedBy(10.dp)
+                                            ) {
+                                                Icon(
+                                                    imageVector = if (visto) Icons.Default.CheckCircle else Icons.Outlined.PlayCircleOutline,
+                                                    contentDescription = if (visto) "Módulo visto" else "Módulo pendiente",
+                                                    tint = if (visto) VerdeLetras else Dorado,
+                                                    modifier = Modifier.size(20.dp)
+                                                )
+                                                Column {
+                                                    Text(
+                                                        text = "${index + 1}. ${modulo.titulo}",
+                                                        fontSize = 13.sp,
+                                                        fontWeight = if (visto) FontWeight.SemiBold else FontWeight.Normal,
+                                                        color = NegroLetra
+                                                    )
+                                                    Text(
+                                                        text = "Insumo: ${modulo.producto}",
+                                                        fontSize = 11.sp,
+                                                        color = NegroLetra.copy(alpha = 0.6f)
+                                                    )
+                                                }
+                                            }
+                                            Text(
+                                                text = modulo.duracion,
+                                                fontSize = 11.sp,
+                                                color = NegroLetra.copy(alpha = 0.6f),
+                                                modifier = Modifier.padding(start = 6.dp)
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }

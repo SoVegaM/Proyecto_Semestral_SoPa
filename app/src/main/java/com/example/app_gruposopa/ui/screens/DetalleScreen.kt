@@ -1,48 +1,69 @@
 package com.example.app_gruposopa.ui.screens
 
+import android.annotation.SuppressLint
+import android.content.Intent
+import android.net.Uri
+import android.view.ViewGroup
+import android.webkit.WebChromeClient
+import android.webkit.WebView
+import android.webkit.WebViewClient
+import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.BookmarkBorder
-import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.OpenInNew
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
+import com.example.app_gruposopa.domain.model.ContenidoMasterMartini
 import com.example.app_gruposopa.ui.theme.*
+import com.example.app_gruposopa.ui.viewmodels.DetalleViewModel
 
 /**
  * Vista 5 · Detalle de contenido (Video e insumo)
- * Maqueta para celular compacto según el wireframe oficial:
- * - Barra superior: ← Detalle
- * - Reproductor de video (mockup oscuro con botón Play)
- * - Categoría y duración
- * - Título y descripción técnica del proceso
- * - Tarjeta "Insumo destacado"
- * - Botones inferiores: "Guardar" y "Consultar" (WhatsApp/asesoría)
+ * Conectada al repositorio central en memoria:
+ * - Reproductor de YouTube embebido mediante WebView (https://www.youtube.com/embed/{id})
+ * - Fallback / acceso directo "Abrir en YouTube" mediante Intent nativo
+ * - Guarda / quita favoritos conectado a ContenidosRepository
+ * - Botón "Consultar" con Toast temporal (conectará con WhatsApp en etapa posterior)
+ * - Al abrir el video se marca automáticamente como visto
  */
+@SuppressLint("SetJavaScriptEnabled")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetalleScreen(
+    videoId: String = "v01",
+    viewModel: DetalleViewModel = remember { DetalleViewModel() },
     modifier: Modifier = Modifier,
     onVolverClick: () -> Unit = {},
-    onConsultarClick: () -> Unit = {}
+    onConsultarClick: ((ContenidoMasterMartini?) -> Unit)? = null
 ) {
-    var guardado by remember { mutableStateOf(false) }
+    val context = LocalContext.current
     val scrollState = rememberScrollState()
+
+    // Cargar video al entrar y marcar como visto
+    LaunchedEffect(videoId) {
+        viewModel.cargarVideo(videoId)
+    }
+
+    val video by viewModel.video.collectAsState()
+    val esGuardado by viewModel.esGuardado.collectAsState()
+    var errorEmbebido by remember { mutableStateOf(false) }
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -71,7 +92,7 @@ fun DetalleScreen(
             )
         },
         bottomBar = {
-            // Barra inferior fija con botones de acción (mínimo 48dp de altura para accesibilidad)
+            // Barra inferior fija con botones de acción (mínimo 48dp de altura)
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -86,35 +107,46 @@ fun DetalleScreen(
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Botón Guardar / Quitar
+                    // Botón Guardar / Quitar conectado al repositorio
                     OutlinedButton(
-                        onClick = { guardado = !guardado },
+                        onClick = { viewModel.toggleGuardado() },
                         modifier = Modifier
                             .weight(1f)
                             .height(48.dp),
                         shape = RoundedCornerShape(8.dp),
                         colors = ButtonDefaults.outlinedButtonColors(
-                            containerColor = if (guardado) VerdeFondo.copy(alpha = 0.08f) else Blanco
+                            containerColor = if (esGuardado) VerdeFondo.copy(alpha = 0.08f) else Blanco
                         )
                     ) {
                         Icon(
-                            imageVector = if (guardado) Icons.Default.Bookmark else Icons.Default.BookmarkBorder,
-                            contentDescription = null,
-                            tint = if (guardado) VerdeLetras else NegroLetra,
+                            imageVector = if (esGuardado) Icons.Default.Bookmark else Icons.Default.BookmarkBorder,
+                            contentDescription = if (esGuardado) "Quitar de guardados" else "Guardar video",
+                            tint = if (esGuardado) VerdeLetras else NegroLetra,
                             modifier = Modifier.size(18.dp)
                         )
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
-                            text = if (guardado) "Guardado" else "Guardar",
-                            color = if (guardado) VerdeLetras else NegroLetra,
+                            text = if (esGuardado) "Guardado" else "Guardar",
+                            color = if (esGuardado) VerdeLetras else NegroLetra,
                             fontSize = 13.sp,
                             fontWeight = FontWeight.Medium
                         )
                     }
 
-                    // Botón Consultar (Asesoría / WhatsApp)
+                    // Botón Consultar (Toast temporal mientras se integra WhatsApp)
                     Button(
-                        onClick = onConsultarClick,
+                        onClick = {
+                            if (onConsultarClick != null) {
+                                onConsultarClick(video)
+                            } else {
+                                val prod = video?.producto ?: "producto"
+                                Toast.makeText(
+                                    context,
+                                    "Consultando asesoría técnica por $prod...",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        },
                         modifier = Modifier
                             .weight(1f)
                             .height(48.dp),
@@ -141,133 +173,219 @@ fun DetalleScreen(
                 .background(GrisFondoSuave)
                 .verticalScroll(scrollState)
         ) {
-            // 1. Contenedor del reproductor de video (mockup visual 16:9 con Play central)
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(210.dp)
-                    .background(Color(0xFF1B2422))
-                    .clickable { /* Simulación de reproducir video */ },
-                contentAlignment = Alignment.Center
-            ) {
-                // Botón Play
-                Surface(
-                    modifier = Modifier.size(60.dp),
-                    shape = CircleShape,
-                    color = Blanco.copy(alpha = 0.25f)
+            val v = video
+            if (v != null) {
+                // 1. Reproductor de YouTube con WebView embebido (formato 16:9)
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(220.dp)
+                        .background(Color.Black),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Box(contentAlignment = Alignment.Center) {
-                        Icon(
-                            imageVector = Icons.Default.PlayArrow,
-                            contentDescription = "Reproducir video",
-                            tint = Blanco,
-                            modifier = Modifier.size(38.dp)
+                    if (!errorEmbebido) {
+                        AndroidView(
+                            factory = { ctx ->
+                                WebView(ctx).apply {
+                                    layoutParams = ViewGroup.LayoutParams(
+                                        ViewGroup.LayoutParams.MATCH_PARENT,
+                                        ViewGroup.LayoutParams.MATCH_PARENT
+                                    )
+                                    settings.javaScriptEnabled = true
+                                    settings.domStorageEnabled = true
+                                    settings.loadWithOverviewMode = true
+                                    settings.useWideViewPort = true
+                                    webChromeClient = WebChromeClient()
+                                    webViewClient = object : WebViewClient() {
+                                        override fun onReceivedError(
+                                            view: WebView?,
+                                            errorCode: Int,
+                                            description: String?,
+                                            failingUrl: String?
+                                        ) {
+                                            errorEmbebido = true
+                                        }
+                                    }
+                                    loadUrl("https://www.youtube.com/embed/${v.youtubeVideoId}?autoplay=0&rel=0")
+                                }
+                            },
+                            update = { webView ->
+                                webView.loadUrl("https://www.youtube.com/embed/${v.youtubeVideoId}?autoplay=0&rel=0")
+                            },
+                            modifier = Modifier.fillMaxSize()
                         )
                     }
-                }
 
-                // Badge de duración sobre el video
-                Surface(
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .padding(12.dp),
-                    shape = RoundedCornerShape(4.dp),
-                    color = Color.Black.copy(alpha = 0.7f)
-                ) {
-                    Text(
-                        text = "45:00",
-                        color = Blanco,
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.Medium,
-                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
-                    )
-                }
-            }
-
-            // 2. Información del contenido
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(14.dp)
-            ) {
-                // Categoría y duración
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Panadería y pastelería",
-                        color = VerdeLetras,
-                        fontSize = 13.sp,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                    Text(
-                        text = "  ·  45 min",
-                        color = NegroLetra.copy(alpha = 0.6f),
-                        fontSize = 13.sp
-                    )
-                }
-
-                // Título
-                Text(
-                    text = "Laminado y horneado de croissants",
-                    fontSize = 21.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = NegroLetra,
-                    lineHeight = 26.sp
-                )
-
-                // Descripción técnica
-                Text(
-                    text = "Empastado, vueltas simples y dobles, fermentación y horneado. Aprende los pasos fundamentales para conseguir un hojaldre crujiente y aireado con metodología profesional Master Martini.",
-                    fontSize = 14.sp,
-                    color = NegroLetra.copy(alpha = 0.85f),
-                    lineHeight = 20.sp
-                )
-
-                Spacer(modifier = Modifier.height(4.dp))
-
-                // 3. Tarjeta de Insumo Destacado
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(10.dp),
-                    colors = CardDefaults.cardColors(containerColor = Blanco),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(6.dp)
-                    ) {
-                        Surface(
-                            color = Dorado.copy(alpha = 0.15f),
-                            shape = RoundedCornerShape(4.dp)
+                    // Fallback si no se puede reproducir embebido
+                    if (errorEmbebido) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                            modifier = Modifier.padding(16.dp)
                         ) {
                             Text(
-                                text = "Insumo destacado",
-                                color = Dorado,
-                                fontSize = 11.sp,
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
+                                text = "No se pudo cargar el reproductor embebido",
+                                color = Blanco,
+                                fontSize = 13.sp
+                            )
+                            Button(
+                                onClick = {
+                                    val intentApp = Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:${v.youtubeVideoId}"))
+                                    val intentWeb = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.youtube.com/watch?v=${v.youtubeVideoId}"))
+                                    try {
+                                        context.startActivity(intentApp)
+                                    } catch (_: Exception) {
+                                        context.startActivity(intentWeb)
+                                    }
+                                },
+                                colors = ButtonDefaults.buttonColors(containerColor = Dorado)
+                            ) {
+                                Text("Abrir en YouTube", color = Blanco, fontWeight = FontWeight.Bold)
+                            }
+                        }
+                    }
+                }
+
+                // Botón complementario para abrir en la app de YouTube directamente
+                Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    color = Blanco
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 8.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Reproducir externamente:",
+                            fontSize = 12.sp,
+                            color = NegroLetra.copy(alpha = 0.65f)
+                        )
+                        TextButton(
+                            onClick = {
+                                val intentApp = Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:${v.youtubeVideoId}"))
+                                val intentWeb = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.youtube.com/watch?v=${v.youtubeVideoId}"))
+                                try {
+                                    context.startActivity(intentApp)
+                                } catch (_: Exception) {
+                                    context.startActivity(intentWeb)
+                                }
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.OpenInNew,
+                                contentDescription = "Abrir en YouTube",
+                                modifier = Modifier.size(16.dp),
+                                tint = VerdeLetras
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = "Abrir en YouTube",
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = VerdeLetras
                             )
                         }
+                    }
+                }
 
+                // 2. Ficha técnica del video
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(14.dp)
+                ) {
+                    // Categoría y duración
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
                         Text(
-                            text = "Margarinas y mantecas especiales Máster",
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = VerdeLetras
-                        )
-
-                        Text(
-                            text = "Grasas vegetales de alto punto de fusión que garantizan laminados definidos y excelente plasticidad.",
+                            text = v.categoria,
+                            color = VerdeLetras,
                             fontSize = 13.sp,
-                            color = NegroLetra.copy(alpha = 0.75f),
-                            lineHeight = 18.sp
+                            fontWeight = FontWeight.SemiBold
+                        )
+                        Text(
+                            text = "  ·  ${v.duracion}",
+                            color = NegroLetra.copy(alpha = 0.6f),
+                            fontSize = 13.sp
                         )
                     }
+
+                    // Título
+                    Text(
+                        text = v.titulo,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = NegroLetra,
+                        lineHeight = 26.sp
+                    )
+
+                    // Descripción ("Video con {producto}")
+                    Text(
+                        text = v.descripcion,
+                        fontSize = 14.sp,
+                        color = NegroLetra.copy(alpha = 0.85f),
+                        lineHeight = 20.sp
+                    )
+
+                    Spacer(modifier = Modifier.height(4.dp))
+
+                    // 3. Tarjeta de Insumo Destacado
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(10.dp),
+                        colors = CardDefaults.cardColors(containerColor = Blanco),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            Surface(
+                                color = Dorado.copy(alpha = 0.15f),
+                                shape = RoundedCornerShape(4.dp)
+                            ) {
+                                Text(
+                                    text = "Insumo destacado",
+                                    color = Dorado,
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
+                                )
+                            }
+
+                            Text(
+                                text = v.producto,
+                                fontSize = 15.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = VerdeLetras
+                            )
+
+                            Text(
+                                text = "Línea oficial Master Martini aplicada en esta preparación técnica.",
+                                fontSize = 13.sp,
+                                color = NegroLetra.copy(alpha = 0.75f),
+                                lineHeight = 18.sp
+                            )
+                        }
+                    }
+                }
+            } else {
+                // Estado mientras carga el video
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(32.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(color = VerdeFondo)
                 }
             }
         }
@@ -278,6 +396,6 @@ fun DetalleScreen(
 @Composable
 fun DetalleScreenPreview() {
     App_GrupoSoPaTheme {
-        DetalleScreen()
+        DetalleScreen(videoId = "v01")
     }
 }
