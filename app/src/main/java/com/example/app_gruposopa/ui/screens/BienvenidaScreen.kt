@@ -30,10 +30,12 @@ import com.example.app_gruposopa.ui.theme.*
  // Vista 1 - Bienvenida
 @Composable
 fun BienvenidaScreen(
+     modifier: Modifier = Modifier,
     onComenzarClick: () -> Unit = {}
+
 ) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .statusBarsPadding()
             .navigationBarsPadding()
