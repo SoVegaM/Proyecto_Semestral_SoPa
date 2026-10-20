@@ -60,28 +60,7 @@ fun HomeScreen(
     Scaffold(
         topBar = {
             Column {
-                // 1. Barra superior verde corporativa
-                Surface(
-                    modifier = Modifier.fillMaxWidth(),
-                    color = VerdeFondo
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .statusBarsPadding()
-                            .padding(horizontal = 14.dp, vertical = 6.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "Master Martini",
-                            color = LetrasEnFondoVerde,
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Medium
-                        )
-                    }
-                }
-
-                // 2. Barra blanca con logo Master Martini
+                // Barra blanca con logo Master Martini
                 Surface(
                     modifier = Modifier.fillMaxWidth(),
                     color = Blanco,
@@ -90,6 +69,7 @@ fun HomeScreen(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
+                            .statusBarsPadding()
                             .padding(vertical = 6.dp),
                         contentAlignment = Alignment.Center
                     ) {
