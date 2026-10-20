@@ -208,12 +208,10 @@ fun DetalleScreen(
                                             errorEmbebido = true
                                         }
                                     }
-                                    loadUrl("https://www.youtube.com/embed/${v.youtubeVideoId}?autoplay=0&rel=0")
+                                    cargarVideoYoutube(v.youtubeVideoId)
                                 }
                             },
-                            update = { webView ->
-                                webView.loadUrl("https://www.youtube.com/embed/${v.youtubeVideoId}?autoplay=0&rel=0")
-                            },
+                            update = { webView -> webView.cargarVideoYoutube(v.youtubeVideoId) },
                             modifier = Modifier.fillMaxSize()
                         )
                     }
@@ -443,6 +441,39 @@ fun DetalleScreen(
             }
         }
     }
+}
+
+/**
+ * Carga el reproductor embebido de YouTube dentro de un HTML propio.
+ * YouTube exige un Referer/origen identificable (sin él muestra "Error 153"),
+ * por eso se usa loadDataWithBaseURL con un origen https y referrerpolicy.
+ * Solo recarga si cambia el video, para no reiniciarlo en cada recomposición.
+ */
+private fun WebView.cargarVideoYoutube(youtubeVideoId: String) {
+    if (tag == youtubeVideoId) return
+    tag = youtubeVideoId
+    val origen = "https://" + context.packageName.replace('_', '-')
+    val html = """
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta name="viewport" content="width=device-width, initial-scale=1">
+          <style>
+            html, body { margin: 0; padding: 0; height: 100%; background: #000; overflow: hidden; }
+            iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+          </style>
+        </head>
+        <body>
+          <iframe
+            src="https://www.youtube.com/embed/$youtubeVideoId?rel=0&playsinline=1&origin=$origen"
+            title="Video de YouTube"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerpolicy="strict-origin-when-cross-origin"
+            allowfullscreen></iframe>
+        </body>
+        </html>
+    """.trimIndent()
+    loadDataWithBaseURL(origen, html, "text/html", "utf-8", null)
 }
 
 @Preview(name = "Vista 5 - Detalle Compacta", widthDp = 360, heightDp = 800, showBackground = true)
