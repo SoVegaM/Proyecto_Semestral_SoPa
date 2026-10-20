@@ -1,14 +1,23 @@
 package com.example.app_gruposopa.data.repository
 
+import android.content.Context
+import com.example.app_gruposopa.data.local.ContenidosLocalDataSource
 import com.example.app_gruposopa.domain.model.ContenidoMasterMartini
 import com.example.app_gruposopa.domain.model.Curso
+import com.example.app_gruposopa.domain.model.TipoContenido
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 /**
- * Repositorio central de Master Martini en memoria.
+ * Repositorio central de Master Martini.
+ * Catálogo en memoria; guardados y videos vistos persistidos con DataStore
+ * una vez llamado [conectarAlmacenamiento].
  * ÚNICA fuente de datos para:
  * - Vista 4 Inicio (30 videos reales de YouTube)
  * - Vista 5 Detalle (reproductor e insumos)
@@ -106,6 +115,9 @@ class ContenidosRepository {
             )
         )
 
+        // Videos de técnica, tips o usos de un insumo; el resto son recetas
+        private val IDS_VIDEOS_TECNICOS = setOf("v03", "v04", "v05", "v11", "v12", "v13", "v22", "v25")
+
         private fun crearVideo(
             id: String,
             titulo: String,
@@ -121,10 +133,14 @@ class ContenidosRepository {
                 duracion = duracion,
                 categoria = categoria,
                 producto = producto,
-                youtubeVideoId = youtubeVideoId
+                youtubeVideoId = youtubeVideoId,
+                tipo = if (id in IDS_VIDEOS_TECNICOS) TipoContenido.VIDEO else TipoContenido.RECETA
             )
         }
     }
+
+    private var almacenamiento: ContenidosLocalDataSource? = null
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     // Estado en memoria: videos guardados
     private val _guardados = MutableStateFlow<Set<String>>(emptySet())
@@ -133,6 +149,22 @@ class ContenidosRepository {
     // Estado en memoria: videos vistos
     private val _videosVistos = MutableStateFlow<Set<String>>(emptySet())
     val videosVistos: StateFlow<Set<String>> = _videosVistos.asStateFlow()
+
+    /**
+     * Carga guardados y vistos desde DataStore y persiste cada cambio posterior.
+     * Se llama una vez desde MainActivity; sin llamarla (Previews) todo queda en memoria.
+     */
+    fun conectarAlmacenamiento(context: Context) {
+        if (almacenamiento != null) return
+        val local = ContenidosLocalDataSource(context)
+        almacenamiento = local
+        scope.launch {
+            _guardados.update { it + local.leerGuardados() }
+            _videosVistos.update { it + local.leerVideosVistos() }
+            launch { guardados.collect { local.escribirGuardados(it) } }
+            launch { videosVistos.collect { local.escribirVideosVistos(it) } }
+        }
+    }
 
     fun obtenerVideos(): List<ContenidoMasterMartini> = LISTA_VIDEOS
 
