@@ -35,6 +35,10 @@ class ContenidosRepository {
         // Instancia singleton para compartir el estado en memoria entre pantallas
         val instance: ContenidosRepository by lazy { ContenidosRepository() }
 
+        // Videos de técnica, tips o usos de un insumo; el resto son recetas.
+        // Debe declararse antes de LISTA_VIDEOS, que lo usa al inicializarse
+        private val IDS_VIDEOS_TECNICOS = setOf("v03", "v04", "v05", "v11", "v12", "v13", "v22", "v25")
+
         // 30 videos reales oficiales de Master Martini
         private val LISTA_VIDEOS: List<ContenidoMasterMartini> = listOf(
             crearVideo("v01", "Leche Asada", "Bravo Crem Azucarada", "1:16", CAT_CREMAS, "-tH8LKMzGN0"),
@@ -114,9 +118,6 @@ class ContenidosRepository {
                 videoIds = listOf("v23", "v24", "v25", "v26", "v27", "v28", "v29", "v30")
             )
         )
-
-        // Videos de técnica, tips o usos de un insumo; el resto son recetas
-        private val IDS_VIDEOS_TECNICOS = setOf("v03", "v04", "v05", "v11", "v12", "v13", "v22", "v25")
 
         private fun crearVideo(
             id: String,
