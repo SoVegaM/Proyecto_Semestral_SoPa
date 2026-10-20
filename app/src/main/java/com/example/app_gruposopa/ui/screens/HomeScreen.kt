@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
@@ -190,306 +191,311 @@ fun HomeScreen(
                 else -> 1
             }
 
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+            // Toda la pantalla se desplaza: encabezado, buscador y chips son ítems
+            // de ancho completo dentro de la misma cuadrícula de contenidos.
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(columnas),
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                // Título institucional
-                Text(
-                    text = "Centro Técnico Gastronómico",
-                    color = VerdeLetras,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold
-                )
+                item(span = { GridItemSpan(maxLineSpan) }) {
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        // Título institucional
+                        Text(
+                            text = "Centro Técnico Gastronómico",
+                            color = VerdeLetras,
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold
+                        )
 
-                Text(
-                    text = "Cursos, recetas y asesoría técnica en materias primas para panaderías, pastelerías y chocolaterías.",
-                    fontSize = 13.sp,
-                    color = NegroLetra,
-                    lineHeight = 18.sp
-                )
-
-                // Banner destacado hacia Vista 6: Cursos (Escuela Única)
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(10.dp))
-                        .clickable { onNavigateTab("cursos") },
-                    colors = CardDefaults.cardColors(containerColor = VerdeFondo),
-                    shape = RoundedCornerShape(10.dp),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-                ) {
-                    Row(
+                        Text(
+                            text = "Cursos, recetas y asesoría técnica en materias primas para panaderías, pastelerías y chocolaterías.",
+                            fontSize = 13.sp,
+                            color = NegroLetra,
+                            lineHeight = 18.sp
+                        )
+                    }
+                }
+                item(span = { GridItemSpan(maxLineSpan) }) {
+                    // Banner destacado hacia Vista 6: Cursos (Escuela Única)
+                    Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 14.dp, vertical = 12.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
+                            .clip(RoundedCornerShape(10.dp))
+                            .clickable { onNavigateTab("cursos") },
+                        colors = CardDefaults.cardColors(containerColor = VerdeFondo),
+                        shape = RoundedCornerShape(10.dp),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                     ) {
                         Row(
-                            modifier = Modifier.weight(1f),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 14.dp, vertical = 12.dp),
                             verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(10.dp)
+                            horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Icon(
-                                imageVector = Icons.Default.School,
-                                contentDescription = null,
-                                tint = Dorado,
-                                modifier = Modifier.size(26.dp)
-                            )
-                            Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                            Row(
+                                modifier = Modifier.weight(1f),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(10.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.School,
+                                    contentDescription = null,
+                                    tint = Dorado,
+                                    modifier = Modifier.size(26.dp)
+                                )
+                                Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                                    Text(
+                                        text = "ESCUELA ÚNICA",
+                                        color = Dorado,
+                                        fontSize = 11.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        letterSpacing = 0.5.sp
+                                    )
+                                    Text(
+                                        text = "6 cursos de formación profesional",
+                                        color = Blanco,
+                                        fontSize = 13.sp,
+                                        fontWeight = FontWeight.SemiBold
+                                    )
+                                }
+                            }
+                            Surface(
+                                shape = RoundedCornerShape(16.dp),
+                                color = Dorado
+                            ) {
                                 Text(
-                                    text = "ESCUELA ÚNICA",
-                                    color = Dorado,
+                                    text = "Ver Cursos →",
+                                    color = NegroLetra,
                                     fontSize = 11.sp,
                                     fontWeight = FontWeight.Bold,
-                                    letterSpacing = 0.5.sp
-                                )
-                                Text(
-                                    text = "6 cursos de formación profesional",
-                                    color = Blanco,
-                                    fontSize = 13.sp,
-                                    fontWeight = FontWeight.SemiBold
+                                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
                                 )
                             }
                         }
-                        Surface(
-                            shape = RoundedCornerShape(16.dp),
-                            color = Dorado
-                        ) {
+                    }
+                }
+                item(span = { GridItemSpan(maxLineSpan) }) {
+                    // Buscador por texto (filtra por título y producto)
+                    OutlinedTextField(
+                        value = textoBusqueda,
+                        onValueChange = { viewModel.onTextoBusquedaChange(it) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(min = 52.dp),
+                        placeholder = {
                             Text(
-                                text = "Ver Cursos →",
-                                color = NegroLetra,
-                                fontSize = 11.sp,
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
+                                text = "Buscar por receta, técnica o producto...",
+                                fontSize = 13.sp,
+                                color = NegroLetra.copy(alpha = 0.5f)
                             )
-                        }
-                    }
-                }
-
-                // Buscador por texto (filtra por título y producto)
-                OutlinedTextField(
-                    value = textoBusqueda,
-                    onValueChange = { viewModel.onTextoBusquedaChange(it) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .heightIn(min = 52.dp),
-                    placeholder = {
-                        Text(
-                            text = "Buscar por receta, técnica o producto...",
-                            fontSize = 13.sp,
-                            color = NegroLetra.copy(alpha = 0.5f)
-                        )
-                    },
-                    leadingIcon = {
-                        Icon(
-                            imageVector = Icons.Default.Search,
-                            contentDescription = "Buscar",
-                            tint = VerdeLetras
-                        )
-                    },
-                    trailingIcon = {
-                        if (textoBusqueda.isNotEmpty()) {
-                            IconButton(onClick = { viewModel.onTextoBusquedaChange("") }) {
-                                Icon(
-                                    imageVector = Icons.Default.Clear,
-                                    contentDescription = "Limpiar búsqueda",
-                                    tint = NegroLetra.copy(alpha = 0.6f)
-                                )
+                        },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.Search,
+                                contentDescription = "Buscar",
+                                tint = VerdeLetras
+                            )
+                        },
+                        trailingIcon = {
+                            if (textoBusqueda.isNotEmpty()) {
+                                IconButton(onClick = { viewModel.onTextoBusquedaChange("") }) {
+                                    Icon(
+                                        imageVector = Icons.Default.Clear,
+                                        contentDescription = "Limpiar búsqueda",
+                                        tint = NegroLetra.copy(alpha = 0.6f)
+                                    )
+                                }
                             }
-                        }
-                    },
-                    singleLine = true,
-                    shape = RoundedCornerShape(8.dp),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedContainerColor = Blanco,
-                        unfocusedContainerColor = Blanco,
-                        focusedBorderColor = VerdeFondo,
-                        unfocusedBorderColor = GrisFondoSuave
-                    )
-                )
-
-                // Chips de categorías generados desde los datos reales (Todas + 4)
-                Text(
-                    text = "Especialidades",
-                    color = VerdeLetras,
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.Bold
-                )
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .horizontalScroll(rememberScrollState()),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    viewModel.categorias.forEach { cat ->
-                        val esSeleccionada = (cat == categoriaSeleccionada)
-                        FilterChip(
-                            selected = esSeleccionada,
-                            onClick = { viewModel.seleccionarCategoria(cat) },
-                            label = {
-                                Text(
-                                    text = cat,
-                                    fontSize = 12.sp,
-                                    fontWeight = if (esSeleccionada) FontWeight.Bold else FontWeight.Normal,
-                                    color = if (esSeleccionada) Blanco else NegroLetra
-                                )
-                            },
-                            colors = FilterChipDefaults.filterChipColors(
-                                selectedContainerColor = VerdeFondo,
-                                containerColor = Blanco
-                            )
+                        },
+                        singleLine = true,
+                        shape = RoundedCornerShape(8.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedContainerColor = Blanco,
+                            unfocusedContainerColor = Blanco,
+                            focusedBorderColor = VerdeFondo,
+                            unfocusedBorderColor = GrisFondoSuave
                         )
-                    }
+                    )
                 }
-
-                // Encabezado con contador
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
+                item(span = { GridItemSpan(maxLineSpan) }) {
+                    // Chips de categorías generados desde los datos reales (Todas + 4)
                     Text(
-                        text = "Contenidos Disponibles",
+                        text = "Especialidades",
                         color = VerdeLetras,
                         fontSize = 15.sp,
                         fontWeight = FontWeight.Bold
                     )
-                    Text(
-                        text = "${contenidos.size} encontrados",
-                        color = NegroLetra.copy(alpha = 0.6f),
-                        fontSize = 12.sp
-                    )
                 }
-
-                // Cuadrícula responsive de tarjetas de videos
-                if (contenidos.isEmpty()) {
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(containerColor = Blanco),
-                        shape = RoundedCornerShape(8.dp)
+                item(span = { GridItemSpan(maxLineSpan) }) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(32.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = "No se encontraron videos para tu búsqueda.",
-                                color = NegroLetra.copy(alpha = 0.7f),
-                                fontSize = 13.sp
+                        viewModel.categorias.forEach { cat ->
+                            val esSeleccionada = (cat == categoriaSeleccionada)
+                            FilterChip(
+                                selected = esSeleccionada,
+                                onClick = { viewModel.seleccionarCategoria(cat) },
+                                label = {
+                                    Text(
+                                        text = cat,
+                                        fontSize = 12.sp,
+                                        fontWeight = if (esSeleccionada) FontWeight.Bold else FontWeight.Normal,
+                                        color = if (esSeleccionada) Blanco else NegroLetra
+                                    )
+                                },
+                                colors = FilterChipDefaults.filterChipColors(
+                                    selectedContainerColor = VerdeFondo,
+                                    containerColor = Blanco
+                                )
                             )
                         }
                     }
-                } else {
-                    LazyVerticalGrid(
-                        columns = GridCells.Fixed(columnas),
-                        modifier = Modifier.weight(1f),
-                        verticalArrangement = Arrangement.spacedBy(12.dp),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                }
+                item(span = { GridItemSpan(maxLineSpan) }) {
+                    // Encabezado con contador
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        items(contenidos, key = { it.id }) { item ->
-                            Card(
+                        Text(
+                            text = "Contenidos Disponibles",
+                            color = VerdeLetras,
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = "${contenidos.size} encontrados",
+                            color = NegroLetra.copy(alpha = 0.6f),
+                            fontSize = 12.sp
+                        )
+                    }
+                }
+                if (contenidos.isEmpty()) {
+                    item(span = { GridItemSpan(maxLineSpan) }) {
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(containerColor = Blanco),
+                            shape = RoundedCornerShape(8.dp)
+                        ) {
+                            Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .clip(RoundedCornerShape(10.dp)),
-                                colors = CardDefaults.cardColors(containerColor = Blanco),
-                                shape = RoundedCornerShape(10.dp),
-                                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-                                onClick = { onContenidoClick(item) }
+                                    .padding(32.dp),
+                                contentAlignment = Alignment.Center
                             ) {
-                                Column(
+                                Text(
+                                    text = "No se encontraron videos para tu búsqueda.",
+                                    color = NegroLetra.copy(alpha = 0.7f),
+                                    fontSize = 13.sp
+                                )
+                            }
+                        }
+                    }
+                } else {
+                    items(contenidos, key = { it.id }) { item ->
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(10.dp)),
+                            colors = CardDefaults.cardColors(containerColor = Blanco),
+                            shape = RoundedCornerShape(10.dp),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                            onClick = { onContenidoClick(item) }
+                        ) {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(12.dp),
+                                verticalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                // Miniatura oficial de YouTube mediante Coil
+                                AsyncImage(
+                                    model = item.miniaturaUrl,
+                                    contentDescription = "Miniatura de ${item.titulo}",
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(12.dp),
-                                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                                        .height(140.dp)
+                                        .clip(RoundedCornerShape(6.dp)),
+                                    contentScale = ContentScale.Crop
+                                )
+
+                                // Fila de categoría y duración
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    // Miniatura oficial de YouTube mediante Coil
-                                    AsyncImage(
-                                        model = item.miniaturaUrl,
-                                        contentDescription = "Miniatura de ${item.titulo}",
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .height(140.dp)
-                                            .clip(RoundedCornerShape(6.dp)),
-                                        contentScale = ContentScale.Crop
-                                    )
-
-                                    // Fila de categoría y duración
-                                    Row(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.SpaceBetween,
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        Surface(
-                                            color = Dorado.copy(alpha = 0.12f),
-                                            shape = RoundedCornerShape(4.dp)
-                                        ) {
-                                            Text(
-                                                text = item.categoria,
-                                                color = Dorado,
-                                                fontSize = 11.sp,
-                                                fontWeight = FontWeight.Bold,
-                                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
-                                                maxLines = 1
-                                            )
-                                        }
-                                        Text(
-                                            text = "⏱ ${item.duracion}",
-                                            color = NegroLetra.copy(alpha = 0.6f),
-                                            fontSize = 11.sp
-                                        )
-                                    }
-
-                                    // Título
-                                    Text(
-                                        text = item.titulo,
-                                        fontSize = 15.sp,
-                                        fontWeight = FontWeight.Bold,
-                                        color = NegroLetra,
-                                        maxLines = 2
-                                    )
-
-                                    // Descripción ("Video con {producto}")
-                                    Text(
-                                        text = item.descripcion,
-                                        fontSize = 12.sp,
-                                        color = NegroLetra.copy(alpha = 0.8f),
-                                        lineHeight = 16.sp,
-                                        maxLines = 2
-                                    )
-
-                                    HorizontalDivider(
-                                        modifier = Modifier.padding(vertical = 2.dp),
-                                        color = GrisFondoSuave
-                                    )
-
-                                    // Insumo destacado y acción
-                                    Row(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.SpaceBetween,
-                                        verticalAlignment = Alignment.CenterVertically
+                                    Surface(
+                                        color = Dorado.copy(alpha = 0.12f),
+                                        shape = RoundedCornerShape(4.dp)
                                     ) {
                                         Text(
-                                            text = "Insumo: ${item.producto}",
-                                            fontSize = 12.sp,
-                                            fontWeight = FontWeight.SemiBold,
-                                            color = VerdeLetras,
-                                            maxLines = 1,
-                                            modifier = Modifier.weight(1f)
-                                        )
-                                        Text(
-                                            text = "Ver video ▶",
+                                            text = item.categoria,
+                                            color = Dorado,
                                             fontSize = 11.sp,
                                             fontWeight = FontWeight.Bold,
-                                            color = Dorado
+                                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                                            maxLines = 1
                                         )
                                     }
+                                    Text(
+                                        text = "⏱ ${item.duracion}",
+                                        color = NegroLetra.copy(alpha = 0.6f),
+                                        fontSize = 11.sp
+                                    )
+                                }
+
+                                // Título
+                                Text(
+                                    text = item.titulo,
+                                    fontSize = 15.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = NegroLetra,
+                                    maxLines = 2
+                                )
+
+                                // Descripción ("Video con {producto}")
+                                Text(
+                                    text = item.descripcion,
+                                    fontSize = 12.sp,
+                                    color = NegroLetra.copy(alpha = 0.8f),
+                                    lineHeight = 16.sp,
+                                    maxLines = 2
+                                )
+
+                                HorizontalDivider(
+                                    modifier = Modifier.padding(vertical = 2.dp),
+                                    color = GrisFondoSuave
+                                )
+
+                                // Insumo destacado y acción
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = "Insumo: ${item.producto}",
+                                        fontSize = 12.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = VerdeLetras,
+                                        maxLines = 1,
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                    Text(
+                                        text = "Ver video ▶",
+                                        fontSize = 11.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = Dorado
+                                    )
                                 }
                             }
                         }
