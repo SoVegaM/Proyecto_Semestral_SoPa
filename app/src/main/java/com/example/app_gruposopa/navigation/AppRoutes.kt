@@ -17,7 +17,6 @@ object AppRoutes {
     const val PERFIL = "perfil"
     const val ACCESIBILIDAD = "accesibilidad"
     const val GUARDADOS = "guardados"
-    const val HOME_ADAPTABLE = "home_adaptable"
 
     fun rutaDetalle(videoId: String): String = "detalle/$videoId"
 }

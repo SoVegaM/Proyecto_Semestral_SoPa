@@ -113,7 +113,7 @@ fun BienvenidaScreen(
                 ) {
                     Text(
                         text = "Comenzar",
-                        fontSize = 22.sp,
+                        style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                         color = Blanco
                     )

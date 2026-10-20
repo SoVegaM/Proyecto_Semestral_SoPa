@@ -51,7 +51,7 @@ fun GuardadosScreen(
                 title = {
                     Text(
                         text = "Mis guardados",
-                        fontSize = 18.sp,
+                        style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = Blanco
                     )
@@ -94,7 +94,7 @@ fun GuardadosScreen(
                         label = {
                             Text(
                                 text = filtro.etiqueta,
-                                fontSize = 13.sp,
+                                style = MaterialTheme.typography.bodyMedium,
                                 fontWeight = if (esSeleccionado) FontWeight.Bold else FontWeight.Normal,
                                 color = if (esSeleccionado) Blanco else NegroLetra
                             )
@@ -131,7 +131,7 @@ fun GuardadosScreen(
                         )
                         Text(
                             text = "Aún no guardas contenidos",
-                            fontSize = 18.sp,
+                            style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
                             color = VerdeLetras,
                             textAlign = TextAlign.Center
@@ -142,10 +142,9 @@ fun GuardadosScreen(
                             } else {
                                 "No tienes contenidos guardados en la categoría \"${filtroSeleccionado.etiqueta}\"."
                             },
-                            fontSize = 13.sp,
+                            style = MaterialTheme.typography.bodyMedium,
                             color = NegroLetra.copy(alpha = 0.7f),
-                            textAlign = TextAlign.Center,
-                            lineHeight = 18.sp
+                            textAlign = TextAlign.Center
                         )
                     }
                 }
@@ -180,13 +179,13 @@ fun GuardadosScreen(
                                 ) {
                                     Text(
                                         text = item.titulo,
-                                        fontSize = 15.sp,
+                                        style = MaterialTheme.typography.titleSmall,
                                         fontWeight = FontWeight.Bold,
                                         color = NegroLetra
                                     )
                                     Text(
                                         text = "${item.tipo.etiqueta} · ${item.duracion}",
-                                        fontSize = 12.sp,
+                                        style = MaterialTheme.typography.bodySmall,
                                         color = NegroLetra.copy(alpha = 0.6f)
                                     )
                                 }
@@ -199,7 +198,7 @@ fun GuardadosScreen(
                                     Icon(
                                         imageVector = Icons.Default.Bookmark,
                                         contentDescription = "Quitar ${item.titulo} de guardados",
-                                        tint = Dorado,
+                                        tint = DoradoTexto,
                                         modifier = Modifier.size(24.dp)
                                     )
                                 }

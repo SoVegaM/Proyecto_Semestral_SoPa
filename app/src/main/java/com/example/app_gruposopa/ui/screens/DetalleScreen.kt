@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.view.ViewGroup
 import android.webkit.WebChromeClient
+import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Toast
@@ -74,7 +75,7 @@ fun DetalleScreen(
                 title = {
                     Text(
                         text = "Detalle",
-                        fontSize = 18.sp,
+                        style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = Blanco
                     )
@@ -130,7 +131,7 @@ fun DetalleScreen(
                         Text(
                             text = if (esGuardado) "Guardado" else "Guardar",
                             color = if (esGuardado) VerdeLetras else NegroLetra,
-                            fontSize = 13.sp,
+                            style = MaterialTheme.typography.bodyMedium,
                             fontWeight = FontWeight.Medium
                         )
                     }
@@ -160,7 +161,7 @@ fun DetalleScreen(
                     ) {
                         Text(
                             text = "Consultar",
-                            fontSize = 14.sp,
+                            style = MaterialTheme.typography.bodyMedium,
                             fontWeight = FontWeight.Bold
                         )
                     }
@@ -208,6 +209,10 @@ fun DetalleScreen(
                                             errorEmbebido = true
                                         }
                                     }
+                                    addJavascriptInterface(
+                                        PuenteReproductor { viewModel.marcarComoVisto() },
+                                        PuenteReproductor.NOMBRE
+                                    )
                                     cargarVideoYoutube(v.youtubeVideoId)
                                 }
                             },
@@ -226,12 +231,13 @@ fun DetalleScreen(
                             Text(
                                 text = "No se pudo cargar el reproductor embebido",
                                 color = Blanco,
-                                fontSize = 13.sp
+                                style = MaterialTheme.typography.bodyMedium
                             )
                             Button(
                                 onClick = {
                                     val intentApp = Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:${v.youtubeVideoId}"))
                                     val intentWeb = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.youtube.com/watch?v=${v.youtubeVideoId}"))
+                                    viewModel.marcarComoVisto()
                                     try {
                                         context.startActivity(intentApp)
                                     } catch (_: Exception) {
@@ -240,7 +246,7 @@ fun DetalleScreen(
                                 },
                                 colors = ButtonDefaults.buttonColors(containerColor = Dorado)
                             ) {
-                                Text("Abrir en YouTube", color = Blanco, fontWeight = FontWeight.Bold)
+                                Text("Abrir en YouTube", color = NegroLetra, fontWeight = FontWeight.Bold)
                             }
                         }
                     }
@@ -260,13 +266,14 @@ fun DetalleScreen(
                     ) {
                         Text(
                             text = "Reproducir externamente:",
-                            fontSize = 12.sp,
+                            style = MaterialTheme.typography.bodySmall,
                             color = NegroLetra.copy(alpha = 0.65f)
                         )
                         TextButton(
                             onClick = {
                                 val intentApp = Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:${v.youtubeVideoId}"))
                                 val intentWeb = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.youtube.com/watch?v=${v.youtubeVideoId}"))
+                                viewModel.marcarComoVisto()
                                 try {
                                     context.startActivity(intentApp)
                                 } catch (_: Exception) {
@@ -283,7 +290,7 @@ fun DetalleScreen(
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(
                                 text = "Abrir en YouTube",
-                                fontSize = 12.sp,
+                                style = MaterialTheme.typography.bodySmall,
                                 fontWeight = FontWeight.SemiBold,
                                 color = VerdeLetras
                             )
@@ -306,31 +313,29 @@ fun DetalleScreen(
                         Text(
                             text = v.categoria,
                             color = VerdeLetras,
-                            fontSize = 13.sp,
+                            style = MaterialTheme.typography.bodyMedium,
                             fontWeight = FontWeight.SemiBold
                         )
                         Text(
                             text = "  ·  ${v.duracion}",
                             color = NegroLetra.copy(alpha = 0.6f),
-                            fontSize = 13.sp
+                            style = MaterialTheme.typography.bodyMedium
                         )
                     }
 
                     // Título
                     Text(
                         text = v.titulo,
-                        fontSize = 20.sp,
+                        style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
-                        color = NegroLetra,
-                        lineHeight = 26.sp
+                        color = NegroLetra
                     )
 
                     // Descripción ("Video con {producto}")
                     Text(
                         text = v.descripcion,
-                        fontSize = 14.sp,
-                        color = NegroLetra.copy(alpha = 0.85f),
-                        lineHeight = 20.sp
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = NegroLetra.copy(alpha = 0.85f)
                     )
 
                     Spacer(modifier = Modifier.height(4.dp))
@@ -354,8 +359,8 @@ fun DetalleScreen(
                             ) {
                                 Text(
                                     text = "Insumo destacado",
-                                    color = Dorado,
-                                    fontSize = 11.sp,
+                                    color = DoradoTexto,
+                                    style = MaterialTheme.typography.labelMedium,
                                     fontWeight = FontWeight.Bold,
                                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
                                 )
@@ -363,16 +368,15 @@ fun DetalleScreen(
 
                             Text(
                                 text = v.producto,
-                                fontSize = 15.sp,
+                                style = MaterialTheme.typography.titleSmall,
                                 fontWeight = FontWeight.Bold,
                                 color = VerdeLetras
                             )
 
                             Text(
                                 text = "Línea oficial Master Martini aplicada en esta preparación técnica.",
-                                fontSize = 13.sp,
-                                color = NegroLetra.copy(alpha = 0.75f),
-                                lineHeight = 18.sp
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = NegroLetra.copy(alpha = 0.75f)
                             )
                         }
                     }
@@ -401,28 +405,28 @@ fun DetalleScreen(
                                 ) {
                                     Text(
                                         text = "MÓDULO DE ESCUELA ÚNICA",
-                                        fontSize = 11.sp,
+                                        style = MaterialTheme.typography.labelMedium,
                                         fontWeight = FontWeight.Bold,
-                                        color = Dorado
+                                        color = DoradoTexto
                                     )
                                     Text(
                                         text = cursoAsociado.titulo,
-                                        fontSize = 14.sp,
+                                        style = MaterialTheme.typography.bodyMedium,
                                         fontWeight = FontWeight.Bold,
                                         color = VerdeLetras
                                     )
                                     Text(
                                         text = cursoAsociado.descripcion,
-                                        fontSize = 12.sp,
+                                        style = MaterialTheme.typography.bodySmall,
                                         color = NegroLetra.copy(alpha = 0.7f),
                                         maxLines = 1
                                     )
                                 }
                                 Text(
                                     text = "Ver curso →",
-                                    fontSize = 12.sp,
+                                    style = MaterialTheme.typography.bodySmall,
                                     fontWeight = FontWeight.Bold,
-                                    color = Dorado
+                                    color = DoradoTexto
                                 )
                             }
                         }
@@ -444,9 +448,23 @@ fun DetalleScreen(
 }
 
 /**
- * Carga el reproductor embebido de YouTube dentro de un HTML propio.
+ * Puente JavaScript → Kotlin: el reproductor avisa cuando el video empieza a reproducirse.
+ * Se invoca desde el hilo del WebView; el repositorio usa StateFlow, que es seguro entre hilos.
+ */
+private class PuenteReproductor(private val onReproducir: () -> Unit) {
+    @JavascriptInterface
+    fun alReproducir() = onReproducir()
+
+    companion object {
+        const val NOMBRE = "PuenteReproductor"
+    }
+}
+
+/**
+ * Carga el reproductor de YouTube (IFrame Player API) dentro de un HTML propio.
  * YouTube exige un Referer/origen identificable (sin él muestra "Error 153"),
- * por eso se usa loadDataWithBaseURL con un origen https y referrerpolicy.
+ * por eso se usa loadDataWithBaseURL con un origen https.
+ * La API permite detectar la reproducción para marcar el módulo como visto.
  * Solo recarga si cambia el video, para no reiniciarlo en cada recomposición.
  */
 private fun WebView.cargarVideoYoutube(youtubeVideoId: String) {
@@ -458,18 +476,34 @@ private fun WebView.cargarVideoYoutube(youtubeVideoId: String) {
         <html>
         <head>
           <meta name="viewport" content="width=device-width, initial-scale=1">
+          <meta name="referrer" content="strict-origin-when-cross-origin">
           <style>
             html, body { margin: 0; padding: 0; height: 100%; background: #000; overflow: hidden; }
-            iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+            #reproductor { position: absolute; inset: 0; width: 100%; height: 100%; }
           </style>
         </head>
         <body>
-          <iframe
-            src="https://www.youtube.com/embed/$youtubeVideoId?rel=0&playsinline=1&origin=$origen"
-            title="Video de YouTube"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            referrerpolicy="strict-origin-when-cross-origin"
-            allowfullscreen></iframe>
+          <div id="reproductor"></div>
+          <script>
+            var avisado = false;
+            function onYouTubeIframeAPIReady() {
+              new YT.Player('reproductor', {
+                width: '100%',
+                height: '100%',
+                videoId: '$youtubeVideoId',
+                playerVars: { rel: 0, playsinline: 1, origin: '$origen' },
+                events: {
+                  onStateChange: function (e) {
+                    if (e.data === YT.PlayerState.PLAYING && !avisado) {
+                      avisado = true;
+                      ${PuenteReproductor.NOMBRE}.alReproducir();
+                    }
+                  }
+                }
+              });
+            }
+          </script>
+          <script src="https://www.youtube.com/iframe_api"></script>
         </body>
         </html>
     """.trimIndent()

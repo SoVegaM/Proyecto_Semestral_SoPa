@@ -3,6 +3,7 @@ package com.example.app_gruposopa.navigation
 import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -14,7 +15,6 @@ import com.example.app_gruposopa.ui.screens.CursosScreen
 import com.example.app_gruposopa.ui.screens.DetalleScreen
 import com.example.app_gruposopa.ui.screens.GuardadosScreen
 import com.example.app_gruposopa.ui.screens.HomeScreen
-import com.example.app_gruposopa.ui.screens.HomeScreenAdaptable
 import com.example.app_gruposopa.ui.screens.PlaceholderVistaScreen
 
 /**
@@ -73,9 +73,8 @@ fun AppNavHost(
                 onContenidoClick = { video ->
                     navController.navigate(AppScreen.Detalle.crearRuta(video.id))
                 },
-                onNavigateTab = { ruta ->
-                    navController.navigate(ruta)
-                }
+                onNavigateTab = { ruta -> navController.navegarAPestana(ruta) },
+                onGuardadosClick = { navController.navigate(AppScreen.Guardados.route) }
             )
         }
 
@@ -102,7 +101,7 @@ fun AppNavHost(
                     ).show()
                 },
                 onVerCursoClick = {
-                    navController.navigate(AppScreen.Cursos.route)
+                    navController.navegarAPestana(AppScreen.Cursos.route)
                 }
             )
         }
@@ -113,9 +112,7 @@ fun AppNavHost(
                 onModuloClick = { videoId ->
                     navController.navigate(AppScreen.Detalle.crearRuta(videoId))
                 },
-                onNavigateTab = { ruta ->
-                    navController.navigate(ruta)
-                }
+                onNavigateTab = { ruta -> navController.navegarAPestana(ruta) }
             )
         }
 
@@ -153,9 +150,29 @@ fun AppNavHost(
             )
         }
 
-        // Pantalla Adaptable
-        composable(route = "home_adaptable") {
-            HomeScreenAdaptable()
-        }
+    }
+}
+
+/**
+ * Navegación entre las pestañas de la barra inferior.
+ * Deja siempre Inicio como base del historial y no apila pestañas repetidas:
+ * Atrás desde cualquier pestaña vuelve a Inicio, y desde Inicio sale de la app.
+ */
+fun NavHostController.navegarAPestana(ruta: String) {
+    navigate(ruta) {
+        popUpTo(AppScreen.Inicio.route) { saveState = true }
+        launchSingleTop = true
+        restoreState = true
+    }
+}
+
+/**
+ * Entrada a Inicio después del primer uso (Bienvenida → Ingreso → Perfil de negocio).
+ * Limpia esas pantallas del historial para que Atrás no vuelva a ellas.
+ */
+fun NavController.entrarAInicio() {
+    navigate(AppScreen.Inicio.route) {
+        popUpTo(graph.id) { inclusive = true }
+        launchSingleTop = true
     }
 }

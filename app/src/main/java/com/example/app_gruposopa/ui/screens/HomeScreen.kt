@@ -33,6 +33,8 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.app_gruposopa.R
 import com.example.app_gruposopa.domain.model.ContenidoMasterMartini
+import com.example.app_gruposopa.navigation.AppScreen
+import com.example.app_gruposopa.ui.components.BarraNavegacionInferior
 import com.example.app_gruposopa.ui.theme.*
 import com.example.app_gruposopa.ui.viewmodels.HomeViewModel
 
@@ -51,7 +53,8 @@ import com.example.app_gruposopa.ui.viewmodels.HomeViewModel
 fun HomeScreen(
     viewModel: HomeViewModel = remember { HomeViewModel() },
     onContenidoClick: (ContenidoMasterMartini) -> Unit = {},
-    onNavigateTab: (String) -> Unit = {}
+    onNavigateTab: (String) -> Unit = {},
+    onGuardadosClick: () -> Unit = {}
 ) {
     val contenidos by viewModel.contenidosFiltrados.collectAsState()
     val categoriaSeleccionada by viewModel.categoriaSeleccionada.collectAsState()
@@ -84,7 +87,7 @@ fun HomeScreen(
 
                         // Acceso directo a Vista 10 · Mis guardados (Persona A)
                         IconButton(
-                            onClick = { onNavigateTab("guardados") },
+                            onClick = onGuardadosClick,
                             modifier = Modifier
                                 .align(Alignment.CenterEnd)
                                 .padding(end = 8.dp)
@@ -93,7 +96,7 @@ fun HomeScreen(
                             Icon(
                                 imageVector = Icons.Default.Bookmark,
                                 contentDescription = "Mis guardados",
-                                tint = Dorado
+                                tint = DoradoTexto
                             )
                         }
                     }
@@ -101,61 +104,10 @@ fun HomeScreen(
             }
         },
         bottomBar = {
-            // Barra de navegación inferior
-            Surface(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .navigationBarsPadding(),
-                color = Blanco,
-                shadowElevation = 8.dp
-            ) {
-                NavigationBar(
-                    containerColor = Blanco,
-                    tonalElevation = 0.dp
-                ) {
-                    NavigationBarItem(
-                        selected = true,
-                        onClick = { /* Ya en Inicio */ },
-                        icon = { Icon(Icons.Default.Home, contentDescription = "Inicio") },
-                        label = { Text("Inicio", fontSize = 11.sp, fontWeight = FontWeight.Bold) },
-                        colors = NavigationBarItemDefaults.colors(
-                            selectedIconColor = VerdeLetras,
-                            selectedTextColor = VerdeLetras,
-                            indicatorColor = VerdeFondo.copy(alpha = 0.12f)
-                        )
-                    )
-                    NavigationBarItem(
-                        selected = false,
-                        onClick = { onNavigateTab("cursos") },
-                        icon = { Icon(Icons.Default.School, contentDescription = "Cursos") },
-                        label = { Text("Cursos", fontSize = 11.sp) },
-                        colors = NavigationBarItemDefaults.colors(
-                            unselectedIconColor = NegroLetra.copy(alpha = 0.6f),
-                            unselectedTextColor = NegroLetra.copy(alpha = 0.6f)
-                        )
-                    )
-                    NavigationBarItem(
-                        selected = false,
-                        onClick = { onNavigateTab("eventos") },
-                        icon = { Icon(Icons.Default.CalendarMonth, contentDescription = "Eventos") },
-                        label = { Text("Eventos", fontSize = 11.sp) },
-                        colors = NavigationBarItemDefaults.colors(
-                            unselectedIconColor = NegroLetra.copy(alpha = 0.6f),
-                            unselectedTextColor = NegroLetra.copy(alpha = 0.6f)
-                        )
-                    )
-                    NavigationBarItem(
-                        selected = false,
-                        onClick = { onNavigateTab("perfil") },
-                        icon = { Icon(Icons.Default.Person, contentDescription = "Perfil") },
-                        label = { Text("Perfil", fontSize = 11.sp) },
-                        colors = NavigationBarItemDefaults.colors(
-                            unselectedIconColor = NegroLetra.copy(alpha = 0.6f),
-                            unselectedTextColor = NegroLetra.copy(alpha = 0.6f)
-                        )
-                    )
-                }
-            }
+            BarraNavegacionInferior(
+                rutaActual = AppScreen.Inicio.route,
+                onNavegar = onNavigateTab
+            )
         }
     ) { innerPadding ->
         BoxWithConstraints(
@@ -186,15 +138,14 @@ fun HomeScreen(
                         Text(
                             text = "Centro Técnico Gastronómico",
                             color = VerdeLetras,
-                            fontSize = 20.sp,
+                            style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold
                         )
 
                         Text(
                             text = "Cursos, recetas y asesoría técnica en materias primas para panaderías, pastelerías y chocolaterías.",
-                            fontSize = 13.sp,
-                            color = NegroLetra,
-                            lineHeight = 18.sp
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = NegroLetra
                         )
                     }
                 }
@@ -204,7 +155,7 @@ fun HomeScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clip(RoundedCornerShape(10.dp))
-                            .clickable { onNavigateTab("cursos") },
+                            .clickable { onNavigateTab(AppScreen.Cursos.route) },
                         colors = CardDefaults.cardColors(containerColor = VerdeFondo),
                         shape = RoundedCornerShape(10.dp),
                         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
@@ -231,14 +182,14 @@ fun HomeScreen(
                                     Text(
                                         text = "ESCUELA ÚNICA",
                                         color = Dorado,
-                                        fontSize = 11.sp,
+                                        style = MaterialTheme.typography.labelMedium,
                                         fontWeight = FontWeight.Bold,
                                         letterSpacing = 0.5.sp
                                     )
                                     Text(
                                         text = "6 cursos de formación profesional",
                                         color = Blanco,
-                                        fontSize = 13.sp,
+                                        style = MaterialTheme.typography.bodyMedium,
                                         fontWeight = FontWeight.SemiBold
                                     )
                                 }
@@ -250,7 +201,7 @@ fun HomeScreen(
                                 Text(
                                     text = "Ver Cursos →",
                                     color = NegroLetra,
-                                    fontSize = 11.sp,
+                                    style = MaterialTheme.typography.labelMedium,
                                     fontWeight = FontWeight.Bold,
                                     modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
                                 )
@@ -268,8 +219,8 @@ fun HomeScreen(
                             .heightIn(min = 52.dp),
                         placeholder = {
                             Text(
-                                text = "Buscar por receta, técnica o producto...",
-                                fontSize = 13.sp,
+                                text = "Buscar receta o producto",
+                                style = MaterialTheme.typography.bodyMedium,
                                 color = NegroLetra.copy(alpha = 0.5f)
                             )
                         },
@@ -306,7 +257,7 @@ fun HomeScreen(
                     Text(
                         text = "Especialidades",
                         color = VerdeLetras,
-                        fontSize = 15.sp,
+                        style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.Bold
                     )
                 }
@@ -325,7 +276,7 @@ fun HomeScreen(
                                 label = {
                                     Text(
                                         text = cat,
-                                        fontSize = 12.sp,
+                                        style = MaterialTheme.typography.bodySmall,
                                         fontWeight = if (esSeleccionada) FontWeight.Bold else FontWeight.Normal,
                                         color = if (esSeleccionada) Blanco else NegroLetra
                                     )
@@ -348,13 +299,13 @@ fun HomeScreen(
                         Text(
                             text = "Contenidos Disponibles",
                             color = VerdeLetras,
-                            fontSize = 15.sp,
+                            style = MaterialTheme.typography.titleSmall,
                             fontWeight = FontWeight.Bold
                         )
                         Text(
                             text = "${contenidos.size} encontrados",
                             color = NegroLetra.copy(alpha = 0.6f),
-                            fontSize = 12.sp
+                            style = MaterialTheme.typography.bodySmall
                         )
                     }
                 }
@@ -374,7 +325,7 @@ fun HomeScreen(
                                 Text(
                                     text = "No se encontraron videos para tu búsqueda.",
                                     color = NegroLetra.copy(alpha = 0.7f),
-                                    fontSize = 13.sp
+                                    style = MaterialTheme.typography.bodyMedium
                                 )
                             }
                         }
@@ -419,8 +370,8 @@ fun HomeScreen(
                                     ) {
                                         Text(
                                             text = item.categoria,
-                                            color = Dorado,
-                                            fontSize = 11.sp,
+                                            color = DoradoTexto,
+                                            style = MaterialTheme.typography.labelMedium,
                                             fontWeight = FontWeight.Bold,
                                             modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
                                             maxLines = 1
@@ -429,14 +380,14 @@ fun HomeScreen(
                                     Text(
                                         text = "⏱ ${item.duracion}",
                                         color = NegroLetra.copy(alpha = 0.6f),
-                                        fontSize = 11.sp
+                                        style = MaterialTheme.typography.labelMedium
                                     )
                                 }
 
                                 // Título
                                 Text(
                                     text = item.titulo,
-                                    fontSize = 15.sp,
+                                    style = MaterialTheme.typography.titleSmall,
                                     fontWeight = FontWeight.Bold,
                                     color = NegroLetra,
                                     maxLines = 2
@@ -445,9 +396,8 @@ fun HomeScreen(
                                 // Descripción ("Video con {producto}")
                                 Text(
                                     text = item.descripcion,
-                                    fontSize = 12.sp,
+                                    style = MaterialTheme.typography.bodySmall,
                                     color = NegroLetra.copy(alpha = 0.8f),
-                                    lineHeight = 16.sp,
                                     maxLines = 2
                                 )
 
@@ -464,7 +414,7 @@ fun HomeScreen(
                                 ) {
                                     Text(
                                         text = "Insumo: ${item.producto}",
-                                        fontSize = 12.sp,
+                                        style = MaterialTheme.typography.bodySmall,
                                         fontWeight = FontWeight.SemiBold,
                                         color = VerdeLetras,
                                         maxLines = 1,
@@ -472,9 +422,9 @@ fun HomeScreen(
                                     )
                                     Text(
                                         text = "Ver video ▶",
-                                        fontSize = 11.sp,
+                                        style = MaterialTheme.typography.labelMedium,
                                         fontWeight = FontWeight.Bold,
-                                        color = Dorado
+                                        color = DoradoTexto
                                     )
                                 }
                             }
@@ -484,22 +434,6 @@ fun HomeScreen(
             }
         }
     }
-}
-
-/**
- * Alias de compatibilidad para mantener referencias hacia HomeScreenAdaptable
- */
-@Composable
-fun HomeScreenAdaptable(
-    viewModel: HomeViewModel = remember { HomeViewModel() },
-    onContenidoClick: (ContenidoMasterMartini) -> Unit = {},
-    onNavigateTab: (String) -> Unit = {}
-) {
-    HomeScreen(
-        viewModel = viewModel,
-        onContenidoClick = onContenidoClick,
-        onNavigateTab = onNavigateTab
-    )
 }
 
 @Preview(name = "Vista 4 - Inicio Compacta", widthDp = 360, heightDp = 800, showBackground = true)

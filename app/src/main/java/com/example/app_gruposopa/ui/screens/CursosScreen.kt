@@ -28,6 +28,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.app_gruposopa.domain.model.Curso
+import com.example.app_gruposopa.navigation.AppScreen
+import com.example.app_gruposopa.ui.components.BarraNavegacionInferior
 import com.example.app_gruposopa.ui.theme.*
 import com.example.app_gruposopa.ui.viewmodels.CursosViewModel
 
@@ -56,7 +58,7 @@ fun CursosScreen(
                 title = {
                     Text(
                         text = "Escuela Única",
-                        fontSize = 18.sp,
+                        style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = Blanco
                     )
@@ -67,61 +69,10 @@ fun CursosScreen(
             )
         },
         bottomBar = {
-            // Barra de navegación inferior
-            Surface(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .navigationBarsPadding(),
-                color = Blanco,
-                shadowElevation = 8.dp
-            ) {
-                NavigationBar(
-                    containerColor = Blanco,
-                    tonalElevation = 0.dp
-                ) {
-                    NavigationBarItem(
-                        selected = false,
-                        onClick = { onNavigateTab("inicio") },
-                        icon = { Icon(Icons.Default.Home, contentDescription = "Inicio") },
-                        label = { Text("Inicio", fontSize = 11.sp) },
-                        colors = NavigationBarItemDefaults.colors(
-                            unselectedIconColor = NegroLetra.copy(alpha = 0.6f),
-                            unselectedTextColor = NegroLetra.copy(alpha = 0.6f)
-                        )
-                    )
-                    NavigationBarItem(
-                        selected = true,
-                        onClick = { /* Ya en Cursos */ },
-                        icon = { Icon(Icons.Default.School, contentDescription = "Cursos") },
-                        label = { Text("Cursos", fontSize = 11.sp, fontWeight = FontWeight.Bold) },
-                        colors = NavigationBarItemDefaults.colors(
-                            selectedIconColor = VerdeLetras,
-                            selectedTextColor = VerdeLetras,
-                            indicatorColor = VerdeFondo.copy(alpha = 0.12f)
-                        )
-                    )
-                    NavigationBarItem(
-                        selected = false,
-                        onClick = { onNavigateTab("eventos") },
-                        icon = { Icon(Icons.Default.CalendarMonth, contentDescription = "Eventos") },
-                        label = { Text("Eventos", fontSize = 11.sp) },
-                        colors = NavigationBarItemDefaults.colors(
-                            unselectedIconColor = NegroLetra.copy(alpha = 0.6f),
-                            unselectedTextColor = NegroLetra.copy(alpha = 0.6f)
-                        )
-                    )
-                    NavigationBarItem(
-                        selected = false,
-                        onClick = { onNavigateTab("perfil") },
-                        icon = { Icon(Icons.Default.Person, contentDescription = "Perfil") },
-                        label = { Text("Perfil", fontSize = 11.sp) },
-                        colors = NavigationBarItemDefaults.colors(
-                            unselectedIconColor = NegroLetra.copy(alpha = 0.6f),
-                            unselectedTextColor = NegroLetra.copy(alpha = 0.6f)
-                        )
-                    )
-                }
-            }
+            BarraNavegacionInferior(
+                rutaActual = AppScreen.Cursos.route,
+                onNavegar = onNavigateTab
+            )
         }
     ) { innerPadding ->
         Column(
@@ -147,14 +98,13 @@ fun CursosScreen(
                     Text(
                         text = "Formación Profesional",
                         color = VerdeLetras,
-                        fontSize = 17.sp,
+                        style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold
                     )
                     Text(
                         text = "Formación profesional con metodología Hecho en Italia.",
-                        fontSize = 13.sp,
-                        color = NegroLetra.copy(alpha = 0.8f),
-                        lineHeight = 18.sp
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = NegroLetra.copy(alpha = 0.8f)
                     )
                 }
             }
@@ -162,7 +112,7 @@ fun CursosScreen(
             // Título de la sección con contador real de cursos
             Text(
                 text = "Cursos disponibles (${viewModel.cursos.size})",
-                fontSize = 15.sp,
+                style = MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.Bold,
                 color = VerdeLetras,
                 modifier = Modifier.padding(top = 4.dp, start = 2.dp)
@@ -204,7 +154,7 @@ fun CursosScreen(
                         ) {
                             Text(
                                 text = curso.titulo,
-                                fontSize = 16.sp,
+                                style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
                                 color = NegroLetra,
                                 modifier = Modifier.weight(1f)
@@ -213,7 +163,7 @@ fun CursosScreen(
                             // Chip del Estado (Sin iniciar / En curso / Completado)
                             val (colorFondo, colorTexto) = when (estado) {
                                 "Completado" -> Pair(VerdeFondo.copy(alpha = 0.12f), VerdeLetras)
-                                "En curso" -> Pair(Dorado.copy(alpha = 0.18f), Dorado)
+                                "En curso" -> Pair(Dorado.copy(alpha = 0.18f), DoradoTexto)
                                 else -> Pair(GrisFondoSuave, NegroLetra.copy(alpha = 0.6f))
                             }
 
@@ -223,7 +173,7 @@ fun CursosScreen(
                             ) {
                                 Text(
                                     text = estado,
-                                    fontSize = 11.sp,
+                                    style = MaterialTheme.typography.labelMedium,
                                     fontWeight = FontWeight.SemiBold,
                                     color = colorTexto,
                                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
@@ -243,9 +193,8 @@ fun CursosScreen(
                         // Descripción breve del curso
                         Text(
                             text = curso.descripcion,
-                            fontSize = 12.sp,
-                            color = NegroLetra.copy(alpha = 0.75f),
-                            lineHeight = 16.sp
+                            style = MaterialTheme.typography.bodySmall,
+                            color = NegroLetra.copy(alpha = 0.75f)
                         )
 
                         // Módulos y completados
@@ -256,12 +205,12 @@ fun CursosScreen(
                         ) {
                             Text(
                                 text = "$totales módulos",
-                                fontSize = 13.sp,
+                                style = MaterialTheme.typography.bodyMedium,
                                 color = NegroLetra.copy(alpha = 0.65f)
                             )
                             Text(
                                 text = "$completados de $totales completados",
-                                fontSize = 12.sp,
+                                style = MaterialTheme.typography.bodySmall,
                                 fontWeight = FontWeight.Medium,
                                 color = NegroLetra.copy(alpha = 0.7f)
                             )
@@ -294,7 +243,7 @@ fun CursosScreen(
 
                                 Text(
                                     text = "Módulos del curso (toca para ver):",
-                                    fontSize = 12.sp,
+                                    style = MaterialTheme.typography.bodySmall,
                                     fontWeight = FontWeight.SemiBold,
                                     color = VerdeLetras
                                 )
@@ -329,20 +278,20 @@ fun CursosScreen(
                                                 Column {
                                                     Text(
                                                         text = "${index + 1}. ${modulo.titulo}",
-                                                        fontSize = 13.sp,
+                                                        style = MaterialTheme.typography.bodyMedium,
                                                         fontWeight = if (visto) FontWeight.SemiBold else FontWeight.Normal,
                                                         color = NegroLetra
                                                     )
                                                     Text(
                                                         text = "Insumo: ${modulo.producto}",
-                                                        fontSize = 11.sp,
+                                                        style = MaterialTheme.typography.labelMedium,
                                                         color = NegroLetra.copy(alpha = 0.6f)
                                                     )
                                                 }
                                             }
                                             Text(
                                                 text = modulo.duracion,
-                                                fontSize = 11.sp,
+                                                style = MaterialTheme.typography.labelMedium,
                                                 color = NegroLetra.copy(alpha = 0.6f),
                                                 modifier = Modifier.padding(start = 6.dp)
                                             )
