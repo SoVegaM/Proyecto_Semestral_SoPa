@@ -8,22 +8,8 @@ import androidx.compose.material.icons.filled.School
 import androidx.compose.ui.graphics.vector.ImageVector
 
 /**
- * Definición de las 10 rutas y pantallas de la aplicación Master Martini MVP.
- * Basado en la arquitectura de la Fase 0 (Base común):
- *
- * Persona A:
- * - Vista 1: Bienvenida
- * - Vista 4: Inicio (Centro técnico)
- * - Vista 5: Detalle de contenido
- * - Vista 6: Cursos (Escuela Única)
- * - Vista 10: Mis guardados
- *
- * Persona B:
- * - Vista 2: Ingreso y registro
- * - Vista 3: Perfil de negocio
- * - Vista 7: Eventos y contacto
- * - Vista 8: Perfil
- * - Vista 9: Accesibilidad
+ * Las 10 pantallas de la app con su ruta.
+ * Las que tienen titulo e icono aparecen en la barra inferior.
  */
 sealed class AppScreen(
     val route: String,
@@ -127,7 +113,7 @@ sealed class AppScreen(
                 Guardados
             )
 
-        // Vistas principales que aparecen en la barra inferior (Bottom Navigation)
+        // Pestañas de la barra inferior
         val vistasBarraInferior: List<AppScreen>
             get() = listOf(
                 Inicio,

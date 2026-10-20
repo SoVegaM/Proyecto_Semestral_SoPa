@@ -13,10 +13,7 @@ private val Context.contenidosDataStore: DataStore<Preferences> by preferencesDa
 )
 
 /**
- * Capa de datos local (DataStore) para los contenidos de Persona A.
- * Persiste solo identificadores de videos:
- * - Guardados (Vista 5 y Vista 10)
- * - Videos vistos, que definen el progreso de los cursos (Vista 6)
+ * Guarda en DataStore los ids de los videos guardados y de los vistos.
  */
 class ContenidosLocalDataSource(context: Context) {
 

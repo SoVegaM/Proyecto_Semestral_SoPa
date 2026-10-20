@@ -4,7 +4,7 @@ import com.example.app_gruposopa.data.repository.ContenidosRepository
 import com.example.app_gruposopa.domain.model.ContenidoMasterMartini
 
 /**
- * Caso de uso para obtener la lista de los 30 videos técnicos reales.
+ * Devuelve todos los contenidos del repositorio.
  */
 class GetContenidosUseCase(
     private val repository: ContenidosRepository = ContenidosRepository.instance

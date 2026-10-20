@@ -1,8 +1,7 @@
 package com.example.app_gruposopa.domain.model
 
 /**
- * Tipo de contenido para el filtro de Vista 10 · Mis guardados.
- * RECETA: preparación paso a paso. VIDEO: técnica, tips o usos de un insumo.
+ * Receta (preparación) o video técnico (usos de un insumo). Se usa en el filtro de Mis guardados.
  */
 enum class TipoContenido(val etiqueta: String) {
     RECETA("Receta"),
@@ -10,8 +9,7 @@ enum class TipoContenido(val etiqueta: String) {
 }
 
 /**
- * Modelo de datos puro para los videos y contenidos técnicos de Master Martini.
- * Conecta las vistas Inicio, Detalle y Cursos con los datos reales de YouTube.
+ * Un video de Master Martini (se muestra en Inicio, Detalle y Cursos).
  */
 data class ContenidoMasterMartini(
     val id: String,
@@ -24,7 +22,7 @@ data class ContenidoMasterMartini(
     val tipo: TipoContenido = TipoContenido.RECETA
 ) {
     /**
-     * URL oficial de la miniatura de YouTube en alta calidad.
+     * URL oficial de la miniatura de YouTube
      */
     val miniaturaUrl: String
         get() = "https://img.youtube.com/vi/$youtubeVideoId/hqdefault.jpg"

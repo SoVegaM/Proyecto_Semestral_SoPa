@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
 /**
- * Filtros de Vista 10. tipo == null significa "Todos".
+ * Filtros de Mis guardados (tipo null = Todos).
  */
 enum class FiltroGuardados(val etiqueta: String, val tipo: TipoContenido?) {
     TODOS("Todos", null),
@@ -23,8 +23,7 @@ enum class FiltroGuardados(val etiqueta: String, val tipo: TipoContenido?) {
 }
 
 /**
- * ViewModel para la Vista 10 · Mis guardados.
- * Lee los guardados persistidos del repositorio y aplica el filtro Todos / Recetas / Videos.
+ * ViewModel de Mis guardados.
  */
 class GuardadosViewModel(
     private val repository: ContenidosRepository = ContenidosRepository.instance
@@ -33,7 +32,7 @@ class GuardadosViewModel(
     private val _filtro = MutableStateFlow(FiltroGuardados.TODOS)
     val filtro: StateFlow<FiltroGuardados> = _filtro.asStateFlow()
 
-    // Todos los guardados, sin filtrar (para distinguir "sin guardados" de "sin resultados en el filtro")
+    // Lista sin filtrar, para saber si no hay ningún guardado o solo ninguno en el filtro
     val guardados: StateFlow<List<ContenidoMasterMartini>> = repository.guardados
         .map { ids -> repository.obtenerVideos().filter { it.id in ids } }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())

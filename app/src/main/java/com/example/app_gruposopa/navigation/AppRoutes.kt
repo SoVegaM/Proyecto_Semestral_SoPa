@@ -1,8 +1,7 @@
 package com.example.app_gruposopa.navigation
 
 /**
- * Constantes y definición centralizada de rutas de la aplicación Master Martini.
- * Corresponde a AppRoutes.kt según la estructura de arquitectura modular.
+ * Nombres de las rutas de la app.
  */
 object AppRoutes {
     const val BIENVENIDA = "bienvenida"

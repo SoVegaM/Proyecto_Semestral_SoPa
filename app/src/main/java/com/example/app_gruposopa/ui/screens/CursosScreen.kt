@@ -34,12 +34,8 @@ import com.example.app_gruposopa.ui.theme.*
 import com.example.app_gruposopa.ui.viewmodels.CursosViewModel
 
 /**
- * Vista 6 · Cursos (Escuela Única)
- * Conectada al repositorio central en memoria:
- * - 6 cursos oficiales con sus IDs de videos reales
- * - Progreso calculado dinámicamente desde los videos vistos
- * - Al tocar una tarjeta se expande para listar sus módulos
- * - Al tocar un módulo navega a "detalle/{videoId}"
+ * Vista 6: Cursos (Escuela Única).
+ * Al tocar un curso se ven sus módulos; cada módulo abre su video.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -84,7 +80,7 @@ fun CursosScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
-            // Tarjeta institucional de encabezado
+            // Encabezado
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(containerColor = Blanco),
@@ -109,7 +105,7 @@ fun CursosScreen(
                 }
             }
 
-            // Título de la sección con contador real de cursos
+            // Título con la cantidad de cursos
             Text(
                 text = "Cursos disponibles (${viewModel.cursos.size})",
                 style = MaterialTheme.typography.titleSmall,
@@ -118,7 +114,7 @@ fun CursosScreen(
                 modifier = Modifier.padding(top = 4.dp, start = 2.dp)
             )
 
-            // Lista de los 6 cursos reales
+            // Lista de cursos
             viewModel.cursos.forEach { curso ->
                 val modulos = viewModel.obtenerModulos(curso)
                 val totales = curso.videoIds.size
@@ -146,7 +142,7 @@ fun CursosScreen(
                             .padding(16.dp),
                         verticalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
-                        // Fila superior: Título del curso, etiqueta de estado y flecha
+                        // Título, estado y flecha
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
@@ -160,7 +156,7 @@ fun CursosScreen(
                                 modifier = Modifier.weight(1f)
                             )
 
-                            // Chip del Estado (Sin iniciar / En curso / Completado)
+                            // Estado del curso
                             val (colorFondo, colorTexto) = when (estado) {
                                 "Completado" -> Pair(VerdeFondo.copy(alpha = 0.12f), VerdeLetras)
                                 "En curso" -> Pair(Dorado.copy(alpha = 0.18f), DoradoTexto)
@@ -190,7 +186,6 @@ fun CursosScreen(
                             )
                         }
 
-                        // Descripción breve del curso
                         Text(
                             text = curso.descripcion,
                             style = MaterialTheme.typography.bodySmall,
@@ -216,7 +211,7 @@ fun CursosScreen(
                             )
                         }
 
-                        // Barra de progreso dorada
+                        // Progreso
                         LinearProgressIndicator(
                             progress = { progreso },
                             modifier = Modifier

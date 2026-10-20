@@ -8,8 +8,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 /**
- * ViewModel para la Vista 4 · Inicio (Centro Técnico Gastronómico).
- * Maneja los 30 videos reales, filtrado por categorías oficiales y búsqueda por título y producto.
+ * ViewModel de Inicio: búsqueda y filtro por categoría.
  */
 class HomeViewModel(
     private val repository: ContenidosRepository = ContenidosRepository.instance
@@ -26,7 +25,7 @@ class HomeViewModel(
     private val _contenidosFiltrados = MutableStateFlow(_todosLosVideos)
     val contenidosFiltrados: StateFlow<List<ContenidoMasterMartini>> = _contenidosFiltrados.asStateFlow()
 
-    // Categorías generadas desde los datos reales: "Todas" + las 4 oficiales
+    // "Todas" + las categorías que aparecen en los videos
     val categorias: List<String> = listOf("Todas") + _todosLosVideos.map { it.categoria }.distinct()
 
     fun seleccionarCategoria(categoria: String) {

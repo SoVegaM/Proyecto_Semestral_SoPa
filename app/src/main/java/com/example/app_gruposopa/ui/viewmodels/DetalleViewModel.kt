@@ -12,8 +12,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
 /**
- * ViewModel para la Vista 5 · Detalle de contenido.
- * Carga el video por ID, lo marca como visto al reproducirse y alterna guardado.
+ * ViewModel del Detalle: video actual, guardado y visto.
  */
 class DetalleViewModel(
     private val repository: ContenidosRepository = ContenidosRepository.instance
@@ -34,8 +33,8 @@ class DetalleViewModel(
     }
 
     /**
-     * Cuenta el módulo como visto para el progreso de Cursos.
-     * Se llama cuando el video empieza a reproducirse (o se abre en YouTube), no al abrir el detalle.
+     * Marca el video como visto (cuenta para el progreso del curso).
+     * Se llama al reproducirlo o al abrirlo en YouTube, no al entrar al detalle.
      */
     fun marcarComoVisto() {
         val id = _videoIdActual.value

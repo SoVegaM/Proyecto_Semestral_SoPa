@@ -18,20 +18,7 @@ import com.example.app_gruposopa.ui.screens.HomeScreen
 import com.example.app_gruposopa.ui.screens.PlaceholderVistaScreen
 
 /**
- * NavHost principal con las 10 rutas vacías de la aplicación Master Martini.
- * Fase 0 - Base Común del MVP Semestral (DSY1105).
- *
- * Flujo de navegación:
- * 1. Bienvenida (Entrada con marca)
- * 2. Ingreso y registro (Login o invitado)
- * 3. Perfil de negocio (Segmentación)
- * 4. Inicio (Centro técnico)
- * 5. Detalle de contenido (Video e insumo)
- * 6. Cursos (Escuela Única)
- * 7. Eventos y contacto (Asesoría)
- * 8. Perfil (Mis datos)
- * 9. Accesibilidad (Texto, contraste)
- * 10. Mis guardados (Favoritos)
+ * Navegación de la app. Primer uso: Bienvenida → Ingreso → Perfil de negocio → Inicio.
  */
 @Composable
 fun AppNavHost(
@@ -154,9 +141,8 @@ fun AppNavHost(
 }
 
 /**
- * Navegación entre las pestañas de la barra inferior.
- * Deja siempre Inicio como base del historial y no apila pestañas repetidas:
- * Atrás desde cualquier pestaña vuelve a Inicio, y desde Inicio sale de la app.
+ * Cambia de pestaña sin apilar pantallas repetidas.
+ * Inicio queda al fondo del historial, así Atrás vuelve a Inicio y luego sale.
  */
 fun NavHostController.navegarAPestana(ruta: String) {
     navigate(ruta) {
@@ -167,8 +153,8 @@ fun NavHostController.navegarAPestana(ruta: String) {
 }
 
 /**
- * Entrada a Inicio después del primer uso (Bienvenida → Ingreso → Perfil de negocio).
- * Limpia esas pantallas del historial para que Atrás no vuelva a ellas.
+ * Va a Inicio y borra del historial las pantallas de primer uso,
+ * para que Atrás no vuelva a Bienvenida o Ingreso.
  */
 fun NavController.entrarAInicio() {
     navigate(AppScreen.Inicio.route) {

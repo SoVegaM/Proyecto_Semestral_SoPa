@@ -25,12 +25,7 @@ import com.example.app_gruposopa.ui.viewmodels.FiltroGuardados
 import com.example.app_gruposopa.ui.viewmodels.GuardadosViewModel
 
 /**
- * Vista 10 · Mis guardados (Favoritos)
- * Conectada a GuardadosViewModel (guardados persistidos con DataStore):
- * - Barra superior: ← Mis guardados
- * - Filtros rápidos: Todos / Recetas / Videos
- * - Lista de tarjetas con título, tipo, duración e ícono para quitar guardado
- * - Estado vacío con mensaje claro ("Aún no guardas contenidos")
+ * Vista 10: Mis guardados, con filtro Todos / Recetas / Videos.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -77,7 +72,7 @@ fun GuardadosScreen(
                 .fillMaxSize()
                 .background(GrisFondoSuave)
         ) {
-            // 1. Fila de Filtros (Chips: Todos, Recetas, Videos)
+            // Filtros
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -110,9 +105,8 @@ fun GuardadosScreen(
 
             HorizontalDivider(color = GrisFondoSuave)
 
-            // 2. Contenido principal: Lista o Estado Vacío
             if (guardadosFiltrados.isEmpty()) {
-                // Estado vacío requerido por la pauta
+                // Sin guardados
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -172,7 +166,6 @@ fun GuardadosScreen(
                                 horizontalArrangement = Arrangement.SpaceBetween,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                // Título y metadata
                                 Column(
                                     modifier = Modifier.weight(1f),
                                     verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -190,7 +183,7 @@ fun GuardadosScreen(
                                     )
                                 }
 
-                                // Botón para quitar de guardados (accesible >= 48dp)
+                                // Quitar (mínimo 48dp)
                                 IconButton(
                                     onClick = { viewModel.quitarGuardado(item.id) },
                                     modifier = Modifier.size(48.dp)

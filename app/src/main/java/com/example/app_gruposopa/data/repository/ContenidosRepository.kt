@@ -15,31 +15,26 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 /**
- * Repositorio central de Master Martini.
- * Catálogo en memoria; guardados y videos vistos persistidos con DataStore
- * una vez llamado [conectarAlmacenamiento].
- * ÚNICA fuente de datos para:
- * - Vista 4 Inicio (30 videos reales de YouTube)
- * - Vista 5 Detalle (reproductor e insumos)
- * - Vista 6 Cursos (6 cursos agrupando videos)
+ * Repositorio de contenidos y cursos. El catálogo está en memoria y
+ * los guardados y vistos se guardan con DataStore (ver conectarAlmacenamiento).
  */
 class ContenidosRepository {
 
     companion object {
-        // Códigos oficiales de categorías
+        // Categorías
         const val CAT_CREMAS = "Cremas Vegetales UHT"
         const val CAT_CHOCO = "Chocolates & Sucedáneos"
         const val CAT_GELATO = "Gelatería"
         const val CAT_PAN = "Panadería & Pastelería"
 
-        // Instancia singleton para compartir el estado en memoria entre pantallas
+        // Una sola instancia para que todas las pantallas compartan los mismos datos
         val instance: ContenidosRepository by lazy { ContenidosRepository() }
 
-        // Videos de técnica, tips o usos de un insumo; el resto son recetas.
-        // Debe declararse antes de LISTA_VIDEOS, que lo usa al inicializarse
+        // Videos de técnica o usos de un insumo (el resto son recetas).
+        // Tiene que ir antes de LISTA_VIDEOS porque se usa al crearla
         private val IDS_VIDEOS_TECNICOS = setOf("v03", "v04", "v05", "v11", "v12", "v13", "v22", "v25")
 
-        // 30 videos reales oficiales de Master Martini
+        // Videos del canal de YouTube de Master Martini
         private val LISTA_VIDEOS: List<ContenidoMasterMartini> = listOf(
             crearVideo("v01", "Leche Asada", "Bravo Crem Azucarada", "1:16", CAT_CREMAS, "-tH8LKMzGN0"),
             crearVideo("v02", "Mousse frutilla", "Bravo Crem Azucarada", "0:38", CAT_CREMAS, "q9gFPtzzZe4"),
@@ -73,7 +68,7 @@ class ContenidosRepository {
             crearVideo("v30", "Pancake de Avena y Plátano con Chef Lili Cañete", "Orasì", "4:48", CAT_CREMAS, "Dz20QKTeK5I")
         )
 
-        // 6 cursos agrupando videos por id
+        // Cada curso agrupa videos por su id
         private val LISTA_CURSOS: List<Curso> = listOf(
             Curso(
                 id = "c1",
@@ -143,17 +138,17 @@ class ContenidosRepository {
     private var almacenamiento: ContenidosLocalDataSource? = null
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
-    // Estado en memoria: videos guardados
+    // Ids de videos guardados
     private val _guardados = MutableStateFlow<Set<String>>(emptySet())
     val guardados: StateFlow<Set<String>> = _guardados.asStateFlow()
 
-    // Estado en memoria: videos vistos
+    // Ids de videos vistos
     private val _videosVistos = MutableStateFlow<Set<String>>(emptySet())
     val videosVistos: StateFlow<Set<String>> = _videosVistos.asStateFlow()
 
     /**
-     * Carga guardados y vistos desde DataStore y persiste cada cambio posterior.
-     * Se llama una vez desde MainActivity; sin llamarla (Previews) todo queda en memoria.
+     * Lee guardados y vistos desde DataStore y guarda cada cambio.
+     * Se llama en MainActivity; en los Previews no se llama y todo queda en memoria.
      */
     fun conectarAlmacenamiento(context: Context) {
         if (almacenamiento != null) return
@@ -212,7 +207,3 @@ class ContenidosRepository {
     }
 }
 
-/**
- * Alias de compatibilidad hacia ContenidoRepository
- */
-typealias ContenidoRepository = ContenidosRepository

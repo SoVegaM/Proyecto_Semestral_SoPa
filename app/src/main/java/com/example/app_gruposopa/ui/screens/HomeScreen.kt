@@ -39,15 +39,8 @@ import com.example.app_gruposopa.ui.theme.*
 import com.example.app_gruposopa.ui.viewmodels.HomeViewModel
 
 /**
- * Vista 4 · Inicio (Centro Técnico Gastronómico)
- * Conectada al repositorio central en memoria:
- * - 30 videos reales de YouTube de Master Martini
- * - Chips de categorías generadas dinámicamente desde los datos (Todas + 4)
- * - Buscador interactivo que filtra por título y producto
- * - Contador "N encontrados"
- * - Miniaturas reales de YouTube mediante Coil
- * - Navegación al tocar una tarjeta hacia "detalle/{videoId}"
- * - Responsive: 1 columna (compacta), 2 columnas (mediana) y 3 columnas (expandida)
+ * Vista 4: Inicio. Buscador, filtro por categoría y lista de videos.
+ * Usa 1, 2 o 3 columnas según el ancho de la pantalla.
  */
 @Composable
 fun HomeScreen(
@@ -85,7 +78,7 @@ fun HomeScreen(
                             contentScale = ContentScale.Fit
                         )
 
-                        // Acceso directo a Vista 10 · Mis guardados (Persona A)
+                        // Ir a Mis guardados
                         IconButton(
                             onClick = onGuardadosClick,
                             modifier = Modifier
@@ -116,15 +109,14 @@ fun HomeScreen(
                 .fillMaxSize()
                 .background(GrisFondoSuave)
         ) {
-            // Determinar cantidad de columnas según ancho disponible (1 compacta, 2 mediana, 3 expandida)
+            // Columnas según el ancho
             val columnas = when {
                 maxWidth >= 840.dp -> 3
                 maxWidth >= 600.dp -> 2
                 else -> 1
             }
 
-            // Toda la pantalla se desplaza: encabezado, buscador y chips son ítems
-            // de ancho completo dentro de la misma cuadrícula de contenidos.
+            // Todo va dentro de la grilla para que haga scroll la pantalla completa
             LazyVerticalGrid(
                 columns = GridCells.Fixed(columnas),
                 modifier = Modifier.fillMaxSize(),
@@ -134,7 +126,6 @@ fun HomeScreen(
             ) {
                 item(span = { GridItemSpan(maxLineSpan) }) {
                     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        // Título institucional
                         Text(
                             text = "Centro Técnico Gastronómico",
                             color = VerdeLetras,
@@ -150,7 +141,7 @@ fun HomeScreen(
                     }
                 }
                 item(span = { GridItemSpan(maxLineSpan) }) {
-                    // Banner destacado hacia Vista 6: Cursos (Escuela Única)
+                    // Banner que lleva a Cursos
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -210,7 +201,7 @@ fun HomeScreen(
                     }
                 }
                 item(span = { GridItemSpan(maxLineSpan) }) {
-                    // Buscador por texto (filtra por título y producto)
+                    // Buscador (por título o producto)
                     OutlinedTextField(
                         value = textoBusqueda,
                         onValueChange = { viewModel.onTextoBusquedaChange(it) },
@@ -253,7 +244,7 @@ fun HomeScreen(
                     )
                 }
                 item(span = { GridItemSpan(maxLineSpan) }) {
-                    // Chips de categorías generados desde los datos reales (Todas + 4)
+                    // Categorías
                     Text(
                         text = "Especialidades",
                         color = VerdeLetras,
@@ -347,7 +338,7 @@ fun HomeScreen(
                                     .padding(12.dp),
                                 verticalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
-                                // Miniatura oficial de YouTube mediante Coil
+                                // Miniatura del video (Coil)
                                 AsyncImage(
                                     model = item.miniaturaUrl,
                                     contentDescription = "Miniatura de ${item.titulo}",
@@ -384,7 +375,6 @@ fun HomeScreen(
                                     )
                                 }
 
-                                // Título
                                 Text(
                                     text = item.titulo,
                                     style = MaterialTheme.typography.titleSmall,
@@ -393,7 +383,6 @@ fun HomeScreen(
                                     maxLines = 2
                                 )
 
-                                // Descripción ("Video con {producto}")
                                 Text(
                                     text = item.descripcion,
                                     style = MaterialTheme.typography.bodySmall,

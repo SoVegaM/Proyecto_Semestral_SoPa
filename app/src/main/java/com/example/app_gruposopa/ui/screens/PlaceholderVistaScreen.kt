@@ -17,14 +17,7 @@ import com.example.app_gruposopa.navigation.entrarAInicio
 import com.example.app_gruposopa.ui.theme.*
 
 /**
- * Pantalla de marcador de posición (Placeholder) para las vistas de la PERSONA B:
- * - Vista 2: Ingreso y registro
- * - Vista 3: Perfil de negocio
- * - Vista 7: Eventos y contacto (Asesoría)
- * - Vista 8: Perfil (Mis datos)
- * - Vista 9: Accesibilidad
- *
- * Muestra claramente la delimitación de responsabilidades académicas según la pauta DSY1105.
+ * Pantalla temporal para las vistas que todavía no están hechas (2, 3, 7, 8 y 9).
  */
 @Composable
 fun PlaceholderVistaScreen(

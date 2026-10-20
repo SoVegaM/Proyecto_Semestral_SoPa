@@ -16,9 +16,7 @@ import com.example.app_gruposopa.ui.theme.VerdeFondo
 import com.example.app_gruposopa.ui.theme.VerdeLetras
 
 /**
- * Barra de navegación inferior compartida (Inicio, Cursos, Eventos, Perfil).
- * Las pestañas salen de AppScreen.vistasBarraInferior; la navegación real
- * (sin acumular pantallas en el historial) la resuelve AppNavHost en [onNavegar].
+ * Barra inferior (Inicio, Cursos, Eventos, Perfil) que comparten las pantallas.
  */
 @Composable
 fun BarraNavegacionInferior(
@@ -35,7 +33,7 @@ fun BarraNavegacionInferior(
                 selected = seleccionada,
                 onClick = { if (!seleccionada) onNavegar(pantalla.route) },
                 icon = {
-                    // La etiqueta ya nombra la pestaña; evitamos que TalkBack la lea dos veces
+                    // null porque el texto de abajo ya dice el nombre (si no, TalkBack lo lee dos veces)
                     pantalla.icono?.let { Icon(it, contentDescription = null) }
                 },
                 label = {

@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
 /**
- * Representa el estado de un curso con su cálculo de progreso reactivo.
+ * Datos de un curso listos para mostrar.
  */
 data class CursoUIState(
     val curso: Curso,
@@ -23,8 +23,7 @@ data class CursoUIState(
 )
 
 /**
- * ViewModel para la Vista 6 · Cursos (Escuela Única).
- * Agrupa videos en 6 cursos, calcula progreso en base a videos vistos y gestiona módulos expandibles.
+ * ViewModel de Cursos: lista de cursos, videos vistos y cursos abiertos.
  */
 class CursosViewModel(
     private val repository: ContenidosRepository = ContenidosRepository.instance

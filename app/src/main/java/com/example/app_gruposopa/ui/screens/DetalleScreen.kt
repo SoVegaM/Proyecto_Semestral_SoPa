@@ -38,13 +38,7 @@ import com.example.app_gruposopa.ui.theme.*
 import com.example.app_gruposopa.ui.viewmodels.DetalleViewModel
 
 /**
- * Vista 5 · Detalle de contenido (Video e insumo)
- * Conectada al repositorio central en memoria:
- * - Reproductor de YouTube embebido mediante WebView (https://www.youtube.com/embed/{id})
- * - Fallback / acceso directo "Abrir en YouTube" mediante Intent nativo
- * - Guarda / quita favoritos conectado a ContenidosRepository
- * - Botón "Consultar" con Toast temporal (conectará con WhatsApp en etapa posterior)
- * - Al abrir el video se marca automáticamente como visto
+ * Vista 5: Detalle de contenido. Video, insumo destacado y botones Guardar y Consultar.
  */
 @SuppressLint("SetJavaScriptEnabled")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -60,7 +54,7 @@ fun DetalleScreen(
     val context = LocalContext.current
     val scrollState = rememberScrollState()
 
-    // Cargar video al entrar y marcar como visto
+    // Carga el video al entrar
     LaunchedEffect(videoId) {
         viewModel.cargarVideo(videoId)
     }
@@ -97,7 +91,7 @@ fun DetalleScreen(
             )
         },
         bottomBar = {
-            // Barra inferior fija con botones de acción (mínimo 48dp de altura)
+            // Barra inferior fija con botones de acción
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -112,7 +106,7 @@ fun DetalleScreen(
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Botón Guardar / Quitar conectado al repositorio
+                    // Guardar / quitar
                     OutlinedButton(
                         onClick = { viewModel.toggleGuardado() },
                         modifier = Modifier
@@ -137,8 +131,8 @@ fun DetalleScreen(
                             fontWeight = FontWeight.Medium
                         )
                     }
-
-                    // Botón Consultar (Toast temporal mientras se integra WhatsApp)
+                    //TODO
+                    // Botón consultar temporal
                     Button(
                         onClick = {
                             if (onConsultarClick != null) {
@@ -180,7 +174,7 @@ fun DetalleScreen(
         ) {
             val v = video
             if (v != null) {
-                // 1. Reproductor de YouTube con WebView embebido (formato 16:9)
+                // Reproductor de YouTube
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -200,7 +194,7 @@ fun DetalleScreen(
                                     settings.domStorageEnabled = true
                                     settings.loadWithOverviewMode = true
                                     settings.useWideViewPort = true
-                                    // Oculto hasta que cargue: evita el destello negro del primer dibujo del WebView
+                                    // Oculto hasta que cargue x bug visual
                                     visibility = View.INVISIBLE
                                     setBackgroundColor(android.graphics.Color.BLACK)
                                     webChromeClient = WebChromeClient()
@@ -234,7 +228,7 @@ fun DetalleScreen(
                         }
                     }
 
-                    // Fallback si no se puede reproducir embebido
+                    // Si el reproductor falla, se ofrece abrirlo en YouTube
                     if (errorEmbebido) {
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
@@ -265,7 +259,7 @@ fun DetalleScreen(
                     }
                 }
 
-                // Botón complementario para abrir en la app de YouTube directamente
+                // Abrir en la app de YouTube
                 Surface(
                     modifier = Modifier.fillMaxWidth(),
                     color = Blanco
@@ -311,7 +305,7 @@ fun DetalleScreen(
                     }
                 }
 
-                // 2. Ficha técnica del video
+                // Datos del video
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -336,7 +330,6 @@ fun DetalleScreen(
                         )
                     }
 
-                    // Título
                     Text(
                         text = v.titulo,
                         style = MaterialTheme.typography.titleLarge,
@@ -344,7 +337,6 @@ fun DetalleScreen(
                         color = NegroLetra
                     )
 
-                    // Descripción ("Video con {producto}")
                     Text(
                         text = v.descripcion,
                         style = MaterialTheme.typography.bodyMedium,
@@ -353,7 +345,7 @@ fun DetalleScreen(
 
                     Spacer(modifier = Modifier.height(4.dp))
 
-                    // 3. Tarjeta de Insumo Destacado
+                    // Insumo destacado
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(10.dp),
@@ -394,7 +386,7 @@ fun DetalleScreen(
                         }
                     }
 
-                    // 4. Tarjeta de Curso asociado en Escuela Única
+                    // Curso al que pertenece el video
                     val cursoAsociado = viewModel.obtenerCursoAsociado()
                     if (cursoAsociado != null) {
                         Card(
@@ -461,8 +453,7 @@ fun DetalleScreen(
 }
 
 /**
- * Puente JavaScript → Kotlin: el reproductor avisa cuando el video empieza a reproducirse.
- * Se invoca desde el hilo del WebView; el repositorio usa StateFlow, que es seguro entre hilos.
+ * El JavaScript del reproductor llama a alReproducir() cuando parte el video.
  */
 private class PuenteReproductor(private val onReproducir: () -> Unit) {
     @JavascriptInterface
@@ -474,11 +465,9 @@ private class PuenteReproductor(private val onReproducir: () -> Unit) {
 }
 
 /**
- * Carga el reproductor de YouTube (IFrame Player API) dentro de un HTML propio.
- * YouTube exige un Referer/origen identificable (sin él muestra "Error 153"),
- * por eso se usa loadDataWithBaseURL con un origen https.
- * La API permite detectar la reproducción para marcar el módulo como visto.
- * Solo recarga si cambia el video, para no reiniciarlo en cada recomposición.
+ * Carga el reproductor de YouTube en el WebView.
+ * Se usa loadDataWithBaseURL con un origen https porque sin eso YouTube
+ * da "Error 153". Solo recarga si cambia el video.
  */
 private fun WebView.cargarVideoYoutube(youtubeVideoId: String) {
     if (tag == youtubeVideoId) return

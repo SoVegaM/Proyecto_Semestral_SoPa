@@ -1,9 +1,8 @@
 package com.example.app_gruposopa.navigation
 
 /**
- * Eventos de navegación desacoplados según la arquitectura de Compose.
- * Permite que los ViewModels o componentes emitan eventos de navegación
- * sin depender directamente del NavController.
+ * Eventos de navegación para que un ViewModel pida navegar sin usar el NavController.
+ * Todavía no se usan.
  */
 sealed class NavigationEvent {
     data class NavigateTo(val route: String) : NavigationEvent()
