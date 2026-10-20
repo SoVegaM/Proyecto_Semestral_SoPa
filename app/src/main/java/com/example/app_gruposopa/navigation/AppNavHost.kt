@@ -46,7 +46,7 @@ fun AppNavHost(
         composable(route = AppScreen.Bienvenida.route) {
             BienvenidaScreen(
                 onComenzarClick = {
-                    navController.navigate(AppScreen.Inicio.route)
+                    navController.navigate(AppScreen.Ingreso.route)
                 }
             )
         }
