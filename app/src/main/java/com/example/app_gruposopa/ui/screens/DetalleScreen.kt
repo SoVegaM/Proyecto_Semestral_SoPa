@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.view.ViewGroup
 import android.webkit.WebChromeClient
+import android.view.View
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -67,6 +68,7 @@ fun DetalleScreen(
     val video by viewModel.video.collectAsState()
     val esGuardado by viewModel.esGuardado.collectAsState()
     var errorEmbebido by remember { mutableStateOf(false) }
+    var reproductorListo by remember { mutableStateOf(false) }
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -198,8 +200,16 @@ fun DetalleScreen(
                                     settings.domStorageEnabled = true
                                     settings.loadWithOverviewMode = true
                                     settings.useWideViewPort = true
+                                    // Oculto hasta que cargue: evita el destello negro del primer dibujo del WebView
+                                    visibility = View.INVISIBLE
+                                    setBackgroundColor(android.graphics.Color.BLACK)
                                     webChromeClient = WebChromeClient()
                                     webViewClient = object : WebViewClient() {
+                                        override fun onPageFinished(view: WebView?, url: String?) {
+                                            view?.visibility = View.VISIBLE
+                                            reproductorListo = true
+                                        }
+
                                         override fun onReceivedError(
                                             view: WebView?,
                                             errorCode: Int,
@@ -219,6 +229,9 @@ fun DetalleScreen(
                             update = { webView -> webView.cargarVideoYoutube(v.youtubeVideoId) },
                             modifier = Modifier.fillMaxSize()
                         )
+                        if (!reproductorListo) {
+                            CircularProgressIndicator(color = Dorado)
+                        }
                     }
 
                     // Fallback si no se puede reproducir embebido
