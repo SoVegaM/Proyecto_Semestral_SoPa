@@ -19,22 +19,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.app_gruposopa.ui.theme.*
-
-/**
- * Modelo de datos de presentación para los elementos guardados.
- */
-data class ContenidoGuardado(
-    val id: Int,
-    val titulo: String,
-    val tipo: String, // "Video" o "Receta"
-    val duracion: String
-)
+import com.example.app_gruposopa.ui.viewmodels.FiltroGuardados
+import com.example.app_gruposopa.ui.viewmodels.GuardadosViewModel
 
 /**
  * Vista 10 · Mis guardados (Favoritos)
- * Maqueta para celular compacto según el wireframe oficial:
- * - Barra superior: ← Mis guardados (#004D42)
+ * Conectada a GuardadosViewModel (guardados persistidos con DataStore):
+ * - Barra superior: ← Mis guardados
  * - Filtros rápidos: Todos / Recetas / Videos
  * - Lista de tarjetas con título, tipo, duración e ícono para quitar guardado
  * - Estado vacío con mensaje claro ("Aún no guardas contenidos")
@@ -42,56 +35,13 @@ data class ContenidoGuardado(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GuardadosScreen(
+    viewModel: GuardadosViewModel = viewModel(),
     onVolverClick: () -> Unit = {},
-    onItemClick: (ContenidoGuardado) -> Unit = {},
-    onVideoClick: ((String) -> Unit)? = null
+    onVideoClick: (String) -> Unit = {}
 ) {
-    val repository = remember { com.example.app_gruposopa.data.repository.ContenidosRepository.instance }
-    val guardadosIds by repository.guardados.collectAsState()
-
-    // Filtro seleccionado
-    var filtroSeleccionado by remember { mutableStateOf("Todos") }
-    val filtros = listOf("Todos", "Recetas", "Videos")
-
-    // Elementos guardados reales desde el repositorio en memoria
-    val videosReales = remember(guardadosIds) {
-        repository.obtenerVideosPorIds(guardadosIds.toList())
-    }
-
-    // Si hay videos reales guardados, los adaptamos; si no, mostramos ejemplos base del wireframe
-    var listaWireframe by remember {
-        mutableStateOf<List<ContenidoGuardado>>(
-            listOf(
-                ContenidoGuardado(1, "Leche Asada", "Video", "1:16"),
-                ContenidoGuardado(2, "Mousse de Frutilla", "Receta", "0:38"),
-                ContenidoGuardado(3, "Torta Chocolate Avellana", "Video", "1:17")
-            )
-        )
-    }
-
-    // Si hay videos reales guardados en el repositorio, los usamos prioritariamente
-    val listaGuardados = remember(videosReales, listaWireframe) {
-        if (videosReales.isNotEmpty()) {
-            videosReales.map { v ->
-                ContenidoGuardado(
-                    id = v.id.replace("v", "").toIntOrNull() ?: 1,
-                    titulo = v.titulo,
-                    tipo = "Video",
-                    duracion = v.duracion
-                )
-            }
-        } else {
-            listaWireframe
-        }
-    }
-
-    val guardadosFiltrados = remember(filtroSeleccionado, listaGuardados) {
-        when (filtroSeleccionado) {
-            "Recetas" -> listaGuardados.filter { it.tipo.equals("Receta", ignoreCase = true) }
-            "Videos" -> listaGuardados.filter { it.tipo.equals("Video", ignoreCase = true) }
-            else -> listaGuardados
-        }
-    }
+    val filtroSeleccionado by viewModel.filtro.collectAsState()
+    val listaGuardados by viewModel.guardados.collectAsState()
+    val guardadosFiltrados by viewModel.guardadosFiltrados.collectAsState()
 
     val scrollState = rememberScrollState()
 
@@ -136,14 +86,14 @@ fun GuardadosScreen(
                     .padding(horizontal = 16.dp, vertical = 10.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                filtros.forEach { filtro ->
+                FiltroGuardados.entries.forEach { filtro ->
                     val esSeleccionado = (filtro == filtroSeleccionado)
                     FilterChip(
                         selected = esSeleccionado,
-                        onClick = { filtroSeleccionado = filtro },
+                        onClick = { viewModel.seleccionarFiltro(filtro) },
                         label = {
                             Text(
-                                text = filtro,
+                                text = filtro.etiqueta,
                                 fontSize = 13.sp,
                                 fontWeight = if (esSeleccionado) FontWeight.Bold else FontWeight.Normal,
                                 color = if (esSeleccionado) Blanco else NegroLetra
@@ -190,7 +140,7 @@ fun GuardadosScreen(
                             text = if (listaGuardados.isEmpty()) {
                                 "Explora las recetas, videos y cursos técnicos en el catálogo y guárdalos para acceder rápidamente a ellos."
                             } else {
-                                "No tienes contenidos guardados en la categoría \"$filtroSeleccionado\"."
+                                "No tienes contenidos guardados en la categoría \"${filtroSeleccionado.etiqueta}\"."
                             },
                             fontSize = 13.sp,
                             color = NegroLetra.copy(alpha = 0.7f),
@@ -214,14 +164,7 @@ fun GuardadosScreen(
                             shape = RoundedCornerShape(10.dp),
                             colors = CardDefaults.cardColors(containerColor = Blanco),
                             elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
-                            onClick = {
-                                val videoReal = videosReales.find { it.titulo == item.titulo }
-                                if (videoReal != null && onVideoClick != null) {
-                                    onVideoClick(videoReal.id)
-                                } else {
-                                    onItemClick(item)
-                                }
-                            }
+                            onClick = { onVideoClick(item.id) }
                         ) {
                             Row(
                                 modifier = Modifier
@@ -242,7 +185,7 @@ fun GuardadosScreen(
                                         color = NegroLetra
                                     )
                                     Text(
-                                        text = "${item.tipo} · ${item.duracion}",
+                                        text = "${item.tipo.etiqueta} · ${item.duracion}",
                                         fontSize = 12.sp,
                                         color = NegroLetra.copy(alpha = 0.6f)
                                     )
@@ -250,19 +193,12 @@ fun GuardadosScreen(
 
                                 // Botón para quitar de guardados (accesible >= 48dp)
                                 IconButton(
-                                    onClick = {
-                                        val videoReal = videosReales.find { it.titulo == item.titulo }
-                                        if (videoReal != null) {
-                                            repository.toggleGuardado(videoReal.id)
-                                        } else {
-                                            listaWireframe = listaWireframe.filter { it.id != item.id }
-                                        }
-                                    },
+                                    onClick = { viewModel.quitarGuardado(item.id) },
                                     modifier = Modifier.size(48.dp)
                                 ) {
                                     Icon(
                                         imageVector = Icons.Default.Bookmark,
-                                        contentDescription = "Quitar de guardados",
+                                        contentDescription = "Quitar ${item.titulo} de guardados",
                                         tint = Dorado,
                                         modifier = Modifier.size(24.dp)
                                     )
