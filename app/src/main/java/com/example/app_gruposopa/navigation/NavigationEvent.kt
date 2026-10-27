@@ -1,11 +1,28 @@
 package com.example.app_gruposopa.navigation
 
 /**
- * Eventos de navegación para que un ViewModel pida navegar sin usar el NavController.
- * Todavía no se usan.
+ * Eventos de navegación que emite el MainViewModel y que MainActivity convierte en navegación real.
  */
 sealed class NavigationEvent {
-    data class NavigateTo(val route: String) : NavigationEvent()
+
+    /**
+     * Ir a una ruta. La ruta es un String porque Detalle lleva el id del video (detalle/{videoId}).
+     * @param popUpToRoute si no es null, se borra el historial hasta esa ruta.
+     * @param inclusive si es true, también se borra popUpToRoute.
+     * @param singleTop evita abrir dos veces la misma pantalla seguida.
+     * @param saveState guarda y recupera el estado de la pantalla (para las pestañas).
+     */
+    data class NavigateTo(
+        val route: String,
+        val popUpToRoute: String? = null,
+        val inclusive: Boolean = false,
+        val singleTop: Boolean = false,
+        val saveState: Boolean = false
+    ) : NavigationEvent()
+
+    // Volver a la pantalla anterior
     object PopBackStack : NavigationEvent()
-    data class PopUpTo(val route: String, val inclusive: Boolean = false) : NavigationEvent()
+
+    // Subir un nivel en la navegación (como la flecha de la barra superior)
+    object NavigateUp : NavigationEvent()
 }

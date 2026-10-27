@@ -11,9 +11,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import com.example.app_gruposopa.navigation.AppScreen
-import com.example.app_gruposopa.navigation.entrarAInicio
 import com.example.app_gruposopa.ui.theme.*
 
 /**
@@ -22,7 +20,7 @@ import com.example.app_gruposopa.ui.theme.*
 @Composable
 fun PlaceholderVistaScreen(
     pantallaActual: AppScreen,
-    navController: NavController? = null
+    onIrAInicio: () -> Unit = {}
 ) {
     Box(
         modifier = Modifier
@@ -76,7 +74,7 @@ fun PlaceholderVistaScreen(
                 Spacer(modifier = Modifier.height(10.dp))
 
                 Button(
-                    onClick = { navController?.entrarAInicio() },
+                    onClick = onIrAInicio,
                     colors = ButtonDefaults.buttonColors(containerColor = VerdeFondo),
                     shape = RoundedCornerShape(8.dp)
                 ) {
