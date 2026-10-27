@@ -2,6 +2,8 @@ package com.example.app_gruposopa.navigation
 
 import android.widget.Toast
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -88,15 +90,16 @@ fun AppNavHost(
                         Toast.LENGTH_SHORT
                     ).show()
                 },
-                onVerCursoClick = {
-                    mainViewModel.irAPestana(AppScreen.Cursos.route)
-                }
+                onVerCursoClick = { cursoId -> mainViewModel.verCurso(cursoId) }
             )
         }
 
         // Vista 6: Cursos (Escuela Única)
         composable(route = AppScreen.Cursos.route) {
+            val cursoPorAbrir by mainViewModel.cursoPorAbrir.collectAsState()
             CursosScreen(
+                cursoParaAbrir = cursoPorAbrir,
+                onCursoAbierto = mainViewModel::cursoAbierto,
                 onModuloClick = { videoId ->
                     mainViewModel.irADetalle(videoId)
                 },

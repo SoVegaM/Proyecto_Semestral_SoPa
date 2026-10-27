@@ -4,11 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.app_gruposopa.data.repository.ContenidosRepository
 import com.example.app_gruposopa.domain.model.ContenidoMasterMartini
+import com.example.app_gruposopa.domain.model.Curso
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 
 /**
@@ -23,9 +24,10 @@ class DetalleViewModel(
 
     private val _videoIdActual = MutableStateFlow("")
 
-    val esGuardado: StateFlow<Boolean> = repository.guardados
-        .map { guardados -> _videoIdActual.value.isNotEmpty() && guardados.contains(_videoIdActual.value) }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
+    // Se recalcula si cambia el video o la lista de guardados
+    val esGuardado: StateFlow<Boolean> = combine(_videoIdActual, repository.guardados) { id, guardados ->
+        id.isNotEmpty() && id in guardados
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
 
     fun cargarVideo(videoId: String) {
         _videoIdActual.value = videoId
@@ -50,7 +52,7 @@ class DetalleViewModel(
         }
     }
 
-    fun obtenerCursoAsociado(): com.example.app_gruposopa.domain.model.Curso? {
+    fun obtenerCursoAsociado(): Curso? {
         val id = _videoIdActual.value
         return if (id.isNotEmpty()) repository.obtenerCursoPorVideoId(id) else null
     }

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Logo centrado en el ícono de la app, dentro de la zona que no se recorta -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:width="50dp"
+        android:height="31dp"
+        android:drawable="@drawable/logo"
+        android:gravity="center" />
+</layer-list>

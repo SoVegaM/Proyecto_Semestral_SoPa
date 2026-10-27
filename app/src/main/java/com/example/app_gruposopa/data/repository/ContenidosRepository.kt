@@ -170,10 +170,6 @@ class ContenidosRepository {
 
     fun obtenerCursos(): List<Curso> = LISTA_CURSOS
 
-    fun obtenerCursoPorId(id: String): Curso? {
-        return LISTA_CURSOS.find { it.id == id }
-    }
-
     fun obtenerVideosPorIds(ids: List<String>): List<ContenidoMasterMartini> {
         val map = LISTA_VIDEOS.associateBy { it.id }
         return ids.mapNotNull { map[it] }
@@ -193,17 +189,7 @@ class ContenidosRepository {
         _videosVistos.update { it + videoId }
     }
 
-    fun esVisto(videoId: String): Boolean {
-        return _videosVistos.value.contains(videoId)
-    }
-
     fun obtenerCursoPorVideoId(videoId: String): Curso? {
         return LISTA_CURSOS.find { it.videoIds.contains(videoId) }
     }
-
-    fun obtenerVideosGuardados(): List<ContenidoMasterMartini> {
-        val guardadosIds = _guardados.value
-        return LISTA_VIDEOS.filter { guardadosIds.contains(it.id) }
-    }
 }
-

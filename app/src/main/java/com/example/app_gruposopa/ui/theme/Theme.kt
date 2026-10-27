@@ -1,27 +1,8 @@
 package com.example.app_gruposopa.ui.theme
 
-import android.os.Build
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-
-private val DarkColorScheme = darkColorScheme(
-    primary = Dorado,
-    onPrimary = NegroLetra,
-    primaryContainer = VerdeFondo,
-    onPrimaryContainer = Blanco,
-    secondary = Dorado,
-    background = NegroLetra,
-    surface = Color(0xFF1B2422),
-    onSurface = Blanco,
-    onSurfaceVariant = LetrasEnFondoVerde
-)
 
 private val LightColorScheme = lightColorScheme(
     primary = VerdeFondo,
@@ -39,24 +20,13 @@ private val LightColorScheme = lightColorScheme(
     onSurfaceVariant = NegroLetra.copy(alpha = 0.7f)
 )
 
+/**
+ * Tema siempre claro, con los colores fijos de la marca.
+ */
 @Composable
-fun App_GrupoSoPaTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    // Siempre false para no alterar los colores oficiales de Master Martini
-    dynamicColor: Boolean = false,
-    content: @Composable () -> Unit
-) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
-    }
-
+fun App_GrupoSoPaTheme(content: @Composable () -> Unit) {
     MaterialTheme(
-        colorScheme = colorScheme,
+        colorScheme = LightColorScheme,
         typography = Typography,
         content = content
     )

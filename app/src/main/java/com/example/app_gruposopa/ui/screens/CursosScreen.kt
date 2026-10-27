@@ -23,15 +23,20 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.ui.unit.sp
 import com.example.app_gruposopa.domain.model.Curso
 import com.example.app_gruposopa.navigation.AppScreen
 import com.example.app_gruposopa.ui.components.BarraNavegacionInferior
 import com.example.app_gruposopa.ui.theme.*
 import com.example.app_gruposopa.ui.viewmodels.CursosViewModel
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 
 /**
  * Vista 6: Cursos (Escuela Única).
@@ -40,13 +45,26 @@ import com.example.app_gruposopa.ui.viewmodels.CursosViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CursosScreen(
-    viewModel: CursosViewModel = remember { CursosViewModel() },
+    viewModel: CursosViewModel = viewModel(),
+    cursoParaAbrir: String? = null,
+    onCursoAbierto: () -> Unit = {},
     onModuloClick: (String) -> Unit = {},
     onNavigateTab: (String) -> Unit = {}
 ) {
     val videosVistos by viewModel.videosVistos.collectAsState()
     val cursosExpandidos by viewModel.cursosExpandidos.collectAsState()
     val scrollState = rememberScrollState()
+    // Posición vertical de cada tarjeta, para poder bajar hasta un curso
+    val posiciones = remember { mutableStateMapOf<String, Int>() }
+
+    // Si se llegó desde "Ver curso", se abre ese curso y se baja hasta él
+    LaunchedEffect(cursoParaAbrir) {
+        val id = cursoParaAbrir ?: return@LaunchedEffect
+        viewModel.expandir(id)
+        val y = snapshotFlow { posiciones[id] }.filterNotNull().first()
+        scrollState.animateScrollTo(y)
+        onCursoAbierto()
+    }
 
     Scaffold(
         topBar = {
@@ -130,6 +148,7 @@ fun CursosScreen(
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .onGloballyPositioned { posiciones[curso.id] = it.positionInParent().y.toInt() }
                         .clip(RoundedCornerShape(10.dp))
                         .clickable { viewModel.toggleExpandido(curso.id) },
                     shape = RoundedCornerShape(10.dp),

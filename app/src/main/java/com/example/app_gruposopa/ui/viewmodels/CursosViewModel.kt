@@ -10,19 +10,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
 /**
- * Datos de un curso listos para mostrar.
- */
-data class CursoUIState(
-    val curso: Curso,
-    val modulosTotales: Int,
-    val modulosCompletados: Int,
-    val progreso: Float,
-    val estadoEtiqueta: String, // "Sin iniciar", "En curso", "Completado"
-    val modulos: List<ContenidoMasterMartini>,
-    val estaExpandido: Boolean
-)
-
-/**
  * ViewModel de Cursos: lista de cursos, videos vistos y cursos abiertos.
  */
 class CursosViewModel(
@@ -41,11 +28,12 @@ class CursosViewModel(
         }
     }
 
+    fun expandir(cursoId: String) {
+        _cursosExpandidos.update { it + cursoId }
+    }
+
     fun obtenerModulos(curso: Curso): List<ContenidoMasterMartini> {
         return repository.obtenerVideosPorIds(curso.videoIds)
     }
 
-    fun esModuloVisto(videoId: String): Boolean {
-        return repository.esVisto(videoId)
-    }
 }

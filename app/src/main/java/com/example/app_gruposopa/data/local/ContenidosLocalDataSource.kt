@@ -1,12 +1,17 @@
 package com.example.app_gruposopa.data.local
 
 import android.content.Context
+import android.util.Log
 import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.MutablePreferences
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
+import java.io.IOException
 
 private val Context.contenidosDataStore: DataStore<Preferences> by preferencesDataStore(
     name = "contenidos_master_martini"
@@ -24,17 +29,26 @@ class ContenidosLocalDataSource(context: Context) {
         val VIDEOS_VISTOS = stringSetPreferencesKey("videos_vistos")
     }
 
-    suspend fun leerGuardados(): Set<String> =
-        dataStore.data.first()[Claves.GUARDADOS] ?: emptySet()
+    // Si el archivo no se puede leer, se parte vacío en vez de cerrar la app
+    private suspend fun leer(): Preferences =
+        dataStore.data
+            .catch { if (it is IOException) emit(emptyPreferences()) else throw it }
+            .first()
 
-    suspend fun leerVideosVistos(): Set<String> =
-        dataStore.data.first()[Claves.VIDEOS_VISTOS] ?: emptySet()
+    suspend fun leerGuardados(): Set<String> = leer()[Claves.GUARDADOS] ?: emptySet()
 
-    suspend fun escribirGuardados(ids: Set<String>) {
-        dataStore.edit { it[Claves.GUARDADOS] = ids }
-    }
+    suspend fun leerVideosVistos(): Set<String> = leer()[Claves.VIDEOS_VISTOS] ?: emptySet()
 
-    suspend fun escribirVideosVistos(ids: Set<String>) {
-        dataStore.edit { it[Claves.VIDEOS_VISTOS] = ids }
+    suspend fun escribirGuardados(ids: Set<String>) = escribir { it[Claves.GUARDADOS] = ids }
+
+    suspend fun escribirVideosVistos(ids: Set<String>) = escribir { it[Claves.VIDEOS_VISTOS] = ids }
+
+    // Si falla la escritura, el cambio queda solo en memoria hasta la próxima vez
+    private suspend fun escribir(cambio: (MutablePreferences) -> Unit) {
+        try {
+            dataStore.edit { cambio(it) }
+        } catch (e: IOException) {
+            Log.w("ContenidosLocal", "No se pudo guardar en DataStore", e)
+        }
     }
 }

@@ -31,6 +31,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.example.app_gruposopa.domain.model.ContenidoMasterMartini
@@ -45,7 +46,7 @@ import com.example.app_gruposopa.ui.viewmodels.DetalleViewModel
 @Composable
 fun DetalleScreen(
     videoId: String = "v01",
-    viewModel: DetalleViewModel = remember { DetalleViewModel() },
+    viewModel: DetalleViewModel = viewModel(),
     modifier: Modifier = Modifier,
     onVolverClick: () -> Unit = {},
     onConsultarClick: ((ContenidoMasterMartini?) -> Unit)? = null,

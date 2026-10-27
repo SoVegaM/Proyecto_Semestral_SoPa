@@ -12,6 +12,8 @@
 
 # Package Files #
 *.jar
+# El wrapper de Gradle sí se sube, si no ./gradlew no funciona al clonar
+!gradle/wrapper/gradle-wrapper.jar
 *.war
 *.nar
 *.ear
@@ -31,4 +33,4 @@ replay_pid*
 .idea/
 build/
 */build/
-local.properties
+local.properties
