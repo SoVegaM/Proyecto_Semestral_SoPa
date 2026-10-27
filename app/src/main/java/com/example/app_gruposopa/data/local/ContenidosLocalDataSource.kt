@@ -29,7 +29,7 @@ class ContenidosLocalDataSource(context: Context) {
         val VIDEOS_VISTOS = stringSetPreferencesKey("videos_vistos")
     }
 
-    // Si el archivo no se puede leer, se parte vacío en vez de cerrar la app
+    // Si no se puede leer el archivo se parte de cero, para que no se caiga la app
     private suspend fun leer(): Preferences =
         dataStore.data
             .catch { if (it is IOException) emit(emptyPreferences()) else throw it }
@@ -43,7 +43,7 @@ class ContenidosLocalDataSource(context: Context) {
 
     suspend fun escribirVideosVistos(ids: Set<String>) = escribir { it[Claves.VIDEOS_VISTOS] = ids }
 
-    // Si falla la escritura, el cambio queda solo en memoria hasta la próxima vez
+    // Si no se puede guardar, el cambio igual queda en memoria
     private suspend fun escribir(cambio: (MutablePreferences) -> Unit) {
         try {
             dataStore.edit { cambio(it) }

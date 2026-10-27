@@ -16,9 +16,6 @@ import com.example.app_gruposopa.ui.theme.App_GrupoSoPaTheme
 import com.example.app_gruposopa.ui.viewmodels.MainViewModel
 import kotlinx.coroutines.flow.collectLatest
 
-/**
- * Actividad principal: aplica el tema, carga la navegación y escucha los eventos del MainViewModel.
- */
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

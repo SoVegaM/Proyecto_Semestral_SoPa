@@ -15,8 +15,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 /**
- * Repositorio de contenidos y cursos. El catálogo está en memoria y
- * los guardados y vistos se guardan con DataStore (ver conectarAlmacenamiento).
+ * Repositorio con los videos y cursos.
+ * Los guardados y los vistos se guardan en el celular con DataStore.
  */
 class ContenidosRepository {
 
@@ -27,7 +27,7 @@ class ContenidosRepository {
         const val CAT_GELATO = "Gelatería"
         const val CAT_PAN = "Panadería & Pastelería"
 
-        // Una sola instancia para que todas las pantallas compartan los mismos datos
+        // Una sola instancia, así todas las pantallas ven los mismos datos
         val instance: ContenidosRepository by lazy { ContenidosRepository() }
 
         // Videos de técnica o usos de un insumo (el resto son recetas)
@@ -146,10 +146,8 @@ class ContenidosRepository {
     private val _videosVistos = MutableStateFlow<Set<String>>(emptySet())
     val videosVistos: StateFlow<Set<String>> = _videosVistos.asStateFlow()
 
-    /**
-     * Lee guardados y vistos desde DataStore y guarda cada cambio.
-     * Se llama en MainActivity; en los Previews no se llama y todo queda en memoria.
-     */
+    // Carga lo que había guardado y guarda cada cambio. Se llama en MainActivity
+    // (en los Previews no se llama, ahí todo queda en memoria)
     fun conectarAlmacenamiento(context: Context) {
         if (almacenamiento != null) return
         val local = ContenidosLocalDataSource(context)

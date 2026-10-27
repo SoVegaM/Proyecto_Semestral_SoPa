@@ -23,7 +23,7 @@ import com.example.app_gruposopa.ui.theme.GrisFondoSuave
 import com.example.app_gruposopa.ui.viewmodels.HomeViewModel
 
 /**
- * Inicio en tablet chica o celular girado: grilla de 2 columnas y categorías que bajan de línea.
+ * Inicio para tablet chica o celular girado, en 2 columnas.
  */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable

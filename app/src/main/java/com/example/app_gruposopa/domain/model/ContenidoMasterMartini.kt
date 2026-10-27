@@ -1,16 +1,12 @@
 package com.example.app_gruposopa.domain.model
 
-/**
- * Receta (una preparación) o técnica (cómo usar un insumo). Se muestra en las tarjetas y en Mis guardados.
- */
+// Receta = una preparación. Técnica = video de cómo usar un insumo
 enum class TipoContenido(val etiqueta: String) {
     RECETA("Receta"),
     TECNICA("Técnica")
 }
 
-/**
- * Un video de Master Martini (se muestra en Inicio, Detalle y Cursos).
- */
+// Video de Master Martini
 data class ContenidoMasterMartini(
     val id: String,
     val titulo: String,

@@ -15,9 +15,7 @@ import com.example.app_gruposopa.ui.theme.NegroLetra
 import com.example.app_gruposopa.ui.theme.VerdeFondo
 import com.example.app_gruposopa.ui.theme.VerdeLetras
 
-/**
- * Barra inferior (Inicio, Cursos, Eventos, Perfil) que comparten las pantallas.
- */
+// Barra de abajo que usan las pantallas principales
 @Composable
 fun BarraNavegacionInferior(
     rutaActual: String,
@@ -33,7 +31,7 @@ fun BarraNavegacionInferior(
                 selected = seleccionada,
                 onClick = { if (!seleccionada) onNavegar(pantalla.route) },
                 icon = {
-                    // null porque el texto de abajo ya dice el nombre (si no, TalkBack lo lee dos veces)
+                    // sin descripción, si no TalkBack lee el nombre dos veces
                     pantalla.icono?.let { Icon(it, contentDescription = null) }
                 },
                 label = {

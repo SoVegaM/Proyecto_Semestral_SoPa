@@ -22,7 +22,7 @@ import com.example.app_gruposopa.ui.theme.GrisFondoSuave
 import com.example.app_gruposopa.ui.viewmodels.HomeViewModel
 
 /**
- * Inicio en celular: una columna y categorías que se deslizan hacia el lado.
+ * Inicio para celular, en una columna.
  */
 @Composable
 fun HomeScreenCompacta(

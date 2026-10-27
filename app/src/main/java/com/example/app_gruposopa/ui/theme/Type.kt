@@ -6,11 +6,8 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
-/**
- * Tamaños de texto más grandes que los de Material (mínimo 13 sp, texto normal 16 sp)
- * pensando en usuarios mayores. Usar estos estilos en vez de fontSize
- * para que la vista de Accesibilidad pueda cambiar el tamaño en toda la app.
- */
+// Letras más grandes que las de Material, pensando en usuarios mayores.
+// Usar estos estilos y no fontSize, así Accesibilidad puede cambiarlos.
 private fun estilo(tamano: Int, interlineado: Int, peso: FontWeight = FontWeight.Normal) = TextStyle(
     fontFamily = FontFamily.Default,
     fontWeight = peso,

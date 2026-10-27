@@ -1,8 +1,6 @@
 package com.example.app_gruposopa.domain.model
 
-/**
- * Curso de Escuela Única. Solo guarda los ids de sus videos.
- */
+// Curso de Escuela Única, guarda solo los ids de sus videos
 data class Curso(
     val id: String,
     val titulo: String,

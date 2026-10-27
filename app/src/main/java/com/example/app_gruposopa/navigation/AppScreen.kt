@@ -8,8 +8,7 @@ import androidx.compose.material.icons.filled.School
 import androidx.compose.ui.graphics.vector.ImageVector
 
 /**
- * Las 10 pantallas de la app con su ruta.
- * Las que tienen titulo e icono aparecen en la barra inferior.
+ * Las 10 pantallas con su ruta. Las que tienen titulo e icono van en la barra de abajo.
  */
 sealed class AppScreen(
     val route: String,

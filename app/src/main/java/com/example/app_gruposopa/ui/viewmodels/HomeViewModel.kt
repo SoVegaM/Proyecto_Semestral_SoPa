@@ -7,9 +7,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-/**
- * ViewModel de Inicio: búsqueda y filtro por categoría.
- */
 class HomeViewModel(
     private val repository: ContenidosRepository = ContenidosRepository.instance
 ) : ViewModel() {

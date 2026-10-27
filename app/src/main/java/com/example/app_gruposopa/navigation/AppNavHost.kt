@@ -19,8 +19,8 @@ import com.example.app_gruposopa.ui.screens.PlaceholderVistaScreen
 import com.example.app_gruposopa.ui.viewmodels.MainViewModel
 
 /**
- * Navegación de la app. Primer uso: Bienvenida → Ingreso → Perfil de negocio → Inicio.
- * Las pantallas navegan a través del MainViewModel.
+ * Rutas de la app. La primera vez: Bienvenida → Ingreso → Perfil de negocio → Inicio.
+ * Para navegar se usa el MainViewModel.
  */
 @Composable
 fun AppNavHost(

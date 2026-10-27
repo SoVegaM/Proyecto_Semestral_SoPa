@@ -13,18 +13,13 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
-/**
- * Filtros de Mis guardados (tipo null = Todos).
- */
+// Filtros de Mis guardados. Todos va con tipo null
 enum class FiltroGuardados(val etiqueta: String, val tipo: TipoContenido?) {
     TODOS("Todos", null),
     RECETAS("Recetas", TipoContenido.RECETA),
     TECNICAS("Técnicas", TipoContenido.TECNICA)
 }
 
-/**
- * ViewModel de Mis guardados.
- */
 class GuardadosViewModel(
     private val repository: ContenidosRepository = ContenidosRepository.instance
 ) : ViewModel() {
@@ -32,7 +27,7 @@ class GuardadosViewModel(
     private val _filtro = MutableStateFlow(FiltroGuardados.TODOS)
     val filtro: StateFlow<FiltroGuardados> = _filtro.asStateFlow()
 
-    // Lista sin filtrar, para saber si no hay ningún guardado o solo ninguno en el filtro
+    // Lista completa sin filtro, para el mensaje cuando no hay nada
     val guardados: StateFlow<List<ContenidoMasterMartini>> = repository.guardados
         .map { ids -> repository.obtenerVideos().filter { it.id in ids } }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())

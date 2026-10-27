@@ -12,9 +12,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 
-/**
- * ViewModel del Detalle: video actual, guardado y visto.
- */
 class DetalleViewModel(
     private val repository: ContenidosRepository = ContenidosRepository.instance
 ) : ViewModel() {
@@ -24,7 +21,7 @@ class DetalleViewModel(
 
     private val _videoIdActual = MutableStateFlow("")
 
-    // Se recalcula si cambia el video o la lista de guardados
+    // Cambia si cambia el video o la lista de guardados
     val esGuardado: StateFlow<Boolean> = combine(_videoIdActual, repository.guardados) { id, guardados ->
         id.isNotEmpty() && id in guardados
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
@@ -34,10 +31,7 @@ class DetalleViewModel(
         _video.value = repository.obtenerVideoPorId(videoId)
     }
 
-    /**
-     * Marca el video como visto (cuenta para el progreso del curso).
-     * Se llama al reproducirlo o al abrirlo en YouTube, no al entrar al detalle.
-     */
+    // Se llama cuando el video parte o se abre en YouTube (cuenta para el progreso del curso)
     fun marcarComoVisto() {
         val id = _videoIdActual.value
         if (id.isNotEmpty()) {

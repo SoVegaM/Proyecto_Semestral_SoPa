@@ -469,9 +469,8 @@ private class PuenteReproductor(private val onReproducir: () -> Unit) {
 }
 
 /**
- * Carga el reproductor de YouTube en el WebView.
- * Se usa loadDataWithBaseURL con un origen https porque sin eso YouTube
- * da "Error 153". Solo recarga si cambia el video.
+ * Carga el video de YouTube en el WebView.
+ * Va con loadDataWithBaseURL y un origen https porque si no YouTube da "Error 153".
  */
 private fun WebView.cargarVideoYoutube(youtubeVideoId: String) {
     if (tag == youtubeVideoId) return

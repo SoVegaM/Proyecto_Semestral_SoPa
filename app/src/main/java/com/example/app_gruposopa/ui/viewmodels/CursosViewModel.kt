@@ -9,9 +9,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-/**
- * ViewModel de Cursos: lista de cursos, videos vistos y cursos abiertos.
- */
 class CursosViewModel(
     private val repository: ContenidosRepository = ContenidosRepository.instance
 ) : ViewModel() {

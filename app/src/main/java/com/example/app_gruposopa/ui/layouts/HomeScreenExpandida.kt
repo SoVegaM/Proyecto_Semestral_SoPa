@@ -25,7 +25,7 @@ import com.example.app_gruposopa.ui.theme.GrisFondoSuave
 import com.example.app_gruposopa.ui.viewmodels.HomeViewModel
 
 /**
- * Inicio en pantalla ancha: panel fijo con buscador y categorías a la izquierda, videos en grilla a la derecha.
+ * Inicio para tablet: filtros a la izquierda y videos a la derecha.
  */
 @Composable
 fun HomeScreenExpandida(
@@ -80,7 +80,7 @@ fun HomeScreenExpandida(
 
             // Resultados
             LazyVerticalGrid(
-                // Tantas columnas como quepan (3 en una tablet normal)
+                // Las columnas que quepan (en tablet son 3)
                 columns = GridCells.Adaptive(minSize = 260.dp),
                 modifier = Modifier
                     .weight(1f)

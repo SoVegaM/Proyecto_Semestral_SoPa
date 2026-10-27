@@ -20,9 +20,7 @@ private val LightColorScheme = lightColorScheme(
     onSurfaceVariant = NegroLetra.copy(alpha = 0.7f)
 )
 
-/**
- * Tema siempre claro, con los colores fijos de la marca.
- */
+// Siempre tema claro, con los colores de la marca
 @Composable
 fun App_GrupoSoPaTheme(content: @Composable () -> Unit) {
     MaterialTheme(

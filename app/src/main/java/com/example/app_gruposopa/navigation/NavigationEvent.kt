@@ -1,17 +1,10 @@
 package com.example.app_gruposopa.navigation
 
-/**
- * Eventos de navegación que emite el MainViewModel y que MainActivity convierte en navegación real.
- */
+// Eventos que manda el MainViewModel para que MainActivity navegue (guía 10)
 sealed class NavigationEvent {
 
-    /**
-     * Ir a una ruta. La ruta es un String porque Detalle lleva el id del video (detalle/{videoId}).
-     * @param popUpToRoute si no es null, se borra el historial hasta esa ruta.
-     * @param inclusive si es true, también se borra popUpToRoute.
-     * @param singleTop evita abrir dos veces la misma pantalla seguida.
-     * @param saveState guarda y recupera el estado de la pantalla (para las pestañas).
-     */
+    // La ruta es String y no AppScreen porque detalle lleva el id del video
+    // popUpToRoute: hasta dónde se borra el historial. saveState se usa en las pestañas
     data class NavigateTo(
         val route: String,
         val popUpToRoute: String? = null,
@@ -23,6 +16,6 @@ sealed class NavigationEvent {
     // Volver a la pantalla anterior
     object PopBackStack : NavigationEvent()
 
-    // Subir un nivel en la navegación (como la flecha de la barra superior)
+    // Subir un nivel (la flecha de la barra de arriba)
     object NavigateUp : NavigationEvent()
 }

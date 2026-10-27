@@ -12,7 +12,7 @@ import com.example.app_gruposopa.ui.utils.obtenerWindowSizeClass
 import com.example.app_gruposopa.ui.viewmodels.HomeViewModel
 
 /**
- * Vista 4: Inicio. Elige el diseño según el ancho de la pantalla (los diseños están en ui/layouts).
+ * Vista 4: Inicio. Elige el diseño según el tamaño de la pantalla.
  */
 @Composable
 fun HomeScreen(
@@ -26,7 +26,7 @@ fun HomeScreen(
     val alto = windowSizeClass.heightSizeClass
     when {
         ancho == WindowWidthSizeClass.Compact -> HomeScreenCompacta(viewModel, onContenidoClick, onNavigateTab, onGuardadosClick)
-        // Un celular girado es ancho pero muy bajo: ahí el panel lateral no cabe bien
+        // El celular girado usa el mediano porque es muy bajo para el panel
         ancho == WindowWidthSizeClass.Expanded && alto != WindowHeightSizeClass.Compact ->
             HomeScreenExpandida(viewModel, onContenidoClick, onNavigateTab, onGuardadosClick)
         else -> HomeScreenMediana(viewModel, onContenidoClick, onNavigateTab, onGuardadosClick)

@@ -54,7 +54,7 @@ fun CursosScreen(
     val videosVistos by viewModel.videosVistos.collectAsState()
     val cursosExpandidos by viewModel.cursosExpandidos.collectAsState()
     val scrollState = rememberScrollState()
-    // Posición vertical de cada tarjeta, para poder bajar hasta un curso
+    // Dónde está cada tarjeta, para poder bajar hasta un curso
     val posiciones = remember { mutableStateMapOf<String, Int>() }
 
     // Si se llegó desde "Ver curso", se abre ese curso y se baja hasta él
@@ -98,7 +98,6 @@ fun CursosScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
-            // Encabezado
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(containerColor = Blanco),
@@ -123,7 +122,6 @@ fun CursosScreen(
                 }
             }
 
-            // Título con la cantidad de cursos
             Text(
                 text = "Cursos disponibles (${viewModel.cursos.size})",
                 style = MaterialTheme.typography.titleSmall,
@@ -230,7 +228,6 @@ fun CursosScreen(
                             )
                         }
 
-                        // Progreso
                         LinearProgressIndicator(
                             progress = { progreso },
                             modifier = Modifier
