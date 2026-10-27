@@ -20,28 +20,28 @@ sealed class AppScreen(
     // 1. Bienvenida (Entrada con marca)
     object Bienvenida : AppScreen(
         route = "bienvenida",
-        nombre = "Vista 1 · Bienvenida",
+        nombre = "Vista 1 - Bienvenida",
         descripcion = "Entrada con marca, lema 'Qualità italiana' y botón Comenzar"
     )
 
     // 2. Ingreso y registro (Login o invitado)
     object Ingreso : AppScreen(
         route = "ingreso",
-        nombre = "Vista 2 · Ingreso y registro",
+        nombre = "Vista 2 - Ingreso y registro",
         descripcion = "Login simulado, creación de cuenta y opción Continuar como invitado"
     )
 
     // 3. Perfil de negocio (Segmentación)
     object PerfilNegocio : AppScreen(
         route = "perfil_negocio",
-        nombre = "Vista 3 · Perfil de negocio",
+        nombre = "Vista 3 - Perfil de negocio",
         descripcion = "Tipo y tamaño de negocio, intereses gastronómicos y continuar"
     )
 
     // 4. Inicio (Centro técnico)
     object Inicio : AppScreen(
         route = "inicio",
-        nombre = "Vista 4 · Inicio (Centro técnico)",
+        nombre = "Vista 4 - Inicio (Centro técnico)",
         descripcion = "Centro técnico gastronómico, buscador, catálogo y filtros",
         titulo = "Inicio",
         icono = Icons.Default.Home
@@ -50,7 +50,7 @@ sealed class AppScreen(
     // 5. Detalle de contenido
     object Detalle : AppScreen(
         route = "detalle/{videoId}",
-        nombre = "Vista 5 · Detalle de contenido",
+        nombre = "Vista 5 - Detalle de contenido",
         descripcion = "Reproductor de video, insumo destacado, botón guardar y consultar"
     ) {
         fun crearRuta(videoId: String): String = "detalle/$videoId"
@@ -59,7 +59,7 @@ sealed class AppScreen(
     // 6. Cursos (Escuela Única)
     object Cursos : AppScreen(
         route = "cursos",
-        nombre = "Vista 6 · Cursos (Escuela Única)",
+        nombre = "Vista 6 - Cursos (Escuela Única)",
         descripcion = "Lista de cursos con cantidad de módulos, estado y barra de progreso",
         titulo = "Cursos",
         icono = Icons.Default.School
@@ -68,7 +68,7 @@ sealed class AppScreen(
     // 7. Eventos y contacto
     object Eventos : AppScreen(
         route = "eventos",
-        nombre = "Vista 7 · Eventos y contacto",
+        nombre = "Vista 7 - Eventos y contacto",
         descripcion = "Talleres, demostraciones, inscripción, llamada y asesoría WhatsApp",
         titulo = "Eventos",
         icono = Icons.Default.CalendarMonth
@@ -77,7 +77,7 @@ sealed class AppScreen(
     // 8. Perfil
     object Perfil : AppScreen(
         route = "perfil",
-        nombre = "Vista 8 · Perfil",
+        nombre = "Vista 8 - Perfil",
         descripcion = "Datos del usuario, accesos a guardados, accesibilidad y cerrar sesión",
         titulo = "Perfil",
         icono = Icons.Default.Person
@@ -86,14 +86,14 @@ sealed class AppScreen(
     // 9. Accesibilidad
     object Accesibilidad : AppScreen(
         route = "accesibilidad",
-        nombre = "Vista 9 · Accesibilidad",
+        nombre = "Vista 9 - Accesibilidad",
         descripcion = "Tamaño de texto, alto contraste, texto en negrita y vista previa"
     )
 
     // 10. Mis guardados
     object Guardados : AppScreen(
         route = "guardados",
-        nombre = "Vista 10 · Mis guardados",
+        nombre = "Vista 10 - Mis guardados",
         descripcion = "Favoritos guardados, filtro Todos / Recetas / Videos"
     )
 

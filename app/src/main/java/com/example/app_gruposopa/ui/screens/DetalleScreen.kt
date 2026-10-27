@@ -326,7 +326,7 @@ fun DetalleScreen(
                             fontWeight = FontWeight.SemiBold
                         )
                         Text(
-                            text = "  ·  ${v.duracion}",
+                            text = "  -  ${v.duracion}",
                             color = NegroLetra.copy(alpha = 0.6f),
                             style = MaterialTheme.typography.bodyMedium
                         )

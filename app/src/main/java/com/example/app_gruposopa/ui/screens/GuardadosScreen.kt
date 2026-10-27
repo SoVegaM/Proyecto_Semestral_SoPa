@@ -180,7 +180,7 @@ fun GuardadosScreen(
                                         color = NegroLetra
                                     )
                                     Text(
-                                        text = "${item.tipo.etiqueta} · ${item.duracion}",
+                                        text = "${item.tipo.etiqueta} - ${item.duracion}",
                                         style = MaterialTheme.typography.bodySmall,
                                         color = NegroLetra.copy(alpha = 0.6f)
                                     )
