@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.example.app_gruposopa.domain.model.ContenidoMasterMartini
 import com.example.app_gruposopa.ui.theme.*
+import com.example.app_gruposopa.ui.components.EtiquetaTipo
 import com.example.app_gruposopa.ui.viewmodels.DetalleViewModel
 
 /**
@@ -330,6 +331,8 @@ fun DetalleScreen(
                             style = MaterialTheme.typography.bodyMedium
                         )
                     }
+
+                    EtiquetaTipo(v.tipo)
 
                     Text(
                         text = v.titulo,

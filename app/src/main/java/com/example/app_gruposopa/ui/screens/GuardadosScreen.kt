@@ -124,7 +124,11 @@ fun GuardadosScreen(
                             modifier = Modifier.size(64.dp)
                         )
                         Text(
-                            text = "Aún no guardas contenidos",
+                            text = if (listaGuardados.isEmpty()) {
+                                "Aún no guardas contenidos"
+                            } else {
+                                "No tienes ${filtroSeleccionado.etiqueta.lowercase()} guardadas"
+                            },
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
                             color = VerdeLetras,
@@ -132,9 +136,9 @@ fun GuardadosScreen(
                         )
                         Text(
                             text = if (listaGuardados.isEmpty()) {
-                                "Explora las recetas, videos y cursos técnicos en el catálogo y guárdalos para acceder rápidamente a ellos."
+                                "Toca \"Guardar\" en cualquier receta o técnica para encontrarla aquí después."
                             } else {
-                                "No tienes contenidos guardados en la categoría \"${filtroSeleccionado.etiqueta}\"."
+                                "Toca \"Guardar\" en una ${if (filtroSeleccionado == FiltroGuardados.RECETAS) "receta" else "técnica"} para verla en esta lista."
                             },
                             style = MaterialTheme.typography.bodyMedium,
                             color = NegroLetra.copy(alpha = 0.7f),

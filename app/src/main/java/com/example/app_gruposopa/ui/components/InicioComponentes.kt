@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.app_gruposopa.R
 import com.example.app_gruposopa.domain.model.ContenidoMasterMartini
+import com.example.app_gruposopa.domain.model.TipoContenido
 import com.example.app_gruposopa.ui.theme.*
 
 // Partes de Inicio que comparten los tres diseños
@@ -267,6 +268,23 @@ fun SinResultados() {
     }
 }
 
+// Etiqueta "Receta" o "Técnica"
+@Composable
+fun EtiquetaTipo(tipo: TipoContenido) {
+    Surface(
+        color = VerdeFondo.copy(alpha = 0.08f),
+        shape = RoundedCornerShape(4.dp)
+    ) {
+        Text(
+            text = tipo.etiqueta,
+            color = VerdeLetras,
+            style = MaterialTheme.typography.labelMedium,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+        )
+    }
+}
+
 @Composable
 fun TarjetaContenido(
     item: ContenidoMasterMartini,
@@ -326,6 +344,8 @@ fun TarjetaContenido(
                     modifier = Modifier.padding(start = 8.dp)
                 )
             }
+
+            EtiquetaTipo(item.tipo)
 
             Text(
                 text = item.titulo,

@@ -30,9 +30,9 @@ class ContenidosRepository {
         // Una sola instancia para que todas las pantallas compartan los mismos datos
         val instance: ContenidosRepository by lazy { ContenidosRepository() }
 
-        // Videos de técnica o usos de un insumo (el resto son recetas).
+        // Videos de técnica o usos de un insumo (el resto son recetas)
         // Tiene que ir antes de LISTA_VIDEOS porque se usa al crearla
-        private val IDS_VIDEOS_TECNICOS = setOf("v03", "v04", "v05", "v11", "v12", "v13", "v22", "v25")
+        private val IDS_TECNICAS = setOf("v03", "v04", "v05", "v11", "v12", "v13", "v22", "v25")
 
         // Videos del canal de YouTube de Master Martini
         private val LISTA_VIDEOS: List<ContenidoMasterMartini> = listOf(
@@ -130,7 +130,7 @@ class ContenidosRepository {
                 categoria = categoria,
                 producto = producto,
                 youtubeVideoId = youtubeVideoId,
-                tipo = if (id in IDS_VIDEOS_TECNICOS) TipoContenido.VIDEO else TipoContenido.RECETA
+                tipo = if (id in IDS_TECNICAS) TipoContenido.TECNICA else TipoContenido.RECETA
             )
         }
     }

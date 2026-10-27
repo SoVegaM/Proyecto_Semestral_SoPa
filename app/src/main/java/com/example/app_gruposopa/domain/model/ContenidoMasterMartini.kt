@@ -1,11 +1,11 @@
 package com.example.app_gruposopa.domain.model
 
 /**
- * Receta (preparación) o video técnico (usos de un insumo). Se usa en el filtro de Mis guardados.
+ * Receta (una preparación) o técnica (cómo usar un insumo). Se muestra en las tarjetas y en Mis guardados.
  */
 enum class TipoContenido(val etiqueta: String) {
     RECETA("Receta"),
-    VIDEO("Video")
+    TECNICA("Técnica")
 }
 
 /**

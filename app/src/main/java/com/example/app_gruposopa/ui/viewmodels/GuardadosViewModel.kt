@@ -19,7 +19,7 @@ import kotlinx.coroutines.flow.stateIn
 enum class FiltroGuardados(val etiqueta: String, val tipo: TipoContenido?) {
     TODOS("Todos", null),
     RECETAS("Recetas", TipoContenido.RECETA),
-    VIDEOS("Videos", TipoContenido.VIDEO)
+    TECNICAS("Técnicas", TipoContenido.TECNICA)
 }
 
 /**
