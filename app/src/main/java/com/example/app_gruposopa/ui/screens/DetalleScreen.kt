@@ -10,6 +10,13 @@ import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Toast
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -20,9 +27,15 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.BookmarkBorder
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.OpenInNew
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -63,11 +76,29 @@ fun DetalleScreen(
 
     val video by viewModel.video.collectAsState()
     val esGuardado by viewModel.esGuardado.collectAsState()
-    var errorEmbebido by remember { mutableStateOf(false) }
+    val mensaje by viewModel.mensaje.collectAsState()
+    // Último texto, para que no se borre mientras se va la animación
+    var ultimoMensaje by remember { mutableStateOf("") }
+    mensaje?.let { ultimoMensaje = it }
+    // rememberSaveable para que no se pierda al girar el celular
+    var errorEmbebido by rememberSaveable { mutableStateOf(false) }
+
+    // Colores animados del botón Guardar (guía 12)
+    val fondoGuardar by animateColorAsState(
+        targetValue = if (esGuardado) VerdeFondo.copy(alpha = 0.12f) else Blanco,
+        animationSpec = tween(400),
+        label = "fondoGuardar"
+    )
+    val colorGuardar by animateColorAsState(
+        targetValue = if (esGuardado) VerdeLetras else NegroLetra,
+        animationSpec = tween(400),
+        label = "colorGuardar"
+    )
     var reproductorListo by remember { mutableStateOf(false) }
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
+        containerColor = GrisFondoSuave,
         topBar = {
             TopAppBar(
                 title = {
@@ -116,19 +147,19 @@ fun DetalleScreen(
                             .height(48.dp),
                         shape = RoundedCornerShape(8.dp),
                         colors = ButtonDefaults.outlinedButtonColors(
-                            containerColor = if (esGuardado) VerdeFondo.copy(alpha = 0.08f) else Blanco
+                            containerColor = fondoGuardar
                         )
                     ) {
                         Icon(
                             imageVector = if (esGuardado) Icons.Default.Bookmark else Icons.Default.BookmarkBorder,
                             contentDescription = if (esGuardado) "Quitar de guardados" else "Guardar video",
-                            tint = if (esGuardado) VerdeLetras else NegroLetra,
+                            tint = colorGuardar,
                             modifier = Modifier.size(18.dp)
                         )
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
                             text = if (esGuardado) "Guardado" else "Guardar",
-                            color = if (esGuardado) VerdeLetras else NegroLetra,
+                            color = colorGuardar,
                             style = MaterialTheme.typography.bodyMedium,
                             fontWeight = FontWeight.Medium
                         )
@@ -167,12 +198,17 @@ fun DetalleScreen(
             }
         }
     ) { innerPadding ->
-        Column(
+        Box(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
                 .background(GrisFondoSuave)
+        ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
                 .verticalScroll(scrollState)
+                .background(GrisFondoSuave)
         ) {
             val v = video
             if (v != null) {
@@ -196,13 +232,10 @@ fun DetalleScreen(
                                     settings.domStorageEnabled = true
                                     settings.loadWithOverviewMode = true
                                     settings.useWideViewPort = true
-                                    // Oculto hasta que cargue x bug visual
-                                    visibility = View.INVISIBLE
                                     setBackgroundColor(android.graphics.Color.BLACK)
                                     webChromeClient = WebChromeClient()
                                     webViewClient = object : WebViewClient() {
                                         override fun onPageFinished(view: WebView?, url: String?) {
-                                            view?.visibility = View.VISIBLE
                                             reproductorListo = true
                                         }
 
@@ -223,7 +256,11 @@ fun DetalleScreen(
                                 }
                             },
                             update = { webView -> webView.cargarVideoYoutube(v.youtubeVideoId) },
-                            modifier = Modifier.fillMaxSize()
+                            modifier = Modifier
+                                .fillMaxSize()
+                                // Transparente hasta que cargue x bug visual (pantalla negra).
+                                // Va en su propia capa para que no afecte al resto de la pantalla
+                                .graphicsLayer { alpha = if (reproductorListo) 1f else 0f }
                         )
                         if (!reproductorListo) {
                             CircularProgressIndicator(color = Dorado)
@@ -450,6 +487,40 @@ fun DetalleScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     CircularProgressIndicator(color = VerdeFondo)
+                }
+            }
+        }
+
+            // Aviso animado al guardar o quitar (guía 12)
+            AnimatedVisibility(
+                visible = mensaje != null,
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(16.dp),
+                enter = fadeIn() + slideInVertically { it },
+                exit = fadeOut() + slideOutVertically { it }
+            ) {
+                Surface(
+                    color = NegroLetra.copy(alpha = 0.9f),
+                    shape = RoundedCornerShape(24.dp),
+                    modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 18.dp, vertical = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.CheckCircle,
+                            contentDescription = null,
+                            tint = Dorado
+                        )
+                        Text(
+                            text = ultimoMensaje,
+                            color = Blanco,
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
                 }
             }
         }

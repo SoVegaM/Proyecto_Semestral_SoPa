@@ -1,6 +1,8 @@
 package com.example.app_gruposopa.ui.screens
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
@@ -134,8 +136,17 @@ fun CursosScreen(
             viewModel.cursos.forEach { curso ->
                 val modulos = viewModel.obtenerModulos(curso)
                 val totales = curso.videoIds.size
-                val completados = curso.videoIds.count { videosVistos.contains(it) }
+                // derivedStateOf: solo se recalcula si cambian los vistos (guía 12)
+                val completados by remember(curso.id) {
+                    derivedStateOf { curso.videoIds.count { videosVistos.contains(it) } }
+                }
                 val progreso = if (totales > 0) completados.toFloat() / totales else 0f
+                // Barra animada
+                val progresoAnimado by animateFloatAsState(
+                    targetValue = progreso,
+                    animationSpec = tween(600),
+                    label = "progreso"
+                )
                 val estado = when {
                     completados == 0 -> "Sin iniciar"
                     completados >= totales -> "Completado"
@@ -229,7 +240,7 @@ fun CursosScreen(
                         }
 
                         LinearProgressIndicator(
-                            progress = { progreso },
+                            progress = { progresoAnimado },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(6.dp)

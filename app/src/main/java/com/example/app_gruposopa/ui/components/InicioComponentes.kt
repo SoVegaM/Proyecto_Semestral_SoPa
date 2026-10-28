@@ -239,7 +239,7 @@ fun ContadorResultados(cantidad: Int) {
     ) {
         TituloSeccion("Contenidos Disponibles")
         Text(
-            text = "$cantidad encontrados",
+            text = if (cantidad == 1) "1 encontrado" else "$cantidad encontrados",
             color = NegroLetra.copy(alpha = 0.6f),
             style = MaterialTheme.typography.bodySmall
         )

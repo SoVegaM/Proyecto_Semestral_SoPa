@@ -1,13 +1,31 @@
 package com.example.app_gruposopa.ui.screens
 
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
+import com.example.app_gruposopa.R
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.app_gruposopa.domain.model.ContenidoMasterMartini
 import com.example.app_gruposopa.ui.layouts.HomeScreenCompacta
 import com.example.app_gruposopa.ui.layouts.HomeScreenExpandida
 import com.example.app_gruposopa.ui.layouts.HomeScreenMediana
+import com.example.app_gruposopa.ui.theme.Blanco
+import com.example.app_gruposopa.ui.theme.VerdeFondo
+import com.example.app_gruposopa.ui.theme.VerdeLetras
 import com.example.app_gruposopa.ui.utils.obtenerWindowSizeClass
 import com.example.app_gruposopa.ui.viewmodels.HomeViewModel
 
@@ -24,11 +42,42 @@ fun HomeScreen(
     val windowSizeClass = obtenerWindowSizeClass()
     val ancho = windowSizeClass.widthSizeClass
     val alto = windowSizeClass.heightSizeClass
-    when {
-        ancho == WindowWidthSizeClass.Compact -> HomeScreenCompacta(viewModel, onContenidoClick, onNavigateTab, onGuardadosClick)
-        // El celular girado usa el mediano porque es muy bajo para el panel
-        ancho == WindowWidthSizeClass.Expanded && alto != WindowHeightSizeClass.Compact ->
-            HomeScreenExpandida(viewModel, onContenidoClick, onNavigateTab, onGuardadosClick)
-        else -> HomeScreenMediana(viewModel, onContenidoClick, onNavigateTab, onGuardadosClick)
+    val cargando by viewModel.cargando.collectAsState()
+
+    // Fundido entre la carga y el contenido (guía 12)
+    Crossfade(targetState = cargando, animationSpec = tween(500), label = "cargaInicio") { estaCargando ->
+        when {
+            estaCargando -> CargandoInicio()
+            ancho == WindowWidthSizeClass.Compact -> HomeScreenCompacta(viewModel, onContenidoClick, onNavigateTab, onGuardadosClick)
+            // El celular girado usa el mediano porque es muy bajo para el panel
+            ancho == WindowWidthSizeClass.Expanded && alto != WindowHeightSizeClass.Compact ->
+                HomeScreenExpandida(viewModel, onContenidoClick, onNavigateTab, onGuardadosClick)
+            else -> HomeScreenMediana(viewModel, onContenidoClick, onNavigateTab, onGuardadosClick)
+        }
+    }
+}
+
+@Composable
+private fun CargandoInicio() {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Blanco),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.logo),
+            contentDescription = "Logo Master Martini",
+            modifier = Modifier.height(80.dp)
+        )
+        Spacer(modifier = Modifier.height(32.dp))
+        CircularProgressIndicator(color = VerdeFondo)
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(
+            text = "Cargando contenidos...",
+            style = MaterialTheme.typography.bodyLarge,
+            color = VerdeLetras
+        )
     }
 }

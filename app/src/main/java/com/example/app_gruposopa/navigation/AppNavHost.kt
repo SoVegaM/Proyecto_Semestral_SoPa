@@ -72,14 +72,14 @@ fun AppNavHost(
         composable(
             route = AppScreen.Detalle.route,
             arguments = listOf(
-                navArgument("videoId") {
+                navArgument(AppRoutes.ARG_VIDEO_ID) {
                     type = NavType.StringType
                     defaultValue = "v01"
                 }
             )
         ) { backStackEntry ->
             val context = LocalContext.current
-            val videoId = backStackEntry.arguments?.getString("videoId") ?: "v01"
+            val videoId = backStackEntry.arguments?.getString(AppRoutes.ARG_VIDEO_ID) ?: "v01"
             DetalleScreen(
                 videoId = videoId,
                 onVolverClick = { mainViewModel.navigateBack() },

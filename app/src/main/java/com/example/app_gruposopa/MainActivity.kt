@@ -9,7 +9,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
-import com.example.app_gruposopa.data.repository.ContenidosRepository
 import com.example.app_gruposopa.navigation.AppNavHost
 import com.example.app_gruposopa.navigation.NavigationEvent
 import com.example.app_gruposopa.ui.theme.App_GrupoSoPaTheme
@@ -24,7 +23,6 @@ class MainActivity : ComponentActivity() {
             statusBarStyle = SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT),
             navigationBarStyle = SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT)
         )
-        ContenidosRepository.instance.conectarAlmacenamiento(applicationContext)
         setContent {
             App_GrupoSoPaTheme {
                 val mainViewModel: MainViewModel = viewModel()

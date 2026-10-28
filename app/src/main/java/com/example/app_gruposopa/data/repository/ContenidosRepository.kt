@@ -146,7 +146,7 @@ class ContenidosRepository {
     private val _videosVistos = MutableStateFlow<Set<String>>(emptySet())
     val videosVistos: StateFlow<Set<String>> = _videosVistos.asStateFlow()
 
-    // Carga lo que había guardado y guarda cada cambio. Se llama en MainActivity
+    // Carga lo que había guardado y guarda cada cambio. Se llama en MasterMartiniApp
     // (en los Previews no se llama, ahí todo queda en memoria)
     fun conectarAlmacenamiento(context: Context) {
         if (almacenamiento != null) return
