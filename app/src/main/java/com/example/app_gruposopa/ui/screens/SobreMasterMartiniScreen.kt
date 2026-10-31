@@ -64,53 +64,61 @@ fun SobreMasterMartiniScreen(onVolverClick: () -> Unit = {}) {
             )
         }
     ) { innerPadding ->
-        Column(
+        // En tablet el contenido no pasa de 640dp de ancho y queda centrado
+        Box(
             modifier = Modifier
                 .padding(innerPadding)
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(20.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+                .fillMaxSize(),
+            contentAlignment = Alignment.TopCenter
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.logo),
-                contentDescription = "Logo Master Martini",
-                modifier = Modifier.height(90.dp)
-            )
-
-            Text(
-                text = "Master Martini Chile es parte de Unigrà, empresa italiana con más de 50 años en materias primas para panadería, pastelería, chocolatería y heladería.",
-                style = MaterialTheme.typography.bodyLarge,
-                color = NegroLetra,
-                textAlign = TextAlign.Center
-            )
-
-            DatoEmpresa(Icons.Default.Public, "Presente en más de 100 países")
-            DatoEmpresa(Icons.Default.Eco, "Productos de origen vegetal, con cultivos propios de soya y arroz")
-            DatoEmpresa(Icons.Default.School, "Escuela Única: formación profesional con la excelencia de lo Hecho en Italia")
-
-            Button(
-                onClick = {
-                    try {
-                        context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(SITIO_WEB)))
-                    } catch (_: Exception) {
-                        Toast.makeText(context, "No se pudo abrir el navegador", Toast.LENGTH_SHORT).show()
-                    }
-                },
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(52.dp),
-                shape = RoundedCornerShape(10.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = VerdeFondo, contentColor = Blanco)
+                    .widthIn(max = 640.dp)
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(20.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Icon(Icons.Default.OpenInNew, contentDescription = null)
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = "Visitar sitio web",
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.Bold
+                Image(
+                    painter = painterResource(id = R.drawable.logo),
+                    contentDescription = "Logo Master Martini",
+                    modifier = Modifier.height(90.dp)
                 )
+
+                Text(
+                    text = "Master Martini Chile es parte de Unigrà, empresa italiana con más de 50 años en materias primas para panadería, pastelería, chocolatería y heladería.",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = NegroLetra,
+                    textAlign = TextAlign.Center
+                )
+
+                DatoEmpresa(Icons.Default.Public, "Presente en más de 100 países")
+                DatoEmpresa(Icons.Default.Eco, "Productos de origen vegetal, con cultivos propios de soya y arroz")
+                DatoEmpresa(Icons.Default.School, "Escuela Única: formación profesional con la excelencia de lo Hecho en Italia")
+
+                Button(
+                    onClick = {
+                        try {
+                            context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(SITIO_WEB)))
+                        } catch (_: Exception) {
+                            Toast.makeText(context, "No se pudo abrir el navegador", Toast.LENGTH_SHORT).show()
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(52.dp),
+                    shape = RoundedCornerShape(10.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = VerdeFondo, contentColor = Blanco)
+                ) {
+                    Icon(Icons.Default.OpenInNew, contentDescription = null)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "Visitar sitio web",
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
         }
     }

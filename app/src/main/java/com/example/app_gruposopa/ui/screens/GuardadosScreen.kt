@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.app_gruposopa.domain.model.ContenidoMasterMartini
 import com.example.app_gruposopa.ui.theme.*
+import com.example.app_gruposopa.ui.utils.esPantallaAncha
 import com.example.app_gruposopa.ui.viewmodels.FiltroGuardados
 import com.example.app_gruposopa.ui.viewmodels.GuardadosViewModel
 
@@ -44,6 +45,7 @@ fun GuardadosScreen(
     val listaGuardados by viewModel.guardados.collectAsState()
     val guardadosFiltrados by viewModel.guardadosFiltrados.collectAsState()
     val notas by viewModel.notas.collectAsState()
+    val ancha = esPantallaAncha()
     // Guardado al que se le está escribiendo la nota (null = cuadro cerrado)
     var editandoNota by remember { mutableStateOf<ContenidoMasterMartini?>(null) }
 
@@ -175,75 +177,102 @@ fun GuardadosScreen(
                         .padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    guardadosFiltrados.forEach { item ->
-                        Card(
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(10.dp),
-                            colors = CardDefaults.cardColors(containerColor = Blanco),
-                            elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
-                            onClick = { onVideoClick(item.id) }
-                        ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 16.dp, vertical = 14.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Column(
-                                    modifier = Modifier.weight(1f),
-                                    verticalArrangement = Arrangement.spacedBy(4.dp)
-                                ) {
-                                    Text(
-                                        text = item.titulo,
-                                        style = MaterialTheme.typography.titleSmall,
-                                        fontWeight = FontWeight.Bold,
-                                        color = NegroLetra
-                                    )
-                                    Text(
-                                        text = "${item.tipo.etiqueta} - ${item.duracion}",
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = NegroLetra.copy(alpha = 0.6f)
-                                    )
-                                    notas[item.id]?.let { nota ->
-                                        Text(
-                                            text = "Nota: $nota",
-                                            style = MaterialTheme.typography.bodyMedium,
-                                            fontStyle = FontStyle.Italic,
-                                            color = VerdeLetras
-                                        )
-                                    }
-                                }
-
-                                // Escribir o editar la nota
-                                IconButton(
-                                    onClick = { editandoNota = item },
-                                    modifier = Modifier.size(48.dp)
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Outlined.EditNote,
-                                        contentDescription = if (notas[item.id] == null) "Agregar nota a ${item.titulo}" else "Editar nota de ${item.titulo}",
-                                        tint = VerdeLetras,
-                                        modifier = Modifier.size(26.dp)
-                                    )
-                                }
-
-                                // Quitar (mínimo 48dp)
-                                IconButton(
-                                    onClick = { viewModel.quitarGuardado(item.id) },
-                                    modifier = Modifier.size(48.dp)
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Bookmark,
-                                        contentDescription = "Quitar ${item.titulo} de guardados",
-                                        tint = DoradoTexto,
-                                        modifier = Modifier.size(24.dp)
+                    // En pantalla ancha, dos tarjetas por fila
+                    guardadosFiltrados.chunked(if (ancha) 2 else 1).forEach { fila ->
+                        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                            fila.forEach { item ->
+                                Box(Modifier.weight(1f)) {
+                                    TarjetaGuardado(
+                                        item = item,
+                                        nota = notas[item.id],
+                                        onAbrir = { onVideoClick(item.id) },
+                                        onEditarNota = { editandoNota = item },
+                                        onQuitar = { viewModel.quitarGuardado(item.id) }
                                     )
                                 }
                             }
+                            // Si la última fila queda con una sola tarjeta, se rellena el espacio
+                            if (fila.size == 1 && ancha) Spacer(Modifier.weight(1f))
                         }
                     }
                 }
+            }
+        }
+    }
+}
+
+// Tarjeta de un guardado: título, tipo, nota y botones de nota y quitar
+@Composable
+private fun TarjetaGuardado(
+    item: ContenidoMasterMartini,
+    nota: String?,
+    onAbrir: () -> Unit,
+    onEditarNota: () -> Unit,
+    onQuitar: () -> Unit
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(10.dp),
+        colors = CardDefaults.cardColors(containerColor = Blanco),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+        onClick = onAbrir
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 14.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Text(
+                    text = item.titulo,
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = NegroLetra
+                )
+                Text(
+                    text = "${item.tipo.etiqueta} - ${item.duracion}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = NegroLetra.copy(alpha = 0.6f)
+                )
+                nota?.let { nota ->
+                    Text(
+                        text = "Nota: $nota",
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontStyle = FontStyle.Italic,
+                        color = VerdeLetras
+                    )
+                }
+            }
+
+            // Escribir o editar la nota
+            IconButton(
+                onClick = onEditarNota,
+                modifier = Modifier.size(48.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.EditNote,
+                    contentDescription = if (nota == null) "Agregar nota a ${item.titulo}" else "Editar nota de ${item.titulo}",
+                    tint = VerdeLetras,
+                    modifier = Modifier.size(26.dp)
+                )
+            }
+
+            // Quitar (mínimo 48dp)
+            IconButton(
+                onClick = onQuitar,
+                modifier = Modifier.size(48.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Bookmark,
+                    contentDescription = "Quitar ${item.titulo} de guardados",
+                    tint = DoradoTexto,
+                    modifier = Modifier.size(24.dp)
+                )
             }
         }
     }

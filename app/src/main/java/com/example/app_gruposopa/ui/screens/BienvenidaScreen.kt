@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.app_gruposopa.R
 import com.example.app_gruposopa.ui.theme.*
+import com.example.app_gruposopa.ui.utils.esPantallaAncha
 
 
  // Vista 1 - Bienvenida
@@ -34,96 +35,114 @@ fun BienvenidaScreen(
     onComenzarClick: () -> Unit = {}
 
 ) {
-    Column(
+    // En tablet o celular girado van lado a lado, en celular, una arriba de la otra
+    if (esPantallaAncha()) {
+        Row(
+            modifier = modifier
+                .fillMaxSize()
+                .statusBarsPadding()
+                .navigationBarsPadding()
+        ) {
+            MitadLogo(Modifier.weight(1f).fillMaxHeight())
+            MitadVerde(Modifier.weight(1f).fillMaxHeight(), onComenzarClick)
+        }
+    } else {
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .statusBarsPadding()
+                .navigationBarsPadding()
+        ) {
+            MitadLogo(Modifier.fillMaxWidth().weight(1f))
+            MitadVerde(Modifier.fillMaxWidth().weight(1.3f), onComenzarClick)
+        }
+    }
+}
+
+// Mitad Superiorcon Fondo claro
+@Composable
+private fun MitadLogo(modifier: Modifier) {
+    Box(
         modifier = modifier
-            .fillMaxSize()
-            .statusBarsPadding()
-            .navigationBarsPadding()
+            .background(BlancoFondo)
+            .padding(24.dp),
+        contentAlignment = Alignment.Center
     ) {
-        // Mitad Superiorcon Fondo claro
+        Image(
+            painter = painterResource(id = R.drawable.logo),
+            contentDescription = "Logo Master Martini",
+            modifier = Modifier.size(250.dp),
+            contentScale = ContentScale.Fit
+        )
+    }
+}
+
+//Mitad Inferior con Fondo verde porque ADIVINA QUE LOGO TIENE LETRAS BLANCAS.
+@Composable
+private fun MitadVerde(modifier: Modifier, onComenzarClick: () -> Unit) {
+    Surface(
+        modifier = modifier,
+        color = VerdeFondo
+    ) {
         Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-                .background(BlancoFondo)
-                .padding(24.dp),
-            contentAlignment = Alignment.Center
+                .fillMaxSize()
+                .padding(24.dp)
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.logo),
-                contentDescription = "Logo Master Martini",
-                modifier = Modifier.size(250.dp),
-                contentScale = ContentScale.Fit
-            )
-        }
-
-        //Mitad Inferior con Fondo verde porque ADIVINA QUE LOGO TIENE LETRAS BLANCAS.
-        Surface(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1.3f),
-            color = VerdeFondo
-        ) {
-            Box(
+            // Bloque central (Título y Logo Italia)
+            Column(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(24.dp)
+                    .fillMaxWidth()
+                    .align(Alignment.Center),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                // Bloque central (Título y Logo Italia)
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .align(Alignment.Center),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    // Título
-                    Text(
-                        text = "Centro técnico gastronómico",
-                        style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.SemiBold,
-                        color = Blanco,
-                        textAlign = TextAlign.Center
-                    )
+                // Título
+                Text(
+                    text = "Centro técnico gastronómico",
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Blanco,
+                    textAlign = TextAlign.Center
+                )
 
-                    // Descripción breve
-                    Text(
-                        text = "Recetas, videos y cursos para tu panadería, pastelería, heladería o restaurante.",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = Blanco,
-                        textAlign = TextAlign.Center
-                    )
+                // Descripción breve
+                Text(
+                    text = "Recetas, videos y cursos para tu panadería, pastelería, heladería o restaurante.",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = Blanco,
+                    textAlign = TextAlign.Center
+                )
 
-                    // Logo Italia
-                    Image(
-                        painter = painterResource(id = R.drawable.italia),
-                        contentDescription = "Logo Italia",
-                        modifier = Modifier.height(100.dp),
-                        contentScale = ContentScale.Fit
-                    )
-                }
+                // Logo Italia
+                Image(
+                    painter = painterResource(id = R.drawable.italia),
+                    contentDescription = "Logo Italia",
+                    modifier = Modifier.height(100.dp),
+                    contentScale = ContentScale.Fit
+                )
+            }
 
-                // Botón inferior "Comenzar"
-                Button(
-                    onClick = onComenzarClick,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .align(Alignment.BottomCenter)
-                        .height(52.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Dorado,
-                        contentColor = NegroLetra
-                    ),
-                    shape = RoundedCornerShape(10.dp),
-                    elevation = ButtonDefaults.buttonElevation(defaultElevation = 2.dp)
-                ) {
-                    Text(
-                        text = "Comenzar",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold,
-                        color = NegroLetra
-                    )
-                }
+            // Botón inferior "Comenzar"
+            Button(
+                onClick = onComenzarClick,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.BottomCenter)
+                    .height(52.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Dorado,
+                    contentColor = NegroLetra
+                ),
+                shape = RoundedCornerShape(10.dp),
+                elevation = ButtonDefaults.buttonElevation(defaultElevation = 2.dp)
+            ) {
+                Text(
+                    text = "Comenzar",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = NegroLetra
+                )
             }
         }
     }

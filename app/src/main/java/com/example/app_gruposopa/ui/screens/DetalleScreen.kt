@@ -50,6 +50,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import com.example.app_gruposopa.domain.model.ContenidoMasterMartini
 import com.example.app_gruposopa.ui.theme.*
 import com.example.app_gruposopa.ui.components.EtiquetaTipo
+import com.example.app_gruposopa.ui.utils.esPantallaAncha
 import com.example.app_gruposopa.ui.viewmodels.DetalleViewModel
 
 /**
@@ -204,82 +205,114 @@ fun DetalleScreen(
                 .fillMaxSize()
                 .background(GrisFondoSuave)
         ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(scrollState)
-                .background(GrisFondoSuave)
-        ) {
             val v = video
             if (v != null) {
-                // Reproductor de YouTube
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(220.dp)
-                        .background(Color.Black),
-                    contentAlignment = Alignment.Center
-                ) {
-                    if (!errorEmbebido) {
-                        AndroidView(
-                            factory = { ctx ->
-                                WebView(ctx).apply {
-                                    layoutParams = ViewGroup.LayoutParams(
-                                        ViewGroup.LayoutParams.MATCH_PARENT,
-                                        ViewGroup.LayoutParams.MATCH_PARENT
-                                    )
-                                    settings.javaScriptEnabled = true
-                                    settings.domStorageEnabled = true
-                                    settings.loadWithOverviewMode = true
-                                    settings.useWideViewPort = true
-                                    setBackgroundColor(android.graphics.Color.BLACK)
-                                    webChromeClient = WebChromeClient()
-                                    webViewClient = object : WebViewClient() {
-                                        override fun onPageFinished(view: WebView?, url: String?) {
-                                            reproductorListo = true
-                                        }
+                // Reproductor y botón para abrir en YouTube
+                val bloqueReproductor: @Composable () -> Unit = {
+                    // Reproductor de YouTube
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .aspectRatio(16f / 9f)
+                            .background(Color.Black),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        if (!errorEmbebido) {
+                            AndroidView(
+                                factory = { ctx ->
+                                    WebView(ctx).apply {
+                                        layoutParams = ViewGroup.LayoutParams(
+                                            ViewGroup.LayoutParams.MATCH_PARENT,
+                                            ViewGroup.LayoutParams.MATCH_PARENT
+                                        )
+                                        settings.javaScriptEnabled = true
+                                        settings.domStorageEnabled = true
+                                        settings.loadWithOverviewMode = true
+                                        settings.useWideViewPort = true
+                                        setBackgroundColor(android.graphics.Color.BLACK)
+                                        webChromeClient = WebChromeClient()
+                                        webViewClient = object : WebViewClient() {
+                                            override fun onPageFinished(view: WebView?, url: String?) {
+                                                reproductorListo = true
+                                            }
 
-                                        override fun onReceivedError(
-                                            view: WebView?,
-                                            errorCode: Int,
-                                            description: String?,
-                                            failingUrl: String?
-                                        ) {
-                                            errorEmbebido = true
+                                            override fun onReceivedError(
+                                                view: WebView?,
+                                                errorCode: Int,
+                                                description: String?,
+                                                failingUrl: String?
+                                            ) {
+                                                errorEmbebido = true
+                                            }
                                         }
+                                        addJavascriptInterface(
+                                            PuenteReproductor { viewModel.marcarComoVisto() },
+                                            PuenteReproductor.NOMBRE
+                                        )
+                                        cargarVideoYoutube(v.youtubeVideoId)
                                     }
-                                    addJavascriptInterface(
-                                        PuenteReproductor { viewModel.marcarComoVisto() },
-                                        PuenteReproductor.NOMBRE
-                                    )
-                                    cargarVideoYoutube(v.youtubeVideoId)
+                                },
+                                update = { webView -> webView.cargarVideoYoutube(v.youtubeVideoId) },
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    // Transparente hasta que cargue x bug visual (pantalla negra).
+                                    // Va en su propia capa para que no afecte al resto de la pantalla
+                                    .graphicsLayer { alpha = if (reproductorListo) 1f else 0f }
+                            )
+                            if (!reproductorListo) {
+                                CircularProgressIndicator(color = Dorado)
+                            }
+                        }
+
+                        // Si el reproductor falla, se ofrece abrirlo en YouTube
+                        if (errorEmbebido) {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.spacedBy(8.dp),
+                                modifier = Modifier.padding(16.dp)
+                            ) {
+                                Text(
+                                    text = "No se pudo cargar el reproductor embebido",
+                                    color = Blanco,
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                                Button(
+                                    onClick = {
+                                        val intentApp = Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:${v.youtubeVideoId}"))
+                                        val intentWeb = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.youtube.com/watch?v=${v.youtubeVideoId}"))
+                                        viewModel.marcarComoVisto()
+                                        try {
+                                            context.startActivity(intentApp)
+                                        } catch (_: Exception) {
+                                            context.startActivity(intentWeb)
+                                        }
+                                    },
+                                    colors = ButtonDefaults.buttonColors(containerColor = Dorado)
+                                ) {
+                                    Text("Abrir en YouTube", color = NegroLetra, fontWeight = FontWeight.Bold)
                                 }
-                            },
-                            update = { webView -> webView.cargarVideoYoutube(v.youtubeVideoId) },
-                            modifier = Modifier
-                                .fillMaxSize()
-                                // Transparente hasta que cargue x bug visual (pantalla negra).
-                                // Va en su propia capa para que no afecte al resto de la pantalla
-                                .graphicsLayer { alpha = if (reproductorListo) 1f else 0f }
-                        )
-                        if (!reproductorListo) {
-                            CircularProgressIndicator(color = Dorado)
+                            }
                         }
                     }
 
-                    // Si el reproductor falla, se ofrece abrirlo en YouTube
-                    if (errorEmbebido) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(8.dp),
-                            modifier = Modifier.padding(16.dp)
+                    // Abrir en la app de YouTube
+                    Surface(
+                        modifier = Modifier.fillMaxWidth(),
+                        color = Blanco
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 8.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = "No se pudo cargar el reproductor embebido",
-                                color = Blanco,
-                                style = MaterialTheme.typography.bodyMedium
+                                text = "Reproducir externamente:",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = NegroLetra.copy(alpha = 0.65f)
                             )
-                            Button(
+                            TextButton(
                                 onClick = {
                                     val intentApp = Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:${v.youtubeVideoId}"))
                                     val intentWeb = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.youtube.com/watch?v=${v.youtubeVideoId}"))
@@ -289,193 +322,188 @@ fun DetalleScreen(
                                     } catch (_: Exception) {
                                         context.startActivity(intentWeb)
                                     }
-                                },
-                                colors = ButtonDefaults.buttonColors(containerColor = Dorado)
-                            ) {
-                                Text("Abrir en YouTube", color = NegroLetra, fontWeight = FontWeight.Bold)
-                            }
-                        }
-                    }
-                }
-
-                // Abrir en la app de YouTube
-                Surface(
-                    modifier = Modifier.fillMaxWidth(),
-                    color = Blanco
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 8.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "Reproducir externamente:",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = NegroLetra.copy(alpha = 0.65f)
-                        )
-                        TextButton(
-                            onClick = {
-                                val intentApp = Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:${v.youtubeVideoId}"))
-                                val intentWeb = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.youtube.com/watch?v=${v.youtubeVideoId}"))
-                                viewModel.marcarComoVisto()
-                                try {
-                                    context.startActivity(intentApp)
-                                } catch (_: Exception) {
-                                    context.startActivity(intentWeb)
                                 }
-                            }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.OpenInNew,
-                                contentDescription = "Abrir en YouTube",
-                                modifier = Modifier.size(16.dp),
-                                tint = VerdeLetras
-                            )
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text(
-                                text = "Abrir en YouTube",
-                                style = MaterialTheme.typography.bodySmall,
-                                fontWeight = FontWeight.SemiBold,
-                                color = VerdeLetras
-                            )
-                        }
-                    }
-                }
-
-                // Datos del video
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(14.dp)
-                ) {
-                    // Categoría y duración
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = v.categoria,
-                            color = VerdeLetras,
-                            style = MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                        Text(
-                            text = "  -  ${v.duracion}",
-                            color = NegroLetra.copy(alpha = 0.6f),
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                    }
-
-                    EtiquetaTipo(v.tipo)
-
-                    Text(
-                        text = v.titulo,
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold,
-                        color = NegroLetra
-                    )
-
-                    Text(
-                        text = v.descripcion,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = NegroLetra.copy(alpha = 0.85f)
-                    )
-
-                    Spacer(modifier = Modifier.height(4.dp))
-
-                    // Insumo destacado
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(10.dp),
-                        colors = CardDefaults.cardColors(containerColor = Blanco),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
-                    ) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
-                            verticalArrangement = Arrangement.spacedBy(6.dp)
-                        ) {
-                            Surface(
-                                color = Dorado.copy(alpha = 0.15f),
-                                shape = RoundedCornerShape(4.dp)
                             ) {
+                                Icon(
+                                    imageVector = Icons.Default.OpenInNew,
+                                    contentDescription = "Abrir en YouTube",
+                                    modifier = Modifier.size(16.dp),
+                                    tint = VerdeLetras
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
                                 Text(
-                                    text = "Insumo destacado",
-                                    color = DoradoTexto,
-                                    style = MaterialTheme.typography.labelMedium,
-                                    fontWeight = FontWeight.Bold,
-                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
+                                    text = "Abrir en YouTube",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = VerdeLetras
                                 )
                             }
-
-                            Text(
-                                text = v.producto,
-                                style = MaterialTheme.typography.titleSmall,
-                                fontWeight = FontWeight.Bold,
-                                color = VerdeLetras
-                            )
-
-                            Text(
-                                text = "Insumo Master Martini usado en esta preparación.",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = NegroLetra.copy(alpha = 0.75f)
-                            )
                         }
                     }
+                }
 
-                    // Curso al que pertenece el video
-                    val cursoAsociado = viewModel.obtenerCursoAsociado()
-                    if (cursoAsociado != null) {
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clip(RoundedCornerShape(10.dp))
-                                .clickable { onVerCursoClick?.invoke(cursoAsociado.id) },
-                            shape = RoundedCornerShape(10.dp),
-                            colors = CardDefaults.cardColors(containerColor = GrisFondoSuave)
+                // Datos del video, insumo y curso
+                val bloqueInfo: @Composable () -> Unit = {
+                    // Datos del video
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(14.dp)
+                    ) {
+                        // Categoría y duración
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Row(
+                            Text(
+                                text = v.categoria,
+                                color = VerdeLetras,
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                            Text(
+                                text = "  -  ${v.duracion}",
+                                color = NegroLetra.copy(alpha = 0.6f),
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+
+                        EtiquetaTipo(v.tipo)
+
+                        Text(
+                            text = v.titulo,
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold,
+                            color = NegroLetra
+                        )
+
+                        Text(
+                            text = v.descripcion,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = NegroLetra.copy(alpha = 0.85f)
+                        )
+
+                        Spacer(modifier = Modifier.height(4.dp))
+
+                        // Insumo destacado
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(10.dp),
+                            colors = CardDefaults.cardColors(containerColor = Blanco),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+                        ) {
+                            Column(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(14.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
+                                    .padding(16.dp),
+                                verticalArrangement = Arrangement.spacedBy(6.dp)
                             ) {
-                                Column(
-                                    modifier = Modifier.weight(1f),
-                                    verticalArrangement = Arrangement.spacedBy(2.dp)
+                                Surface(
+                                    color = Dorado.copy(alpha = 0.15f),
+                                    shape = RoundedCornerShape(4.dp)
                                 ) {
                                     Text(
-                                        text = "MÓDULO DE ESCUELA ÚNICA",
+                                        text = "Insumo destacado",
+                                        color = DoradoTexto,
                                         style = MaterialTheme.typography.labelMedium,
+                                        fontWeight = FontWeight.Bold,
+                                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
+                                    )
+                                }
+
+                                Text(
+                                    text = v.producto,
+                                    style = MaterialTheme.typography.titleSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = VerdeLetras
+                                )
+
+                                Text(
+                                    text = "Insumo Master Martini usado en esta preparación.",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = NegroLetra.copy(alpha = 0.75f)
+                                )
+                            }
+                        }
+
+                        // Curso al que pertenece el video
+                        val cursoAsociado = viewModel.obtenerCursoAsociado()
+                        if (cursoAsociado != null) {
+                            Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clip(RoundedCornerShape(10.dp))
+                                    .clickable { onVerCursoClick?.invoke(cursoAsociado.id) },
+                                shape = RoundedCornerShape(10.dp),
+                                colors = CardDefaults.cardColors(containerColor = GrisFondoSuave)
+                            ) {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(14.dp),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Column(
+                                        modifier = Modifier.weight(1f),
+                                        verticalArrangement = Arrangement.spacedBy(2.dp)
+                                    ) {
+                                        Text(
+                                            text = "MÓDULO DE ESCUELA ÚNICA",
+                                            style = MaterialTheme.typography.labelMedium,
+                                            fontWeight = FontWeight.Bold,
+                                            color = DoradoTexto
+                                        )
+                                        Text(
+                                            text = cursoAsociado.titulo,
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            fontWeight = FontWeight.Bold,
+                                            color = VerdeLetras
+                                        )
+                                        Text(
+                                            text = cursoAsociado.descripcion,
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = NegroLetra.copy(alpha = 0.7f),
+                                            maxLines = 1
+                                        )
+                                    }
+                                    Text(
+                                        text = "Ver curso →",
+                                        style = MaterialTheme.typography.bodySmall,
                                         fontWeight = FontWeight.Bold,
                                         color = DoradoTexto
                                     )
-                                    Text(
-                                        text = cursoAsociado.titulo,
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        fontWeight = FontWeight.Bold,
-                                        color = VerdeLetras
-                                    )
-                                    Text(
-                                        text = cursoAsociado.descripcion,
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = NegroLetra.copy(alpha = 0.7f),
-                                        maxLines = 1
-                                    )
                                 }
-                                Text(
-                                    text = "Ver curso →",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    fontWeight = FontWeight.Bold,
-                                    color = DoradoTexto
-                                )
                             }
                         }
+                    }
+                }
+
+                // En tablet o celular girado: video a la izquierda e información a la derecha
+                if (esPantallaAncha()) {
+                    Row(modifier = Modifier.fillMaxSize()) {
+                        Column(
+                            modifier = Modifier
+                                .weight(1.1f)
+                                .fillMaxHeight()
+                                .verticalScroll(rememberScrollState())
+                        ) { bloqueReproductor() }
+                        Column(
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxHeight()
+                                .verticalScroll(scrollState)
+                        ) { bloqueInfo() }
+                    }
+                } else {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(scrollState)
+                    ) {
+                        bloqueReproductor()
+                        bloqueInfo()
                     }
                 }
             } else {
@@ -489,7 +517,6 @@ fun DetalleScreen(
                     CircularProgressIndicator(color = VerdeFondo)
                 }
             }
-        }
 
             // Aviso animado al guardar o quitar
             AnimatedVisibility(

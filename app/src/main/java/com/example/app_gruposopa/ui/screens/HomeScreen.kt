@@ -66,7 +66,7 @@ fun HomeScreen(
 
     ModalNavigationDrawer(
         drawerState = estadoMenu,
-        // Solo se cierra deslizando; así deslizar las categorías no lo abre sin querer
+        // Solo se cierra deslizando así deslizar las categorías no lo abre sin querer
         gesturesEnabled = estadoMenu.isOpen,
         drawerContent = {
             MenuLateral(
