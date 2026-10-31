@@ -27,10 +27,15 @@ class GuardadosViewModel(
     private val _filtro = MutableStateFlow(FiltroGuardados.TODOS)
     val filtro: StateFlow<FiltroGuardados> = _filtro.asStateFlow()
 
-    // Lista completa sin filtro, para el mensaje cuando no hay nada
-    val guardados: StateFlow<List<ContenidoMasterMartini>> = repository.guardados
-        .map { ids -> repository.obtenerVideos().filter { it.id in ids } }
+    private val catalogo = repository.obtenerVideos().associateBy { it.id }
+
+    // Lista completa sin filtro (la más nueva primero), para el mensaje cuando no hay nada
+    val guardados: StateFlow<List<ContenidoMasterMartini>> = repository.guardadosRecientes
+        .map { ids -> ids.mapNotNull { catalogo[it] } }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    // Nota de cada guardado (videoId -> texto)
+    val notas: StateFlow<Map<String, String>> = repository.notas
 
     val guardadosFiltrados: StateFlow<List<ContenidoMasterMartini>> =
         combine(guardados, _filtro) { lista, filtro ->
@@ -41,9 +46,17 @@ class GuardadosViewModel(
         _filtro.value = filtro
     }
 
+    fun guardarNota(videoId: String, nota: String) {
+        repository.actualizarNota(videoId, nota.take(LARGO_MAXIMO_NOTA))
+    }
+
     fun quitarGuardado(videoId: String) {
         if (repository.esGuardado(videoId)) {
             repository.toggleGuardado(videoId)
         }
+    }
+
+    companion object {
+        const val LARGO_MAXIMO_NOTA = 200
     }
 }

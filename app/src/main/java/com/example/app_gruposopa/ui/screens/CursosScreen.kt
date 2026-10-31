@@ -136,7 +136,7 @@ fun CursosScreen(
             viewModel.cursos.forEach { curso ->
                 val modulos = viewModel.obtenerModulos(curso)
                 val totales = curso.videoIds.size
-                // derivedStateOf: solo se recalcula si cambian los vistos (guía 12)
+                // derivedStateOf: solo se recalcula si cambian los vistos
                 val completados by remember(curso.id) {
                     derivedStateOf { curso.videoIds.count { videosVistos.contains(it) } }
                 }

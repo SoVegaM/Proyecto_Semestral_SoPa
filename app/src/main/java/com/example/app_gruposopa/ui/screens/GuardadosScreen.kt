@@ -10,16 +10,22 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.outlined.BookmarkBorder
+import androidx.compose.material.icons.outlined.EditNote
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.app_gruposopa.domain.model.ContenidoMasterMartini
 import com.example.app_gruposopa.ui.theme.*
 import com.example.app_gruposopa.ui.viewmodels.FiltroGuardados
 import com.example.app_gruposopa.ui.viewmodels.GuardadosViewModel
@@ -37,6 +43,21 @@ fun GuardadosScreen(
     val filtroSeleccionado by viewModel.filtro.collectAsState()
     val listaGuardados by viewModel.guardados.collectAsState()
     val guardadosFiltrados by viewModel.guardadosFiltrados.collectAsState()
+    val notas by viewModel.notas.collectAsState()
+    // Guardado al que se le está escribiendo la nota (null = cuadro cerrado)
+    var editandoNota by remember { mutableStateOf<ContenidoMasterMartini?>(null) }
+
+    editandoNota?.let { item ->
+        DialogoNota(
+            titulo = item.titulo,
+            notaActual = notas[item.id].orEmpty(),
+            onGuardar = { texto ->
+                viewModel.guardarNota(item.id, texto)
+                editandoNota = null
+            },
+            onCancelar = { editandoNota = null }
+        )
+    }
 
     val scrollState = rememberScrollState()
 
@@ -184,6 +205,27 @@ fun GuardadosScreen(
                                         style = MaterialTheme.typography.bodySmall,
                                         color = NegroLetra.copy(alpha = 0.6f)
                                     )
+                                    notas[item.id]?.let { nota ->
+                                        Text(
+                                            text = "Nota: $nota",
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            fontStyle = FontStyle.Italic,
+                                            color = VerdeLetras
+                                        )
+                                    }
+                                }
+
+                                // Escribir o editar la nota
+                                IconButton(
+                                    onClick = { editandoNota = item },
+                                    modifier = Modifier.size(48.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Outlined.EditNote,
+                                        contentDescription = if (notas[item.id] == null) "Agregar nota a ${item.titulo}" else "Editar nota de ${item.titulo}",
+                                        tint = VerdeLetras,
+                                        modifier = Modifier.size(26.dp)
+                                    )
                                 }
 
                                 // Quitar (mínimo 48dp)
@@ -205,6 +247,52 @@ fun GuardadosScreen(
             }
         }
     }
+}
+
+// Cuadro para escribir la nota de un guardado
+@Composable
+private fun DialogoNota(
+    titulo: String,
+    notaActual: String,
+    onGuardar: (String) -> Unit,
+    onCancelar: () -> Unit
+) {
+    // El cursor parte al final, para seguir escribiendo después de lo que ya había
+    var texto by rememberSaveable(stateSaver = TextFieldValue.Saver) {
+        mutableStateOf(TextFieldValue(notaActual, TextRange(notaActual.length)))
+    }
+    AlertDialog(
+        onDismissRequest = onCancelar,
+        title = {
+            Text(
+                text = "Nota para $titulo",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = VerdeLetras
+            )
+        },
+        text = {
+            OutlinedTextField(
+                value = texto,
+                onValueChange = { if (it.text.length <= GuardadosViewModel.LARGO_MAXIMO_NOTA) texto = it },
+                placeholder = { Text("Ej: probar con menos azúcar") },
+                supportingText = { Text("${texto.text.length}/${GuardadosViewModel.LARGO_MAXIMO_NOTA}") },
+                minLines = 3,
+                maxLines = 5,
+                modifier = Modifier.fillMaxWidth()
+            )
+        },
+        confirmButton = {
+            Button(
+                onClick = { onGuardar(texto.text) },
+                colors = ButtonDefaults.buttonColors(containerColor = VerdeFondo, contentColor = Blanco)
+            ) { Text("Guardar") }
+        },
+        dismissButton = {
+            TextButton(onClick = onCancelar) { Text("Cancelar", color = VerdeLetras) }
+        },
+        containerColor = Blanco
+    )
 }
 
 @Preview(name = "Vista 10 - Guardados Compacta", widthDp = 360, heightDp = 800, showBackground = true)

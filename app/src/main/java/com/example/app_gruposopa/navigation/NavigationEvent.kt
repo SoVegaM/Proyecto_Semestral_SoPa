@@ -1,6 +1,6 @@
 package com.example.app_gruposopa.navigation
 
-// Eventos que manda el MainViewModel para que MainActivity navegue (guía 10)
+// Eventos que manda el MainViewModel para que MainActivity navegue
 sealed class NavigationEvent {
 
     // La ruta es String y no AppScreen porque detalle lleva el id del video

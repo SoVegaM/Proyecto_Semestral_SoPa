@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-// Las pantallas le piden a este ViewModel que navegue y MainActivity hace la navegación (guía 10)
+// Las pantallas le piden a este ViewModel que navegue y MainActivity hace la navegación
 class MainViewModel : ViewModel() {
 
     private val _navigationEvents = MutableSharedFlow<NavigationEvent>()
@@ -54,6 +54,11 @@ class MainViewModel : ViewModel() {
     // Entra a Inicio y saca Bienvenida e Ingreso del historial
     fun entrarAInicio() {
         navigateTo(AppScreen.Inicio.route, popUpToRoute = AppScreen.Bienvenida.route, inclusive = true, singleTop = true)
+    }
+
+    // Vuelve a Bienvenida y borra Inicio del historial (la sesión simulada es de la vista 2)
+    fun cerrarSesion() {
+        navigateTo(AppScreen.Bienvenida.route, popUpToRoute = AppScreen.Inicio.route, inclusive = true, singleTop = true)
     }
 
     fun verCurso(cursoId: String) {

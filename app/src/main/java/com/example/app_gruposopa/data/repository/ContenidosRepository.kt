@@ -1,22 +1,28 @@
 package com.example.app_gruposopa.data.repository
 
 import android.content.Context
+import android.util.Log
 import com.example.app_gruposopa.data.local.ContenidosLocalDataSource
+import com.example.app_gruposopa.data.local.db.GuardadoEntity
+import com.example.app_gruposopa.data.local.db.MasterMartiniDatabase
+import com.example.app_gruposopa.data.local.db.VistoEntity
 import com.example.app_gruposopa.domain.model.ContenidoMasterMartini
 import com.example.app_gruposopa.domain.model.Curso
 import com.example.app_gruposopa.domain.model.TipoContenido
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * Repositorio con los videos y cursos.
- * Los guardados y los vistos se guardan en el celular con DataStore.
+ * Los guardados (con su nota) y los vistos se guardan en el celular con Room.
  */
 class ContenidosRepository {
 
@@ -135,28 +141,81 @@ class ContenidosRepository {
         }
     }
 
-    private var almacenamiento: ContenidosLocalDataSource? = null
+    private var db: MasterMartiniDatabase? = null
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    // Las escrituras van de a una y en orden, así dos toques seguidos no se cruzan
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val escritura = Dispatchers.IO.limitedParallelism(1)
 
     // Ids de videos guardados
     private val _guardados = MutableStateFlow<Set<String>>(emptySet())
     val guardados: StateFlow<Set<String>> = _guardados.asStateFlow()
 
+    // Los mismos ids, del más nuevo al más antiguo
+    private val _guardadosRecientes = MutableStateFlow<List<String>>(emptyList())
+    val guardadosRecientes: StateFlow<List<String>> = _guardadosRecientes.asStateFlow()
+
+    // Nota que el usuario escribió en cada guardado
+    private val _notas = MutableStateFlow<Map<String, String>>(emptyMap())
+    val notas: StateFlow<Map<String, String>> = _notas.asStateFlow()
+
     // Ids de videos vistos
     private val _videosVistos = MutableStateFlow<Set<String>>(emptySet())
     val videosVistos: StateFlow<Set<String>> = _videosVistos.asStateFlow()
 
-    // Carga lo que había guardado y guarda cada cambio. Se llama en MasterMartiniApp
+    // Último video que se reprodujo (para "Seguir viendo")
+    private val _ultimoVisto = MutableStateFlow<String?>(null)
+    val ultimoVisto: StateFlow<String?> = _ultimoVisto.asStateFlow()
+
+    // Abre la base de datos Room y empieza a leer de ella. Se llama en MasterMartiniApp
     // (en los Previews no se llama, ahí todo queda en memoria)
     fun conectarAlmacenamiento(context: Context) {
-        if (almacenamiento != null) return
-        val local = ContenidosLocalDataSource(context)
-        almacenamiento = local
+        if (db != null) return
+        val base = MasterMartiniDatabase.obtener(context)
+        db = base
         scope.launch {
-            _guardados.update { it + local.leerGuardados() }
-            _videosVistos.update { it + local.leerVideosVistos() }
-            launch { guardados.collect { local.escribirGuardados(it) } }
-            launch { videosVistos.collect { local.escribirVideosVistos(it) } }
+            withContext(escritura) { migrarDesdeDataStore(context, base) }
+            launch {
+                base.guardadoDao().observarTodos().collect { lista ->
+                    _guardadosRecientes.value = lista.map { it.videoId }
+                    _guardados.value = lista.map { it.videoId }.toSet()
+                    _notas.value = lista.filter { it.nota.isNotBlank() }.associate { it.videoId to it.nota }
+                }
+            }
+            launch {
+                base.vistoDao().observarTodos().collect { lista ->
+                    _videosVistos.value = lista.map { it.videoId }.toSet()
+                    _ultimoVisto.value = lista.firstOrNull()?.videoId
+                }
+            }
+        }
+    }
+
+    // Antes los guardados y vistos estaban en DataStore: se pasan a Room una sola vez
+    private suspend fun migrarDesdeDataStore(context: Context, base: MasterMartiniDatabase) {
+        try {
+            val antiguo = ContenidosLocalDataSource(context)
+            val guardados = antiguo.leerGuardados()
+            val vistos = antiguo.leerVideosVistos()
+            if (guardados.isEmpty() && vistos.isEmpty()) return
+            val ahora = System.currentTimeMillis()
+            guardados.forEach { base.guardadoDao().insertar(GuardadoEntity(it, ahora)) }
+            vistos.forEach { base.vistoDao().registrar(VistoEntity(it, ahora)) }
+            antiguo.borrarDatosAntiguos()
+        } catch (e: Exception) {
+            Log.w("ContenidosRepository", "No se pudieron pasar los datos antiguos a Room", e)
+        }
+    }
+
+    // Se actualiza primero la memoria (la pantalla responde al tiro) y después Room
+    private fun enBaseDeDatos(accion: suspend (MasterMartiniDatabase) -> Unit) {
+        val base = db ?: return
+        scope.launch(escritura) {
+            try {
+                accion(base)
+            } catch (e: Exception) {
+                Log.w("ContenidosRepository", "No se pudo guardar en Room", e)
+            }
         }
     }
 
@@ -174,9 +233,26 @@ class ContenidosRepository {
     }
 
     fun toggleGuardado(videoId: String) {
-        _guardados.update { actual ->
-            if (actual.contains(videoId)) actual - videoId else actual + videoId
-        }
+        if (esGuardado(videoId)) quitarGuardado(videoId) else guardar(videoId)
+    }
+
+    private fun guardar(videoId: String) {
+        _guardados.update { it + videoId }
+        _guardadosRecientes.update { listOf(videoId) + (it - videoId) }
+        enBaseDeDatos { it.guardadoDao().insertar(GuardadoEntity(videoId, System.currentTimeMillis())) }
+    }
+
+    private fun quitarGuardado(videoId: String) {
+        _guardados.update { it - videoId }
+        _guardadosRecientes.update { it - videoId }
+        _notas.update { it - videoId }
+        enBaseDeDatos { it.guardadoDao().eliminar(videoId) }
+    }
+
+    fun actualizarNota(videoId: String, nota: String) {
+        val limpia = nota.trim()
+        _notas.update { if (limpia.isEmpty()) it - videoId else it + (videoId to limpia) }
+        enBaseDeDatos { it.guardadoDao().actualizarNota(videoId, limpia) }
     }
 
     fun esGuardado(videoId: String): Boolean {
@@ -185,6 +261,8 @@ class ContenidosRepository {
 
     fun marcarComoVisto(videoId: String) {
         _videosVistos.update { it + videoId }
+        _ultimoVisto.value = videoId
+        enBaseDeDatos { it.vistoDao().registrar(VistoEntity(videoId, System.currentTimeMillis())) }
     }
 
     fun obtenerCursoPorVideoId(videoId: String): Curso? {

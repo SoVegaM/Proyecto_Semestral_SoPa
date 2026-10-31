@@ -7,6 +7,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.School
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
@@ -29,7 +30,7 @@ import com.example.app_gruposopa.ui.theme.*
 // Partes de Inicio que comparten los tres diseños
 
 @Composable
-fun BarraSuperiorInicio(onGuardadosClick: () -> Unit) {
+fun BarraSuperiorInicio(onGuardadosClick: () -> Unit, onMenuClick: () -> Unit = {}) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
         color = Blanco,
@@ -50,6 +51,21 @@ fun BarraSuperiorInicio(onGuardadosClick: () -> Unit) {
                     .fillMaxWidth(),
                 contentScale = ContentScale.Fit
             )
+
+            // Abrir el menú lateral
+            IconButton(
+                onClick = onMenuClick,
+                modifier = Modifier
+                    .align(Alignment.CenterStart)
+                    .padding(start = 8.dp)
+                    .size(48.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Menu,
+                    contentDescription = "Abrir menú",
+                    tint = VerdeLetras
+                )
+            }
 
             // Ir a Mis guardados
             IconButton(

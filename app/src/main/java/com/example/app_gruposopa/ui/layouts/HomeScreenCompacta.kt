@@ -29,14 +29,15 @@ fun HomeScreenCompacta(
     viewModel: HomeViewModel = remember { HomeViewModel() },
     onContenidoClick: (ContenidoMasterMartini) -> Unit = {},
     onNavigateTab: (String) -> Unit = {},
-    onGuardadosClick: () -> Unit = {}
+    onGuardadosClick: () -> Unit = {},
+    onMenuClick: () -> Unit = {}
 ) {
     val contenidos by viewModel.contenidosFiltrados.collectAsState()
     val categoriaSeleccionada by viewModel.categoriaSeleccionada.collectAsState()
     val textoBusqueda by viewModel.textoBusqueda.collectAsState()
 
     Scaffold(
-        topBar = { BarraSuperiorInicio(onGuardadosClick) },
+        topBar = { BarraSuperiorInicio(onGuardadosClick, onMenuClick) },
         bottomBar = {
             BarraNavegacionInferior(
                 rutaActual = AppScreen.Inicio.route,

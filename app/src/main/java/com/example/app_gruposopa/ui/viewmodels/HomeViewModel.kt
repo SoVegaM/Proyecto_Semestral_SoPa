@@ -7,8 +7,11 @@ import com.example.app_gruposopa.domain.model.ContenidoMasterMartini
 import com.example.app_gruposopa.domain.usecase.FiltrarContenidosUseCase
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class HomeViewModel(
@@ -18,7 +21,7 @@ class HomeViewModel(
 
     private val _todosLosVideos = repository.obtenerVideos()
 
-    // Carga simulada al abrir Inicio (guía 12)
+    // Carga simulada al abrir Inicio
     private val _cargando = MutableStateFlow(true)
     val cargando: StateFlow<Boolean> = _cargando.asStateFlow()
 
@@ -37,6 +40,11 @@ class HomeViewModel(
 
     private val _contenidosFiltrados = MutableStateFlow(_todosLosVideos)
     val contenidosFiltrados: StateFlow<List<ContenidoMasterMartini>> = _contenidosFiltrados.asStateFlow()
+
+    // Último video reproducido, para "Seguir viendo" en el menú
+    val ultimoVisto: StateFlow<ContenidoMasterMartini?> = repository.ultimoVisto
+        .map { id -> id?.let { repository.obtenerVideoPorId(it) } }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
 
     // "Todas" + las categorías que aparecen en los videos
     val categorias: List<String> = listOf(FiltrarContenidosUseCase.TODAS) + _todosLosVideos.map { it.categoria }.distinct()

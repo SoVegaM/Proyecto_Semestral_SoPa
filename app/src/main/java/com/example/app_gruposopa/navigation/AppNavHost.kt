@@ -15,7 +15,9 @@ import com.example.app_gruposopa.ui.screens.CursosScreen
 import com.example.app_gruposopa.ui.screens.DetalleScreen
 import com.example.app_gruposopa.ui.screens.GuardadosScreen
 import com.example.app_gruposopa.ui.screens.HomeScreen
+import com.example.app_gruposopa.ui.components.OpcionMenu
 import com.example.app_gruposopa.ui.screens.PlaceholderVistaScreen
+import com.example.app_gruposopa.ui.screens.SobreMasterMartiniScreen
 import com.example.app_gruposopa.ui.viewmodels.MainViewModel
 
 /**
@@ -64,7 +66,18 @@ fun AppNavHost(
                     mainViewModel.irADetalle(video.id)
                 },
                 onNavigateTab = { ruta -> mainViewModel.irAPestana(ruta) },
-                onGuardadosClick = { mainViewModel.navigateTo(AppScreen.Guardados.route) }
+                onGuardadosClick = { mainViewModel.navigateTo(AppScreen.Guardados.route) },
+                onOpcionMenu = { opcion, ultimoVisto ->
+                    when (opcion) {
+                        OpcionMenu.GUARDADOS -> mainViewModel.navigateTo(AppScreen.Guardados.route)
+                        OpcionMenu.SEGUIR_VIENDO -> ultimoVisto?.let { mainViewModel.irADetalle(it.id) }
+                        OpcionMenu.ACCESIBILIDAD -> mainViewModel.navigateTo(AppScreen.Accesibilidad.route)
+                        // El contacto con asesores está en la vista 7
+                        OpcionMenu.ASESOR -> mainViewModel.irAPestana(AppScreen.Eventos.route)
+                        OpcionMenu.SOBRE -> mainViewModel.navigateTo(AppScreen.Sobre.route)
+                        OpcionMenu.CERRAR_SESION -> mainViewModel.cerrarSesion()
+                    }
+                }
             )
         }
 
@@ -139,6 +152,11 @@ fun AppNavHost(
                     mainViewModel.irADetalle(videoId)
                 }
             )
+        }
+
+        // Sobre Master Martini (desde el menú lateral)
+        composable(route = AppScreen.Sobre.route) {
+            SobreMasterMartiniScreen(onVolverClick = { mainViewModel.navigateBack() })
         }
 
     }

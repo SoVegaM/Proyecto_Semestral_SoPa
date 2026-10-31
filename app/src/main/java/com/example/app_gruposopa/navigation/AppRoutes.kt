@@ -11,6 +11,7 @@ object AppRoutes {
     const val PERFIL = "perfil"
     const val ACCESIBILIDAD = "accesibilidad"
     const val GUARDADOS = "guardados"
+    const val SOBRE = "sobre_master_martini"
 
     // Detalle lleva el id del video, ej: detalle/v01
     const val ARG_VIDEO_ID = "videoId"

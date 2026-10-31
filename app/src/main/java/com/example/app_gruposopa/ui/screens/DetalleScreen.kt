@@ -83,7 +83,7 @@ fun DetalleScreen(
     // rememberSaveable para que no se pierda al girar el celular
     var errorEmbebido by rememberSaveable { mutableStateOf(false) }
 
-    // Colores animados del botón Guardar (guía 12)
+    // Colores animados del botón Guardar
     val fondoGuardar by animateColorAsState(
         targetValue = if (esGuardado) VerdeFondo.copy(alpha = 0.12f) else Blanco,
         animationSpec = tween(400),
@@ -491,7 +491,7 @@ fun DetalleScreen(
             }
         }
 
-            // Aviso animado al guardar o quitar (guía 12)
+            // Aviso animado al guardar o quitar
             AnimatedVisibility(
                 visible = mensaje != null,
                 modifier = Modifier

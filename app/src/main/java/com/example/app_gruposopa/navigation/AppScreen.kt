@@ -94,7 +94,14 @@ sealed class AppScreen(
     object Guardados : AppScreen(
         route = AppRoutes.GUARDADOS,
         nombre = "Vista 10 - Mis guardados",
-        descripcion = "Favoritos guardados, filtro Todos / Recetas / Videos"
+        descripcion = "Favoritos guardados, filtro Todos / Recetas / Técnicas"
+    )
+
+    // Desde el menú lateral
+    object Sobre : AppScreen(
+        route = AppRoutes.SOBRE,
+        nombre = "Sobre Master Martini",
+        descripcion = "Quiénes son Master Martini y Unigrà, y enlace a su sitio web"
     )
 
     companion object {
@@ -109,7 +116,8 @@ sealed class AppScreen(
                 Eventos,
                 Perfil,
                 Accesibilidad,
-                Guardados
+                Guardados,
+                Sobre
             )
 
         // Pestañas de la barra inferior
