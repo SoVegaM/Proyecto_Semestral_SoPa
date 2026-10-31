@@ -117,7 +117,7 @@ fun CursosScreen(
                         fontWeight = FontWeight.Bold
                     )
                     Text(
-                        text = "Formación profesional con metodología Hecho en Italia.",
+                        text = "Formación profesional con la excelencia de lo Hecho en Italia.",
                         style = MaterialTheme.typography.bodyMedium,
                         color = NegroLetra.copy(alpha = 0.8f)
                     )

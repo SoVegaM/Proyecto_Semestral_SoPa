@@ -84,8 +84,14 @@ fun BienvenidaScreen(
                         fontWeight = FontWeight.SemiBold,
                         color = Blanco,
                         textAlign = TextAlign.Center
+                    )
 
-
+                    // Descripción breve
+                    Text(
+                        text = "Recetas, videos y cursos para tu panadería, pastelería, heladería o restaurante.",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = Blanco,
+                        textAlign = TextAlign.Center
                     )
 
                     // Logo Italia
@@ -106,7 +112,7 @@ fun BienvenidaScreen(
                         .height(52.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Dorado,
-                        contentColor = Blanco
+                        contentColor = NegroLetra
                     ),
                     shape = RoundedCornerShape(10.dp),
                     elevation = ButtonDefaults.buttonElevation(defaultElevation = 2.dp)
@@ -115,7 +121,7 @@ fun BienvenidaScreen(
                         text = "Comenzar",
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
-                        color = Blanco
+                        color = NegroLetra
                     )
                 }
             }

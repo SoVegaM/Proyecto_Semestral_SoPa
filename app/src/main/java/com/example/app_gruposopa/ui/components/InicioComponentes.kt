@@ -79,7 +79,7 @@ fun EncabezadoInicio() {
             fontWeight = FontWeight.Bold
         )
         Text(
-            text = "Cursos, recetas y asesoría técnica en materias primas para panaderías, pastelerías y chocolaterías.",
+            text = "Recetas, videos y asesoría técnica para panaderías, pastelerías, heladerías y restaurantes.",
             style = MaterialTheme.typography.bodyMedium,
             color = NegroLetra
         )

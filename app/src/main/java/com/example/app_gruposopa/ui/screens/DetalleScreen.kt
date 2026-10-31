@@ -420,7 +420,7 @@ fun DetalleScreen(
                             )
 
                             Text(
-                                text = "Línea oficial Master Martini aplicada en esta preparación técnica.",
+                                text = "Insumo Master Martini usado en esta preparación.",
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = NegroLetra.copy(alpha = 0.75f)
                             )
