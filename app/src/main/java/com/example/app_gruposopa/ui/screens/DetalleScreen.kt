@@ -1,7 +1,9 @@
 package com.example.app_gruposopa.ui.screens
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.net.Uri
 import android.view.ViewGroup
 import android.webkit.WebChromeClient
@@ -9,7 +11,10 @@ import android.view.View
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import android.widget.FrameLayout
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
+import androidx.activity.compose.LocalActivity
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
@@ -47,6 +52,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import com.example.app_gruposopa.domain.model.ContenidoMasterMartini
 import com.example.app_gruposopa.ui.theme.*
 import com.example.app_gruposopa.ui.components.EtiquetaTipo
@@ -96,6 +104,64 @@ fun DetalleScreen(
         label = "colorGuardar"
     )
     var reproductorListo by remember { mutableStateOf(false) }
+
+    val actividad = LocalActivity.current
+    var pantallaCompleta by remember { mutableStateOf(false) }
+    val clienteReproductor = remember {
+        ClienteReproductor(actividad) { pantallaCompleta = it }
+    }
+
+    // Un solo WebView para toda la pantalla: así el video no parte de cero al girar el celular
+    val reproductor = remember {
+        WebView(context).apply {
+            layoutParams = ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+            )
+            settings.javaScriptEnabled = true
+            settings.domStorageEnabled = true
+            settings.loadWithOverviewMode = true
+            settings.useWideViewPort = true
+            setBackgroundColor(android.graphics.Color.BLACK)
+            webChromeClient = clienteReproductor
+            webViewClient = object : WebViewClient() {
+                override fun onPageFinished(view: WebView?, url: String?) {
+                    reproductorListo = true
+                }
+
+                override fun onReceivedError(
+                    view: WebView?,
+                    errorCode: Int,
+                    description: String?,
+                    failingUrl: String?
+                ) {
+                    errorEmbebido = true
+                }
+            }
+            addJavascriptInterface(
+                PuenteReproductor { viewModel.marcarComoVisto() },
+                PuenteReproductor.NOMBRE
+            )
+        }
+    }
+
+    // Al salir de Detalle se cierra el reproductor, si no el video sigue sonando
+    DisposableEffect(Unit) {
+        onDispose {
+            clienteReproductor.onHideCustomView()
+            reproductor.destroy()
+        }
+    }
+
+    // El botón atrás primero sale de pantalla completa
+    BackHandler(enabled = pantallaCompleta) {
+        clienteReproductor.onHideCustomView()
+    }
+
+    // En pantalla completa el celular gira, pero el diseño de atrás no tiene que cambiar
+    val pantallaAncha = esPantallaAncha()
+    var dosColumnas by remember { mutableStateOf(pantallaAncha) }
+    if (!pantallaCompleta) dosColumnas = pantallaAncha
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -219,38 +285,10 @@ fun DetalleScreen(
                     ) {
                         if (!errorEmbebido) {
                             AndroidView(
-                                factory = { ctx ->
-                                    WebView(ctx).apply {
-                                        layoutParams = ViewGroup.LayoutParams(
-                                            ViewGroup.LayoutParams.MATCH_PARENT,
-                                            ViewGroup.LayoutParams.MATCH_PARENT
-                                        )
-                                        settings.javaScriptEnabled = true
-                                        settings.domStorageEnabled = true
-                                        settings.loadWithOverviewMode = true
-                                        settings.useWideViewPort = true
-                                        setBackgroundColor(android.graphics.Color.BLACK)
-                                        webChromeClient = WebChromeClient()
-                                        webViewClient = object : WebViewClient() {
-                                            override fun onPageFinished(view: WebView?, url: String?) {
-                                                reproductorListo = true
-                                            }
-
-                                            override fun onReceivedError(
-                                                view: WebView?,
-                                                errorCode: Int,
-                                                description: String?,
-                                                failingUrl: String?
-                                            ) {
-                                                errorEmbebido = true
-                                            }
-                                        }
-                                        addJavascriptInterface(
-                                            PuenteReproductor { viewModel.marcarComoVisto() },
-                                            PuenteReproductor.NOMBRE
-                                        )
-                                        cargarVideoYoutube(v.youtubeVideoId)
-                                    }
+                                factory = {
+                                    // Al girar cambia de lugar, hay que sacarlo de donde estaba
+                                    (reproductor.parent as? ViewGroup)?.removeView(reproductor)
+                                    reproductor
                                 },
                                 update = { webView -> webView.cargarVideoYoutube(v.youtubeVideoId) },
                                 modifier = Modifier
@@ -481,7 +519,7 @@ fun DetalleScreen(
                 }
 
                 // En tablet o celular girado: video a la izquierda e información a la derecha
-                if (esPantallaAncha()) {
+                if (dosColumnas) {
                     Row(modifier = Modifier.fillMaxSize()) {
                         Column(
                             modifier = Modifier
@@ -554,9 +592,58 @@ fun DetalleScreen(
     }
 }
 
-/**
- * El JavaScript del reproductor llama a alReproducir() cuando parte el video.
- */
+
+  // Pantalla completa del reproductor
+
+private class ClienteReproductor(
+    private val actividad: Activity?,
+    private val onCambio: (Boolean) -> Unit
+) : WebChromeClient() {
+    private var vistaVideo: View? = null
+    private var callback: CustomViewCallback? = null
+    private var orientacionAnterior = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+
+    override fun onShowCustomView(view: View, callback: CustomViewCallback) {
+        val ventana = actividad?.window
+        if (ventana == null || vistaVideo != null) {
+            callback.onCustomViewHidden()
+            return
+        }
+        vistaVideo = view
+        this.callback = callback
+        (ventana.decorView as ViewGroup).addView(
+            view,
+            FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+            )
+        )
+        WindowCompat.getInsetsController(ventana, ventana.decorView).apply {
+            systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            hide(WindowInsetsCompat.Type.systemBars())
+        }
+        orientacionAnterior = actividad.requestedOrientation
+        actividad.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
+        onCambio(true)
+    }
+
+    override fun onHideCustomView() {
+        val vista = vistaVideo ?: return
+        vistaVideo = null
+        val ventana = actividad?.window ?: return
+        (ventana.decorView as ViewGroup).removeView(vista)
+        WindowCompat.getInsetsController(ventana, ventana.decorView)
+            .show(WindowInsetsCompat.Type.systemBars())
+        actividad.requestedOrientation = orientacionAnterior
+        callback?.onCustomViewHidden()
+        callback = null
+        onCambio(false)
+    }
+}
+
+
+  // El js del reproductor llama a alReproducir() cuando parte el video
+
 private class PuenteReproductor(private val onReproducir: () -> Unit) {
     @JavascriptInterface
     fun alReproducir() = onReproducir()
@@ -566,10 +653,10 @@ private class PuenteReproductor(private val onReproducir: () -> Unit) {
     }
 }
 
-/**
- * Carga el video de YouTube en el WebView.
- * Va con loadDataWithBaseURL y un origen https porque si no YouTube da "Error 153".
- */
+
+  //Carga el video de YouTube en el WebView.
+  // Va con loadDataWithBaseURL y un origen https porque si no YouTube da "Error 153".
+
 private fun WebView.cargarVideoYoutube(youtubeVideoId: String) {
     if (tag == youtubeVideoId) return
     tag = youtubeVideoId
