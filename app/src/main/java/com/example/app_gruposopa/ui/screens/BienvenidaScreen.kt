@@ -1,5 +1,6 @@
 package com.example.app_gruposopa.ui.screens
 
+import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -16,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -35,8 +37,10 @@ fun BienvenidaScreen(
     onComenzarClick: () -> Unit = {}
 
 ) {
-    // En tablet o celular girado van lado a lado, en celular, una arriba de la otra
-    if (esPantallaAncha()) {
+    // Lado a lado solo con pantalla ancha y en horizontal, si no una arriba de la otra
+    val ladoALado = esPantallaAncha() &&
+        LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
+    if (ladoALado) {
         Row(
             modifier = modifier
                 .fillMaxSize()

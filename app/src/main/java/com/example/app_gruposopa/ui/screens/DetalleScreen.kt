@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.ActivityInfo
+import android.content.res.Configuration
 import android.net.Uri
 import android.view.ViewGroup
 import android.webkit.WebChromeClient
@@ -45,6 +46,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -159,7 +161,9 @@ fun DetalleScreen(
     }
 
     // En pantalla completa el celular gira, pero el diseño de atrás no tiene que cambiar
-    val pantallaAncha = esPantallaAncha()
+    // Dos columnas solo en horizontal: en tablet vertical el video queda chico y sobra espacio abajo
+    val pantallaAncha = esPantallaAncha() &&
+        LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
     var dosColumnas by remember { mutableStateOf(pantallaAncha) }
     if (!pantallaCompleta) dosColumnas = pantallaAncha
 
