@@ -138,9 +138,12 @@ fun CursosScreen(
             // Lista de cursos
             // En pantalla ancha, dos cursos por fila
             viewModel.cursos.chunked(if (ancha) 2 else 1).forEach { fila ->
+                // Misma altura en la fila, salvo que haya un curso abierto: si no, el otro se estira
+                val igualarAltura = ancha && fila.none { cursosExpandidos.contains(it.id) }
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .then(if (igualarAltura) Modifier.height(IntrinsicSize.Min) else Modifier)
                         // Se guarda dónde queda la fila, para poder bajar hasta un curso
                         .onGloballyPositioned { coord ->
                             fila.forEach { posiciones[it.id] = coord.positionInParent().y.toInt() }
@@ -156,6 +159,7 @@ fun CursosScreen(
                             expandido = cursosExpandidos.contains(curso.id),
                             onToggle = { viewModel.toggleExpandido(curso.id) },
                             onModuloClick = onModuloClick,
+                            igualarAltura = igualarAltura,
                             modifier = Modifier.weight(1f)
                         )
                     }
@@ -175,8 +179,10 @@ private fun TarjetaCurso(
     expandido: Boolean,
     onToggle: () -> Unit,
     onModuloClick: (String) -> Unit,
+    igualarAltura: Boolean = false,
     modifier: Modifier = Modifier
 ) {
+    val altoCompleto = if (igualarAltura) Modifier.fillMaxHeight() else Modifier
     val totales = curso.videoIds.size
     // derivedStateOf: solo se recalcula si cambian los vistos
     val completados by remember(curso.id) {
@@ -197,6 +203,7 @@ private fun TarjetaCurso(
     Card(
         modifier = modifier
             .fillMaxWidth()
+            .then(altoCompleto)
             .clip(RoundedCornerShape(10.dp))
             .clickable(onClick = onToggle),
         shape = RoundedCornerShape(10.dp),
@@ -206,6 +213,7 @@ private fun TarjetaCurso(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .then(altoCompleto)
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
@@ -256,7 +264,9 @@ private fun TarjetaCurso(
             Text(
                 text = curso.descripcion,
                 style = MaterialTheme.typography.bodySmall,
-                color = NegroLetra.copy(alpha = 0.75f)
+                color = NegroLetra.copy(alpha = 0.75f),
+                // Ocupa lo que sobra, así la barra de progreso queda abajo en las dos tarjetas
+                modifier = if (igualarAltura) Modifier.weight(1f) else Modifier
             )
 
             // Módulos y completados
