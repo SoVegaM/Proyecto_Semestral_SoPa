@@ -2,7 +2,6 @@ package com.example.app_gruposopa.data.repository
 
 import android.content.Context
 import android.util.Log
-import com.example.app_gruposopa.data.local.ContenidosLocalDataSource
 import com.example.app_gruposopa.data.local.db.GuardadoEntity
 import com.example.app_gruposopa.data.local.db.MasterMartiniDatabase
 import com.example.app_gruposopa.data.local.db.VistoEntity
@@ -18,7 +17,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 /**
  * Repositorio con los videos y cursos.
@@ -174,7 +172,6 @@ class ContenidosRepository {
         val base = MasterMartiniDatabase.obtener(context)
         db = base
         scope.launch {
-            withContext(escritura) { migrarDesdeDataStore(context, base) }
             launch {
                 base.guardadoDao().observarTodos().collect { lista ->
                     _guardadosRecientes.value = lista.map { it.videoId }
@@ -188,22 +185,6 @@ class ContenidosRepository {
                     _ultimoVisto.value = lista.firstOrNull()?.videoId
                 }
             }
-        }
-    }
-
-    // Antes los guardados y vistos estaban en DataStore: se pasan a Room una sola vez
-    private suspend fun migrarDesdeDataStore(context: Context, base: MasterMartiniDatabase) {
-        try {
-            val antiguo = ContenidosLocalDataSource(context)
-            val guardados = antiguo.leerGuardados()
-            val vistos = antiguo.leerVideosVistos()
-            if (guardados.isEmpty() && vistos.isEmpty()) return
-            val ahora = System.currentTimeMillis()
-            guardados.forEach { base.guardadoDao().insertar(GuardadoEntity(it, ahora)) }
-            vistos.forEach { base.vistoDao().registrar(VistoEntity(it, ahora)) }
-            antiguo.borrarDatosAntiguos()
-        } catch (e: Exception) {
-            Log.w("ContenidosRepository", "No se pudieron pasar los datos antiguos a Room", e)
         }
     }
 
