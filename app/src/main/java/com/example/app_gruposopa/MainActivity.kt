@@ -10,7 +10,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import com.example.app_gruposopa.navigation.AppNavHost
+import com.example.app_gruposopa.navigation.AppScreen
 import com.example.app_gruposopa.navigation.NavigationEvent
+import com.example.app_gruposopa.notificaciones.Recordatorio
 import com.example.app_gruposopa.ui.theme.App_GrupoSoPaTheme
 import com.example.app_gruposopa.ui.viewmodels.MainViewModel
 import kotlinx.coroutines.flow.collectLatest
@@ -51,6 +53,18 @@ class MainActivity : ComponentActivity() {
                 }
 
                 AppNavHost(navController = navController, mainViewModel = mainViewModel)
+
+                // Si se abrió desde el recordatorio, va directo a ese video.
+                // Usa navController porque el ViewModel aún no tiene quién escuche sus eventos
+                LaunchedEffect(Unit) {
+                    intent.getStringExtra(Recordatorio.EXTRA_VIDEO_ID)?.let { videoId ->
+                        intent.removeExtra(Recordatorio.EXTRA_VIDEO_ID)
+                        navController.navigate(AppScreen.Inicio.route) {
+                            popUpTo(AppScreen.Bienvenida.route) { inclusive = true }
+                        }
+                        navController.navigate(AppScreen.Detalle.crearRuta(videoId))
+                    }
+                }
             }
         }
     }

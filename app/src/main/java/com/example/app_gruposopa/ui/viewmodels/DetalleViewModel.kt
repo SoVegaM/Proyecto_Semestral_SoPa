@@ -42,7 +42,7 @@ class DetalleViewModel(
         }
     }
 
-    // Aviso de abajo al guardar o quitar (null = no se ve)
+    // Aviso de abajo al guardar, quitar o pedir un recordatorio (null = no se ve)
     private val _mensaje = MutableStateFlow<String?>(null)
     val mensaje: StateFlow<String?> = _mensaje.asStateFlow()
     private var trabajoMensaje: Job? = null
@@ -56,7 +56,7 @@ class DetalleViewModel(
     }
 
     // Se muestra 2 segundos
-    private fun mostrarMensaje(texto: String) {
+    fun mostrarMensaje(texto: String) {
         trabajoMensaje?.cancel()
         trabajoMensaje = viewModelScope.launch {
             _mensaje.value = texto

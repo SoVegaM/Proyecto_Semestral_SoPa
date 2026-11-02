@@ -1,11 +1,14 @@
 package com.example.app_gruposopa.ui.screens
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.ActivityInfo
+import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.net.Uri
+import android.os.Build
 import android.view.ViewGroup
 import android.webkit.WebChromeClient
 import android.view.View
@@ -16,6 +19,8 @@ import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
@@ -34,6 +39,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.BookmarkBorder
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.OpenInNew
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -54,10 +60,13 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.example.app_gruposopa.domain.model.ContenidoMasterMartini
+import com.example.app_gruposopa.notificaciones.Recordatorio
 import com.example.app_gruposopa.ui.theme.*
 import com.example.app_gruposopa.ui.components.EtiquetaTipo
 import com.example.app_gruposopa.ui.utils.esPantallaAncha
@@ -93,6 +102,19 @@ fun DetalleScreen(
     mensaje?.let { ultimoMensaje = it }
     // rememberSaveable para que no se pierda al girar el celular
     var errorEmbebido by rememberSaveable { mutableStateOf(false) }
+
+    // Programa el recordatorio si las notificaciones están activas
+    val programarRecordatorio = {
+        if (NotificationManagerCompat.from(context).areNotificationsEnabled()) {
+            video?.let { Recordatorio.programar(context, it) }
+            viewModel.mostrarMensaje("Te lo recordaremos en menos de un minuto")
+        } else {
+            viewModel.mostrarMensaje("Activa las notificaciones en Ajustes")
+        }
+    }
+    val pedirPermisoNotificaciones = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { programarRecordatorio() }
 
     // Colores animados del botón Guardar
     val fondoGuardar by animateColorAsState(
@@ -425,6 +447,38 @@ fun DetalleScreen(
                             style = MaterialTheme.typography.bodyMedium,
                             color = NegroLetra.copy(alpha = 0.85f)
                         )
+
+                        // Recordatorio (desde Android 13 hay que pedir permiso)
+                        OutlinedButton(
+                            onClick = {
+                                val faltaPermiso = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+                                    ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) !=
+                                    PackageManager.PERMISSION_GRANTED
+                                if (faltaPermiso) {
+                                    pedirPermisoNotificaciones.launch(Manifest.permission.POST_NOTIFICATIONS)
+                                } else {
+                                    programarRecordatorio()
+                                }
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(48.dp),
+                            shape = RoundedCornerShape(8.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Notifications,
+                                contentDescription = null,
+                                tint = VerdeLetras,
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = "Recordarme ver este video",
+                                color = VerdeLetras,
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
 
                         Spacer(modifier = Modifier.height(4.dp))
 
