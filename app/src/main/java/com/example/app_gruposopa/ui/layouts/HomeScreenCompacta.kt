@@ -21,9 +21,7 @@ import com.example.app_gruposopa.ui.theme.App_GrupoSoPaTheme
 import com.example.app_gruposopa.ui.theme.GrisFondoSuave
 import com.example.app_gruposopa.ui.viewmodels.HomeViewModel
 
-/**
- * Inicio para celular, en una columna.
- */
+// Inicio para celular, en una columna
 @Composable
 fun HomeScreenCompacta(
     viewModel: HomeViewModel = remember { HomeViewModel() },

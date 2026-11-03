@@ -42,10 +42,7 @@ import com.example.app_gruposopa.ui.viewmodels.CursosViewModel
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 
-/**
- * Vista 6: Cursos (Escuela Única).
- * Al tocar un curso se ven sus módulos cada módulo abre su video.
- */
+// Vista 6 - Cursos (Escuela Única)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CursosScreen(

@@ -22,9 +22,7 @@ import com.example.app_gruposopa.ui.theme.App_GrupoSoPaTheme
 import com.example.app_gruposopa.ui.theme.GrisFondoSuave
 import com.example.app_gruposopa.ui.viewmodels.HomeViewModel
 
-/**
- * Inicio para tablet chica o celular girado, en 2 columnas.
- */
+// Inicio para tablet chica o celular girado, en 2 columnas
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun HomeScreenMediana(

@@ -24,9 +24,7 @@ import com.example.app_gruposopa.ui.theme.Blanco
 import com.example.app_gruposopa.ui.theme.GrisFondoSuave
 import com.example.app_gruposopa.ui.viewmodels.HomeViewModel
 
-/**
- * Inicio para tablet: filtros a la izquierda y videos a la derecha.
- */
+// Inicio para tablet: filtros a la izquierda y videos a la derecha
 @Composable
 fun HomeScreenExpandida(
     viewModel: HomeViewModel = remember { HomeViewModel() },

@@ -37,9 +37,7 @@ import com.example.app_gruposopa.ui.utils.obtenerWindowSizeClass
 import com.example.app_gruposopa.ui.viewmodels.HomeViewModel
 import kotlinx.coroutines.launch
 
-/**
- * Vista 4: Inicio. Elige el diseño según el tamaño de la pantalla.
- */
+// Vista 4 - Inicio. Elige el diseño según el tamaño de la pantalla
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = viewModel(),

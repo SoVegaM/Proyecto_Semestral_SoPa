@@ -17,9 +17,7 @@ data class ContenidoMasterMartini(
     val youtubeVideoId: String,
     val tipo: TipoContenido = TipoContenido.RECETA
 ) {
-    /**
-     * URL oficial de la miniatura de YouTube
-     */
+    // URL oficial de la miniatura de YouTube
     val miniaturaUrl: String
         get() = "https://img.youtube.com/vi/$youtubeVideoId/hqdefault.jpg"
 }

@@ -2,9 +2,7 @@ package com.example.app_gruposopa.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-/**
- * Colores
- */
+// Colores
 val VerdeFondo = Color(0xFF004D42)           // #004D42 (Verde oficial)
 val Blanco = Color(0xFFFFFFFF)               // #FFFFFF (Blanco)
 val BlancoFondo = Color(0xFFFBF9F5)          // #FBF9F5 Blanco alternativo

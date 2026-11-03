@@ -72,9 +72,7 @@ import com.example.app_gruposopa.ui.components.EtiquetaTipo
 import com.example.app_gruposopa.ui.utils.esPantallaAncha
 import com.example.app_gruposopa.ui.viewmodels.DetalleViewModel
 
-/**
- * Vista 5: Detalle de contenido. Video, insumo destacado y botones Guardar y Consultar.
- */
+// Vista 5 - Detalle de contenido
 @SuppressLint("SetJavaScriptEnabled")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

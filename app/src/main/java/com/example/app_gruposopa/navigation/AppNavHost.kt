@@ -20,10 +20,7 @@ import com.example.app_gruposopa.ui.screens.PlaceholderVistaScreen
 import com.example.app_gruposopa.ui.screens.SobreMasterMartiniScreen
 import com.example.app_gruposopa.ui.viewmodels.MainViewModel
 
-/**
- * Rutas de la app. La primera vez: Bienvenida → Ingreso → Perfil de negocio → Inicio.
- * Para navegar se usa el MainViewModel.
- */
+// Pantalla que se dibuja en cada ruta
 @Composable
 fun AppNavHost(
     navController: NavHostController,

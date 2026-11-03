@@ -18,10 +18,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-/**
- * Repositorio con los videos y cursos.
- * Los guardados (con su nota) y los vistos se guardan en el celular con Room.
- */
+// Repositorio con los videos y cursos. Los guardados y vistos van en Room
 class ContenidosRepository {
 
     companion object {

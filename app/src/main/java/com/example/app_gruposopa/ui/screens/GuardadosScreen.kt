@@ -31,9 +31,7 @@ import com.example.app_gruposopa.ui.utils.esPantallaAncha
 import com.example.app_gruposopa.ui.viewmodels.FiltroGuardados
 import com.example.app_gruposopa.ui.viewmodels.GuardadosViewModel
 
-/**
- * Vista 10: Mis guardados, con filtro Todos / Recetas / Técnicas.
- */
+// Vista 10 - Mis guardados
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GuardadosScreen(

@@ -14,9 +14,7 @@ import androidx.compose.ui.unit.sp
 import com.example.app_gruposopa.navigation.AppScreen
 import com.example.app_gruposopa.ui.theme.*
 
-/**
- * Pantalla temporal para las vistas que todavía no están hechas (2, 3, 7, 8 y 9).
- */
+// Pantalla temporal para las vistas que todavía no están hechas
 @Composable
 fun PlaceholderVistaScreen(
     pantallaActual: AppScreen,

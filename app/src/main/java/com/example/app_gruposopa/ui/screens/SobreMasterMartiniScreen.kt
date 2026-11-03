@@ -31,9 +31,7 @@ import com.example.app_gruposopa.ui.theme.*
 
 private const val SITIO_WEB = "https://mastermartini.cl"
 
-/**
- * Sobre Master Martini: quiénes son y enlace a su sitio. Se abre desde el menú lateral.
- */
+// Sobre Master Martini. Se abre desde el menú lateral
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SobreMasterMartiniScreen(onVolverClick: () -> Unit = {}) {
