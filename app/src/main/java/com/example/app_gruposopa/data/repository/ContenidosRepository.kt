@@ -17,16 +17,17 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import com.example.app_gruposopa.domain.model.Configuracion
 
 // Repositorio con los videos y cursos. Los guardados y vistos van en Room
 class ContenidosRepository {
 
     companion object {
         // Categorías
-        const val CAT_CREMAS = "Cremas Vegetales UHT"
-        const val CAT_CHOCO = "Chocolates & Sucedáneos"
-        const val CAT_GELATO = "Gelatería"
-        const val CAT_PAN = "Panadería & Pastelería"
+        const val Categorias.cremas = "Cremas Vegetales UHT"
+        const val Categorias.chocolates = "Chocolates & Sucedáneos"
+        const val Categorias.gelateria = "Gelatería"
+        const val Categorias.panaderia = "Panadería & Pastelería"
 
         // Una sola instancia, así todas las pantallas ven los mismos datos
         val instance: ContenidosRepository by lazy { ContenidosRepository() }
@@ -37,36 +38,36 @@ class ContenidosRepository {
 
         // Videos del canal de YouTube de Master Martini
         private val LISTA_VIDEOS: List<ContenidoMasterMartini> = listOf(
-            crearVideo("v01", "Leche Asada", "Bravo Crem Azucarada", "1:16", CAT_CREMAS, "-tH8LKMzGN0"),
-            crearVideo("v02", "Mousse frutilla", "Bravo Crem Azucarada", "0:38", CAT_CREMAS, "q9gFPtzzZe4"),
-            crearVideo("v03", "¿Cómo utilizar la crema vegetal?", "Bravo Crem Azucarada", "0:43", CAT_CREMAS, "3n-h0n7Ttks"),
-            crearVideo("v04", "¿Cómo utilizar crema pastelera, merengue o crema chantilly EN POLVO?", "Delice", "1:01", CAT_PAN, "1U1twaw6bP0"),
-            crearVideo("v05", "Calda Delicia: Usos", "Calda Delicia", "0:39", CAT_PAN, "KCYCWkBpxR4"),
-            crearVideo("v06", "Frutti di mare", "Bravo Crem Cocina", "1:00", CAT_CREMAS, "Mxy3SInyk8Y"),
-            crearVideo("v07", "Gratín de Papas", "Bravo Crem Cocina", "0:52", CAT_CREMAS, "UJAF5sEBgnA"),
-            crearVideo("v08", "Crema de brócoli", "Bravo Crem Cocina", "1:01", CAT_CREMAS, "y1mJISdxwm8"),
-            crearVideo("v09", "Lomo strogonoff", "Bravo Crem Cocina", "1:01", CAT_CREMAS, "Qwv-Uxbivqw"),
-            crearVideo("v10", "Royale para quiches", "Bravo Crem Cocina", "1:08", CAT_CREMAS, "7i2UkZ0AHMg"),
-            crearVideo("v11", "Tips y Usos del Chocolate con Chef Lili Cañete", "Caravella", "8:18", CAT_CHOCO, "v_WinlHRQt0"),
-            crearVideo("v12", "¡Qué fácil es con Chocolate Caravella!", "Caravella", "0:25", CAT_CHOCO, "C1HaDB9US_Y"),
-            crearVideo("v13", "Caravella Nocciola", "Caravella Nocciola", "0:28", CAT_CHOCO, "lvL9R-g5LGw"),
-            crearVideo("v14", "Torta Chocolate Avellana", "Caravella Deco", "1:17", CAT_CHOCO, "ZwOkabO177M"),
-            crearVideo("v15", "Mousse chocolate blanco", "Chocolate Ariba", "1:02", CAT_CHOCO, "-8KFtkMyntY"),
-            crearVideo("v16", "Helado Artesanal Frutos del Bosque", "Martini Gelato", "0:56", CAT_GELATO, "R2N_oOG0xI8"),
-            crearVideo("v17", "Helado Artesanal de Avellana", "Base Blanca Martini Gelato", "1:01", CAT_GELATO, "KhhA9pAJZxA"),
-            crearVideo("v18", "Café helado", "Base Vainilla Martini Gelato", "0:50", CAT_GELATO, "mGTlgfD_x5Y"),
-            crearVideo("v19", "Preparación sorbete detox", "Martini Gelato", "0:45", CAT_GELATO, "4Zt0f_24fXY"),
-            crearVideo("v20", "Masa hojaldre", "Master Export Hoja", "1:51", CAT_PAN, "1yv3Kb7KdEk"),
-            crearVideo("v21", "Queque navideño", "Vita Bake", "1:21", CAT_PAN, "xoTHn4_-Fhs"),
-            crearVideo("v22", "Master Shine: Usos", "Master Shine", "0:44", CAT_PAN, "OO4WLgcfB3E"),
-            crearVideo("v23", "Fetuccini Setas", "Orasì Bio Organic", "0:55", CAT_CREMAS, "9jJvCFPKSss"),
-            crearVideo("v24", "Arroz con Leche", "Orasì Bio Organic", "0:38", CAT_CREMAS, "K45qNIq85oA"),
-            crearVideo("v25", "Orasì Barista: Usos", "Orasì Barista", "0:42", CAT_CREMAS, "gjonIyJV9T0"),
-            crearVideo("v26", "Pudín de chía", "Orasì Coco", "0:55", CAT_CREMAS, "8n7kAGbS5uE"),
-            crearVideo("v27", "Panna Cotta", "Orasì Barista", "1:00", CAT_CREMAS, "CdSAJaKY1cY"),
-            crearVideo("v28", "Crema de zapallo", "Orasì", "0:56", CAT_CREMAS, "2J_Pj--qzjo"),
-            crearVideo("v29", "Tarta de coco", "Orasì Coco", "1:07", CAT_CREMAS, "vmC2JpTvrLM"),
-            crearVideo("v30", "Pancake de Avena y Plátano con Chef Lili Cañete", "Orasì", "4:48", CAT_CREMAS, "Dz20QKTeK5I")
+            crearVideo("v01", "Leche Asada", "Bravo Crem Azucarada", "1:16", Categorias.cremas, "-tH8LKMzGN0"),
+            crearVideo("v02", "Mousse frutilla", "Bravo Crem Azucarada", "0:38", Categorias.cremas, "q9gFPtzzZe4"),
+            crearVideo("v03", "¿Cómo utilizar la crema vegetal?", "Bravo Crem Azucarada", "0:43", Categorias.cremas, "3n-h0n7Ttks"),
+            crearVideo("v04", "¿Cómo utilizar crema pastelera, merengue o crema chantilly EN POLVO?", "Delice", "1:01", Categorias.panaderia, "1U1twaw6bP0"),
+            crearVideo("v05", "Calda Delicia: Usos", "Calda Delicia", "0:39", Categorias.panaderia, "KCYCWkBpxR4"),
+            crearVideo("v06", "Frutti di mare", "Bravo Crem Cocina", "1:00", Categorias.cremas, "Mxy3SInyk8Y"),
+            crearVideo("v07", "Gratín de Papas", "Bravo Crem Cocina", "0:52", Categorias.cremas, "UJAF5sEBgnA"),
+            crearVideo("v08", "Crema de brócoli", "Bravo Crem Cocina", "1:01", Categorias.cremas, "y1mJISdxwm8"),
+            crearVideo("v09", "Lomo strogonoff", "Bravo Crem Cocina", "1:01", Categorias.cremas, "Qwv-Uxbivqw"),
+            crearVideo("v10", "Royale para quiches", "Bravo Crem Cocina", "1:08", Categorias.cremas, "7i2UkZ0AHMg"),
+            crearVideo("v11", "Tips y Usos del Chocolate con Chef Lili Cañete", "Caravella", "8:18", Categorias.chocolates, "v_WinlHRQt0"),
+            crearVideo("v12", "¡Qué fácil es con Chocolate Caravella!", "Caravella", "0:25", Categorias.chocolates, "C1HaDB9US_Y"),
+            crearVideo("v13", "Caravella Nocciola", "Caravella Nocciola", "0:28", Categorias.chocolates, "lvL9R-g5LGw"),
+            crearVideo("v14", "Torta Chocolate Avellana", "Caravella Deco", "1:17", Categorias.chocolates, "ZwOkabO177M"),
+            crearVideo("v15", "Mousse chocolate blanco", "Chocolate Ariba", "1:02", Categorias.chocolates, "-8KFtkMyntY"),
+            crearVideo("v16", "Helado Artesanal Frutos del Bosque", "Martini Gelato", "0:56", Categorias.gelateria, "R2N_oOG0xI8"),
+            crearVideo("v17", "Helado Artesanal de Avellana", "Base Blanca Martini Gelato", "1:01", Categorias.gelateria, "KhhA9pAJZxA"),
+            crearVideo("v18", "Café helado", "Base Vainilla Martini Gelato", "0:50", Categorias.gelateria, "mGTlgfD_x5Y"),
+            crearVideo("v19", "Preparación sorbete detox", "Martini Gelato", "0:45", Categorias.gelateria, "4Zt0f_24fXY"),
+            crearVideo("v20", "Masa hojaldre", "Master Export Hoja", "1:51", Categorias.panaderia, "1yv3Kb7KdEk"),
+            crearVideo("v21", "Queque navideño", "Vita Bake", "1:21", Categorias.panaderia, "xoTHn4_-Fhs"),
+            crearVideo("v22", "Master Shine: Usos", "Master Shine", "0:44", Categorias.panaderia, "OO4WLgcfB3E"),
+            crearVideo("v23", "Fetuccini Setas", "Orasì Bio Organic", "0:55", Categorias.cremas, "9jJvCFPKSss"),
+            crearVideo("v24", "Arroz con Leche", "Orasì Bio Organic", "0:38", Categorias.cremas, "K45qNIq85oA"),
+            crearVideo("v25", "Orasì Barista: Usos", "Orasì Barista", "0:42", Categorias.cremas, "gjonIyJV9T0"),
+            crearVideo("v26", "Pudín de chía", "Orasì Coco", "0:55", Categorias.cremas, "8n7kAGbS5uE"),
+            crearVideo("v27", "Panna Cotta", "Orasì Barista", "1:00", Categorias.cremas, "CdSAJaKY1cY"),
+            crearVideo("v28", "Crema de zapallo", "Orasì", "0:56", Categorias.cremas, "2J_Pj--qzjo"),
+            crearVideo("v29", "Tarta de coco", "Orasì Coco", "1:07", Categorias.cremas, "vmC2JpTvrLM"),
+            crearVideo("v30", "Pancake de Avena y Plátano con Chef Lili Cañete", "Orasì", "4:48", Categorias.cremas, "Dz20QKTeK5I")
         )
 
         // Cada curso agrupa videos por su id
@@ -74,42 +75,42 @@ class ContenidosRepository {
             Curso(
                 id = "c1",
                 titulo = "Pastelería y cremas",
-                categoria = CAT_CREMAS,
+                categoria = Categorias.cremas,
                 descripcion = "Postres y preparaciones con cremas vegetales Bravo Crem y productos Delice.",
                 videoIds = listOf("v01", "v02", "v03", "v04", "v05")
             ),
             Curso(
                 id = "c2",
                 titulo = "Cocina salada con Bravo Crem",
-                categoria = CAT_CREMAS,
+                categoria = Categorias.cremas,
                 descripcion = "Recetas saladas con Bravo Crem Cocina: gratines, cremas y salsas.",
                 videoIds = listOf("v06", "v07", "v08", "v09", "v10")
             ),
             Curso(
                 id = "c3",
                 titulo = "Chocolatería",
-                categoria = CAT_CHOCO,
+                categoria = Categorias.chocolates,
                 descripcion = "Técnicas y recetas con las coberturas y chocolates Caravella y Ariba.",
                 videoIds = listOf("v11", "v12", "v13", "v14", "v15")
             ),
             Curso(
                 id = "c4",
                 titulo = "Heladería artesanal",
-                categoria = CAT_GELATO,
+                categoria = Categorias.gelateria,
                 descripcion = "Helados y sorbetes artesanales con las bases Martini Gelato.",
                 videoIds = listOf("v16", "v17", "v18", "v19")
             ),
             Curso(
                 id = "c5",
                 titulo = "Panadería y masas",
-                categoria = CAT_PAN,
+                categoria = Categorias.panaderia,
                 descripcion = "Masas de hojaldre y productos de horneo.",
                 videoIds = listOf("v20", "v21", "v22")
             ),
             Curso(
                 id = "c6",
                 titulo = "Recetas plant based con Orasì",
-                categoria = CAT_CREMAS,
+                categoria = Categorias.cremas,
                 descripcion = "Recetas dulces y saladas con las bebidas vegetales Orasì.",
                 videoIds = listOf("v23", "v24", "v25", "v26", "v27", "v28", "v29", "v30")
             )

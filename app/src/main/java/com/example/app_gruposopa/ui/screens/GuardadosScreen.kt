@@ -301,9 +301,9 @@ private fun DialogoNota(
         text = {
             OutlinedTextField(
                 value = texto,
-                onValueChange = { if (it.text.length <= GuardadosViewModel.LARGO_MAXIMO_NOTA) texto = it },
+                onValueChange = { if (it.text.length <= GuardadosViewModel.Configuracion.largoMaximoNota) texto = it },
                 placeholder = { Text("Ej: probar con menos azúcar") },
-                supportingText = { Text("${texto.text.length}/${GuardadosViewModel.LARGO_MAXIMO_NOTA}") },
+                supportingText = { Text("${texto.text.length}/${GuardadosViewModel.Configuracion.largoMaximoNota}") },
                 minLines = 3,
                 maxLines = 5,
                 modifier = Modifier.fillMaxWidth()

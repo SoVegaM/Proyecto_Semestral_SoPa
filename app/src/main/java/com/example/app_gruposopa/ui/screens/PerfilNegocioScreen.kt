@@ -99,7 +99,7 @@ fun PerfilNegocioScreen(
                     ) {
                         TituloSeccion(Icons.Default.Storefront, "Tipo de negocio")
                         GrupoOpciones(
-                            opciones = PerfilNegocioViewModel.TIPOS,
+                            opciones = OpcionesDeNegocio.tipos,
                             estaElegida = { it == tipo },
                             onClick = viewModel::seleccionarTipo
                         )

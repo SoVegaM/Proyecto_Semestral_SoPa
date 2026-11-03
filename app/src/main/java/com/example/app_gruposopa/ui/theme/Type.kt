@@ -30,7 +30,7 @@ val Typography = Typography(
 )
 
 // Tamaño que corresponde a la escala normal en el ajuste de Accesibilidad
-const val TAMANO_TEXTO_BASE = 16f
+const val Configuracion.tamanoTextoBase = 16f
 
 // Para el ajuste Texto en negrita, los títulos ya lo son
 val TypographyNegrita = Typography.copy(

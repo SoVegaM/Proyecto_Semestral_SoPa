@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.dp
 import com.example.app_gruposopa.R
 import com.example.app_gruposopa.ui.theme.*
 
-private const val SITIO_WEB = "https://mastermartini.cl"
+private const val Configuracion.sitioWeb = "https://mastermartini.cl"
 
 // Sobre Master Martini. Se abre desde el menú lateral
 @OptIn(ExperimentalMaterial3Api::class)
@@ -98,7 +98,7 @@ fun SobreMasterMartiniScreen(onVolverClick: () -> Unit = {}) {
                 Button(
                     onClick = {
                         try {
-                            context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(SITIO_WEB)))
+                            context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(Configuracion.sitioWeb)))
                         } catch (_: Exception) {
                             Toast.makeText(context, "No se pudo abrir el navegador", Toast.LENGTH_SHORT).show()
                         }

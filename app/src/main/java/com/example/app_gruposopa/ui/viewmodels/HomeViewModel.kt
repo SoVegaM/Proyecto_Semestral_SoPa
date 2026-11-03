@@ -32,7 +32,7 @@ class HomeViewModel(
         }
     }
 
-    private val _categoriaSeleccionada = MutableStateFlow(FiltrarContenidosUseCase.TODAS)
+    private val _categoriaSeleccionada = MutableStateFlow(Categorias.todas)
     val categoriaSeleccionada: StateFlow<String> = _categoriaSeleccionada.asStateFlow()
 
     private val _textoBusqueda = MutableStateFlow("")
@@ -47,7 +47,7 @@ class HomeViewModel(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
 
     // "Todas" + las categorías que aparecen en los videos
-    val categorias: List<String> = listOf(FiltrarContenidosUseCase.TODAS) + _todosLosVideos.map { it.categoria }.distinct()
+    val categorias: List<String> = listOf(Categorias.todas) + _todosLosVideos.map { it.categoria }.distinct()
 
     fun seleccionarCategoria(categoria: String) {
         _categoriaSeleccionada.value = categoria

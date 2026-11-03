@@ -3,6 +3,7 @@ package com.example.app_gruposopa.ui.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.app_gruposopa.data.repository.ContenidosRepository
+import com.example.app_gruposopa.domain.model.Configuracion
 import com.example.app_gruposopa.domain.model.ContenidoMasterMartini
 import com.example.app_gruposopa.domain.model.TipoContenido
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -47,16 +48,12 @@ class GuardadosViewModel(
     }
 
     fun guardarNota(videoId: String, nota: String) {
-        repository.actualizarNota(videoId, nota.take(LARGO_MAXIMO_NOTA))
+        repository.actualizarNota(videoId, nota.take(Configuracion.largoMaximoNota))
     }
 
     fun quitarGuardado(videoId: String) {
         if (repository.esGuardado(videoId)) {
             repository.toggleGuardado(videoId)
         }
-    }
-
-    companion object {
-        const val LARGO_MAXIMO_NOTA = 200
     }
 }

@@ -27,7 +27,7 @@ private fun esquemaDeColores() = lightColorScheme(
 // Siempre tema claro, con los colores de la marca y los ajustes de Accesibilidad
 @Composable
 fun App_GrupoSoPaTheme(
-    tamanoTexto: Float = TAMANO_TEXTO_BASE,
+    tamanoTexto: Float = Configuracion.tamanoTextoBase,
     altoContraste: Boolean = false,
     textoNegrita: Boolean = false,
     content: @Composable () -> Unit
@@ -38,7 +38,7 @@ fun App_GrupoSoPaTheme(
     val densidad = LocalDensity.current
     val densidadConTexto = Density(
         density = densidad.density,
-        fontScale = densidad.fontScale * tamanoTexto / TAMANO_TEXTO_BASE
+        fontScale = densidad.fontScale * tamanoTexto / Configuracion.tamanoTextoBase
     )
 
     MaterialTheme(

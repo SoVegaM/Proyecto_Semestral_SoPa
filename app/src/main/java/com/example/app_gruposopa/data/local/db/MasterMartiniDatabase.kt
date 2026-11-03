@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.example.app_gruposopa.domain.model.Configuracion
 
 // Base de datos local (Room sobre SQLite)
 @Database(
@@ -30,4 +31,5 @@ abstract class MasterMartiniDatabase : RoomDatabase() {
                 ).build().also { instancia = it }
             }
     }
+
 }

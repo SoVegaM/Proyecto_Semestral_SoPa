@@ -147,7 +147,7 @@ fun AccesibilidadScreen(
                     Text(
                         text = "Laminado y horneado de croissants",
                         // Se descuenta la escala que ya tiene la app, para mostrar el tamaño elegido
-                        fontSize = (sliderPosition * TAMANO_TEXTO_BASE / tamanoGuardado).sp,
+                        fontSize = (sliderPosition * Configuracion.tamanoTextoBase / tamanoGuardado).sp,
                         fontWeight = if (textoNegrita) FontWeight.Bold else FontWeight.Normal,
                         color = if (altoContraste) NegroLetra else VerdeLetras
                     )

@@ -21,6 +21,7 @@ import com.example.app_gruposopa.ui.screens.PerfilNegocioScreen
 import com.example.app_gruposopa.ui.screens.PerfilScreen
 import com.example.app_gruposopa.ui.screens.SobreMasterMartiniScreen
 import com.example.app_gruposopa.ui.viewmodels.MainViewModel
+import com.example.app_gruposopa.domain.model.Configuracion
 
 // Pantalla que se dibuja en cada ruta
 @Composable
@@ -88,13 +89,13 @@ fun AppNavHost(
         composable(
             route = AppScreen.Detalle.route,
             arguments = listOf(
-                navArgument(AppRoutes.ARG_VIDEO_ID) {
+                navArgument(Rutas.argVideoId) {
                     type = NavType.StringType
                     defaultValue = "v01"
                 }
             )
         ) { backStackEntry ->
-            val videoId = backStackEntry.arguments?.getString(AppRoutes.ARG_VIDEO_ID) ?: "v01"
+            val videoId = backStackEntry.arguments?.getString(Rutas.argVideoId) ?: "v01"
             DetalleScreen(
                 videoId = videoId,
                 onVolverClick = { mainViewModel.navigateBack() },

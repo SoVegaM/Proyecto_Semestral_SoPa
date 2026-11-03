@@ -14,19 +14,21 @@ import com.example.app_gruposopa.MainActivity
 import com.example.app_gruposopa.R
 import com.example.app_gruposopa.domain.model.ContenidoMasterMartini
 
+// Valores fijos de los recordatorios
+data class ConfigRecordatorio(
+    val extraVideoId: String = "videoId",
+    val extraTitulo: String = "titulo",
+    val idCanal: String = "recordatorios",
+    val segundosDeEspera: Int = 30
+)
 
-  //AlarmManager la dispara aunque la app esté cerrada.
-
+// AlarmManager la dispara aunque la app esté cerrada.
 object Recordatorio {
-    const val EXTRA_VIDEO_ID = "videoId"
-    const val EXTRA_TITULO = "titulo"
-    private const val ID_CANAL = "recordatorios"
+    val config = ConfigRecordatorio()
 
-    private const val SEGUNDOS_DE_ESPERA = 30
-
-    //toda notificación necesita un canal
+    // toda notificación necesita un canal
     fun crearCanal(context: Context) {
-        val canal = NotificationChannelCompat.Builder(ID_CANAL, NotificationManagerCompat.IMPORTANCE_HIGH)
+        val canal = NotificationChannelCompat.Builder(config.idCanal, NotificationManagerCompat.IMPORTANCE_HIGH)
             .setName("Recordatorios de videos")
             .setDescription("Avisos para ver los videos que pediste recordar")
             .build()
@@ -35,8 +37,8 @@ object Recordatorio {
 
     fun programar(context: Context, video: ContenidoMasterMartini) {
         val intent = Intent(context, RecordatorioReceiver::class.java)
-            .putExtra(EXTRA_VIDEO_ID, video.id)
-            .putExtra(EXTRA_TITULO, video.titulo)
+            .putExtra(config.extraVideoId, video.id)
+            .putExtra(config.extraTitulo, video.titulo)
         val alarma = PendingIntent.getBroadcast(
             context,
             video.id.hashCode(),
@@ -46,7 +48,7 @@ object Recordatorio {
         val alarmManager = context.getSystemService(AlarmManager::class.java)
         alarmManager.set(
             AlarmManager.ELAPSED_REALTIME_WAKEUP,
-            SystemClock.elapsedRealtime() + SEGUNDOS_DE_ESPERA * 1000L,
+            SystemClock.elapsedRealtime() + config.segundosDeEspera * 1000L,
             alarma
         )
     }
@@ -60,14 +62,14 @@ object Recordatorio {
         // Al tocarla abre la app en ese video
         val abrirVideo = Intent(context, MainActivity::class.java)
             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-            .putExtra(EXTRA_VIDEO_ID, videoId)
+            .putExtra(config.extraVideoId, videoId)
         val alTocar = PendingIntent.getActivity(
             context,
             videoId.hashCode(),
             abrirVideo,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
-        val notificacion = NotificationCompat.Builder(context, ID_CANAL)
+        val notificacion = NotificationCompat.Builder(context, config.idCanal)
             .setSmallIcon(R.drawable.ic_notificacion)
             .setContentTitle("Tienes un video pendiente")
             .setContentText(titulo)
@@ -82,8 +84,8 @@ object Recordatorio {
 // Lo llama AlarmManager cuando se cumple el tiempo
 class RecordatorioReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
-        val videoId = intent.getStringExtra(Recordatorio.EXTRA_VIDEO_ID) ?: return
-        val titulo = intent.getStringExtra(Recordatorio.EXTRA_TITULO).orEmpty()
+        val videoId = intent.getStringExtra(Recordatorio.config.extraVideoId) ?: return
+        val titulo = intent.getStringExtra(Recordatorio.config.extraTitulo).orEmpty()
         Recordatorio.mostrar(context, videoId, titulo)
     }
 }
