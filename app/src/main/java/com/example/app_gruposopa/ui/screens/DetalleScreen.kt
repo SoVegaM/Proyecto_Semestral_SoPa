@@ -372,7 +372,7 @@ fun DetalleScreen(
                             Text(
                                 text = "Reproducir externamente:",
                                 style = MaterialTheme.typography.bodySmall,
-                                color = NegroLetra.copy(alpha = 0.65f)
+                                color = NegroLetra.suave(0.65f)
                             )
                             TextButton(
                                 onClick = {
@@ -426,7 +426,7 @@ fun DetalleScreen(
                             )
                             Text(
                                 text = "  -  ${v.duracion}",
-                                color = NegroLetra.copy(alpha = 0.6f),
+                                color = NegroLetra.suave(0.6f),
                                 style = MaterialTheme.typography.bodyMedium
                             )
                         }
@@ -443,7 +443,7 @@ fun DetalleScreen(
                         Text(
                             text = v.descripcion,
                             style = MaterialTheme.typography.bodyMedium,
-                            color = NegroLetra.copy(alpha = 0.85f)
+                            color = NegroLetra.suave(0.85f)
                         )
 
                         // Recordatorio (desde Android 13 hay que pedir permiso)
@@ -516,7 +516,7 @@ fun DetalleScreen(
                                 Text(
                                     text = "Insumo Master Martini usado en esta preparación.",
                                     style = MaterialTheme.typography.bodyMedium,
-                                    color = NegroLetra.copy(alpha = 0.75f)
+                                    color = NegroLetra.suave(0.75f)
                                 )
                             }
                         }
@@ -558,7 +558,7 @@ fun DetalleScreen(
                                         Text(
                                             text = cursoAsociado.descripcion,
                                             style = MaterialTheme.typography.bodySmall,
-                                            color = NegroLetra.copy(alpha = 0.7f),
+                                            color = NegroLetra.suave(0.7f),
                                             maxLines = 1
                                         )
                                     }
@@ -622,7 +622,7 @@ fun DetalleScreen(
                 exit = fadeOut() + slideOutVertically { it }
             ) {
                 Surface(
-                    color = NegroLetra.copy(alpha = 0.9f),
+                    color = NegroLetra.suave(0.9f),
                     shape = RoundedCornerShape(24.dp),
                     modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }
                 ) {

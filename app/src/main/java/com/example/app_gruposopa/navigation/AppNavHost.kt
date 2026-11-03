@@ -10,13 +10,17 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.example.app_gruposopa.ui.components.OpcionMenu
+import com.example.app_gruposopa.ui.screens.AccesibilidadScreen
 import com.example.app_gruposopa.ui.screens.BienvenidaScreen
 import com.example.app_gruposopa.ui.screens.CursosScreen
 import com.example.app_gruposopa.ui.screens.DetalleScreen
+import com.example.app_gruposopa.ui.screens.EventosScreen
 import com.example.app_gruposopa.ui.screens.GuardadosScreen
 import com.example.app_gruposopa.ui.screens.HomeScreen
-import com.example.app_gruposopa.ui.components.OpcionMenu
-import com.example.app_gruposopa.ui.screens.PlaceholderVistaScreen
+import com.example.app_gruposopa.ui.screens.IngresoScreen
+import com.example.app_gruposopa.ui.screens.PerfilNegocioScreen
+import com.example.app_gruposopa.ui.screens.PerfilScreen
 import com.example.app_gruposopa.ui.screens.SobreMasterMartiniScreen
 import com.example.app_gruposopa.ui.viewmodels.MainViewModel
 
@@ -42,23 +46,28 @@ fun AppNavHost(
 
         // Vista 2: Ingreso y registro
         composable(route = AppScreen.Ingreso.route) {
-            PlaceholderVistaScreen(
-                pantallaActual = AppScreen.Ingreso,
-                onIrAInicio = mainViewModel::entrarAInicio
+            IngresoScreen(
+                onIngresoExitoso = { nombreIngresado ->
+                    mainViewModel.guardarNombreUsuario(nombreIngresado)
+                    mainViewModel.navigateTo(AppScreen.PerfilNegocio.route)
+                }
             )
         }
 
         // Vista 3: Perfil de negocio
         composable(route = AppScreen.PerfilNegocio.route) {
-            PlaceholderVistaScreen(
-                pantallaActual = AppScreen.PerfilNegocio,
-                onIrAInicio = mainViewModel::entrarAInicio
+            PerfilNegocioScreen(
+                onGuardarYContinuar = {
+                    mainViewModel.entrarAInicio()
+                }
             )
         }
 
         // Vista 4: Inicio (Centro técnico)
         composable(route = AppScreen.Inicio.route) {
+            val nombreUsuario by mainViewModel.nombreUsuario.collectAsState()
             HomeScreen(
+                nombreUsuario = nombreUsuario,
                 onContenidoClick = { video ->
                     mainViewModel.irADetalle(video.id)
                 },
@@ -69,7 +78,6 @@ fun AppNavHost(
                         OpcionMenu.GUARDADOS -> mainViewModel.navigateTo(AppScreen.Guardados.route)
                         OpcionMenu.SEGUIR_VIENDO -> ultimoVisto?.let { mainViewModel.irADetalle(it.id) }
                         OpcionMenu.ACCESIBILIDAD -> mainViewModel.navigateTo(AppScreen.Accesibilidad.route)
-                        // El contacto con asesores está en la vista 7
                         OpcionMenu.ASESOR -> mainViewModel.irAPestana(AppScreen.Eventos.route)
                         OpcionMenu.SOBRE -> mainViewModel.navigateTo(AppScreen.Sobre.route)
                         OpcionMenu.CERRAR_SESION -> mainViewModel.cerrarSesion()
@@ -119,25 +127,25 @@ fun AppNavHost(
 
         // Vista 7: Eventos y contacto
         composable(route = AppScreen.Eventos.route) {
-            PlaceholderVistaScreen(
-                pantallaActual = AppScreen.Eventos,
-                onIrAInicio = mainViewModel::entrarAInicio
+            EventosScreen(
+                onNavigateTab = { ruta -> mainViewModel.irAPestana(ruta) }
             )
         }
 
         // Vista 8: Perfil
         composable(route = AppScreen.Perfil.route) {
-            PlaceholderVistaScreen(
-                pantallaActual = AppScreen.Perfil,
-                onIrAInicio = mainViewModel::entrarAInicio
+            PerfilScreen(
+                onMisGuardadosClick = { mainViewModel.navigateTo(AppScreen.Guardados.route) },
+                onAccesibilidadClick = { mainViewModel.navigateTo(AppScreen.Accesibilidad.route) },
+                onCerrarSesionClick = { mainViewModel.cerrarSesion() },
+                onNavigateTab = { ruta -> mainViewModel.irAPestana(ruta) }
             )
         }
 
         // Vista 9: Accesibilidad
         composable(route = AppScreen.Accesibilidad.route) {
-            PlaceholderVistaScreen(
-                pantallaActual = AppScreen.Accesibilidad,
-                onIrAInicio = mainViewModel::entrarAInicio
+            AccesibilidadScreen(
+                onVolverClick = { mainViewModel.navigateBack() }
             )
         }
 
@@ -155,6 +163,5 @@ fun AppNavHost(
         composable(route = AppScreen.Sobre.route) {
             SobreMasterMartiniScreen(onVolverClick = { mainViewModel.navigateBack() })
         }
-
     }
 }

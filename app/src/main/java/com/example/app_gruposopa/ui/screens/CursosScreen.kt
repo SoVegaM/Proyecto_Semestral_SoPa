@@ -119,7 +119,7 @@ fun CursosScreen(
                     Text(
                         text = "Formación profesional con la excelencia de lo Hecho en Italia.",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = NegroLetra.copy(alpha = 0.8f)
+                        color = NegroLetra.suave(0.8f)
                     )
                 }
             }
@@ -232,7 +232,7 @@ private fun TarjetaCurso(
                 val (colorFondo, colorTexto) = when (estado) {
                     "Completado" -> Pair(VerdeFondo.copy(alpha = 0.12f), VerdeLetras)
                     "En curso" -> Pair(Dorado.copy(alpha = 0.18f), DoradoTexto)
-                    else -> Pair(GrisFondoSuave, NegroLetra.copy(alpha = 0.6f))
+                    else -> Pair(GrisFondoSuave, NegroLetra.suave(0.6f))
                 }
 
                 Surface(
@@ -253,7 +253,7 @@ private fun TarjetaCurso(
                 Icon(
                     imageVector = if (expandido) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
                     contentDescription = if (expandido) "Colapsar módulos" else "Ver módulos",
-                    tint = NegroLetra.copy(alpha = 0.5f),
+                    tint = NegroLetra.suave(0.5f),
                     modifier = Modifier.size(22.dp)
                 )
             }
@@ -261,7 +261,7 @@ private fun TarjetaCurso(
             Text(
                 text = curso.descripcion,
                 style = MaterialTheme.typography.bodySmall,
-                color = NegroLetra.copy(alpha = 0.75f),
+                color = NegroLetra.suave(0.75f),
                 // Ocupa lo que sobra, así la barra de progreso queda abajo en las dos tarjetas
                 modifier = if (igualarAltura) Modifier.weight(1f) else Modifier
             )
@@ -275,13 +275,13 @@ private fun TarjetaCurso(
                 Text(
                     text = "$totales módulos",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = NegroLetra.copy(alpha = 0.65f)
+                    color = NegroLetra.suave(0.65f)
                 )
                 Text(
                     text = "$completados de $totales completados",
                     style = MaterialTheme.typography.bodySmall,
                     fontWeight = FontWeight.Medium,
-                    color = NegroLetra.copy(alpha = 0.7f)
+                    color = NegroLetra.suave(0.7f)
                 )
             }
 
@@ -291,7 +291,7 @@ private fun TarjetaCurso(
                     .fillMaxWidth()
                     .height(6.dp)
                     .clip(RoundedCornerShape(3.dp)),
-                color = Dorado,
+                color = DoradoSobreClaro,
                 trackColor = GrisFondoSuave
             )
 
@@ -340,7 +340,7 @@ private fun TarjetaCurso(
                                     Icon(
                                         imageVector = if (visto) Icons.Default.CheckCircle else Icons.Outlined.PlayCircleOutline,
                                         contentDescription = if (visto) "Módulo visto" else "Módulo pendiente",
-                                        tint = if (visto) VerdeLetras else Dorado,
+                                        tint = if (visto) VerdeLetras else DoradoSobreClaro,
                                         modifier = Modifier.size(20.dp)
                                     )
                                     Column {
@@ -353,14 +353,14 @@ private fun TarjetaCurso(
                                         Text(
                                             text = "Insumo: ${modulo.producto}",
                                             style = MaterialTheme.typography.labelMedium,
-                                            color = NegroLetra.copy(alpha = 0.6f)
+                                            color = NegroLetra.suave(0.6f)
                                         )
                                     }
                                 }
                                 Text(
                                     text = modulo.duracion,
                                     style = MaterialTheme.typography.labelMedium,
-                                    color = NegroLetra.copy(alpha = 0.6f),
+                                    color = NegroLetra.suave(0.6f),
                                     modifier = Modifier.padding(start = 6.dp)
                                 )
                             }

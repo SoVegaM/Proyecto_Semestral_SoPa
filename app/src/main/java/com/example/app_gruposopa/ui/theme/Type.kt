@@ -28,3 +28,16 @@ val Typography = Typography(
     labelMedium = estilo(14, 20, FontWeight.Medium),
     labelSmall = estilo(13, 18, FontWeight.Medium)
 )
+
+// Tamaño que corresponde a la escala normal en el ajuste de Accesibilidad
+const val TAMANO_TEXTO_BASE = 16f
+
+// Para el ajuste Texto en negrita, los títulos ya lo son
+val TypographyNegrita = Typography.copy(
+    bodyLarge = Typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+    bodyMedium = Typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+    bodySmall = Typography.bodySmall.copy(fontWeight = FontWeight.Bold),
+    labelLarge = Typography.labelLarge.copy(fontWeight = FontWeight.Bold),
+    labelMedium = Typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+    labelSmall = Typography.labelSmall.copy(fontWeight = FontWeight.Bold)
+)

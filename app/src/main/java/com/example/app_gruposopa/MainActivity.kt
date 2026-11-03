@@ -7,6 +7,8 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import com.example.app_gruposopa.navigation.AppNavHost
@@ -26,8 +28,16 @@ class MainActivity : ComponentActivity() {
             navigationBarStyle = SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT)
         )
         setContent {
-            App_GrupoSoPaTheme {
-                val mainViewModel: MainViewModel = viewModel()
+            val mainViewModel: MainViewModel = viewModel()
+            val tamanoTexto by mainViewModel.tamanoTexto.collectAsState()
+            val altoContraste by mainViewModel.altoContraste.collectAsState()
+            val textoNegrita by mainViewModel.textoNegrita.collectAsState()
+
+            App_GrupoSoPaTheme(
+                tamanoTexto = tamanoTexto,
+                altoContraste = altoContraste,
+                textoNegrita = textoNegrita
+            ) {
                 val navController = rememberNavController()
 
                 // Escucha los eventos de navegación que emite el ViewModel

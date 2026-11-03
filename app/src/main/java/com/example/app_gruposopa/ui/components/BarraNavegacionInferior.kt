@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.app_gruposopa.navigation.AppScreen
+import com.example.app_gruposopa.ui.theme.suave
 import com.example.app_gruposopa.ui.theme.Blanco
 import com.example.app_gruposopa.ui.theme.NegroLetra
 import com.example.app_gruposopa.ui.theme.VerdeFondo
@@ -45,8 +46,8 @@ fun BarraNavegacionInferior(
                     selectedIconColor = VerdeLetras,
                     selectedTextColor = VerdeLetras,
                     indicatorColor = VerdeFondo.copy(alpha = 0.12f),
-                    unselectedIconColor = NegroLetra.copy(alpha = 0.7f),
-                    unselectedTextColor = NegroLetra.copy(alpha = 0.7f)
+                    unselectedIconColor = NegroLetra.suave(0.7f),
+                    unselectedTextColor = NegroLetra.suave(0.7f)
                 )
             )
         }

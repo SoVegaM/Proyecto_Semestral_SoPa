@@ -177,7 +177,7 @@ fun BuscadorContenidos(texto: String, onTextoChange: (String) -> Unit) {
             Text(
                 text = "Buscar receta o producto",
                 style = MaterialTheme.typography.bodyMedium,
-                color = NegroLetra.copy(alpha = 0.5f)
+                color = NegroLetra.suave(0.5f)
             )
         },
         leadingIcon = {
@@ -193,7 +193,7 @@ fun BuscadorContenidos(texto: String, onTextoChange: (String) -> Unit) {
                     Icon(
                         imageVector = Icons.Default.Clear,
                         contentDescription = "Limpiar búsqueda",
-                        tint = NegroLetra.copy(alpha = 0.6f)
+                        tint = NegroLetra.suave(0.6f)
                     )
                 }
             }
@@ -256,7 +256,7 @@ fun ContadorResultados(cantidad: Int) {
         TituloSeccion("Contenidos Disponibles")
         Text(
             text = if (cantidad == 1) "1 encontrado" else "$cantidad encontrados",
-            color = NegroLetra.copy(alpha = 0.6f),
+            color = NegroLetra.suave(0.6f),
             style = MaterialTheme.typography.bodySmall
         )
     }
@@ -277,7 +277,7 @@ fun SinResultados() {
         ) {
             Text(
                 text = "No se encontraron videos para tu búsqueda.",
-                color = NegroLetra.copy(alpha = 0.7f),
+                color = NegroLetra.suave(0.7f),
                 style = MaterialTheme.typography.bodyMedium
             )
         }
@@ -355,7 +355,7 @@ fun TarjetaContenido(
                 }
                 Text(
                     text = "⏱ ${item.duracion}",
-                    color = NegroLetra.copy(alpha = 0.6f),
+                    color = NegroLetra.suave(0.6f),
                     style = MaterialTheme.typography.labelMedium,
                     modifier = Modifier.padding(start = 8.dp)
                 )
@@ -374,7 +374,7 @@ fun TarjetaContenido(
             Text(
                 text = item.descripcion,
                 style = MaterialTheme.typography.bodySmall,
-                color = NegroLetra.copy(alpha = 0.8f),
+                color = NegroLetra.suave(0.8f),
                 maxLines = 2
             )
 

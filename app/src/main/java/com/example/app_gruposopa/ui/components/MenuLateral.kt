@@ -103,7 +103,7 @@ private fun OpcionDelMenu(
                     Text(
                         text = detalle,
                         style = MaterialTheme.typography.bodySmall,
-                        color = NegroLetra.copy(alpha = 0.7f),
+                        color = NegroLetra.suave(0.7f),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )

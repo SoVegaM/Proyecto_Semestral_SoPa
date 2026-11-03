@@ -41,6 +41,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = viewModel(),
+    nombreUsuario: String = "Invitado",
     onContenidoClick: (ContenidoMasterMartini) -> Unit = {},
     onNavigateTab: (String) -> Unit = {},
     onGuardadosClick: () -> Unit = {},
@@ -68,7 +69,7 @@ fun HomeScreen(
         gesturesEnabled = estadoMenu.isOpen,
         drawerContent = {
             MenuLateral(
-                nombreUsuario = "Invitado",
+                nombreUsuario = nombreUsuario,
                 ultimoVisto = ultimoVisto?.titulo,
                 onOpcion = { opcion ->
                     scope.launch {

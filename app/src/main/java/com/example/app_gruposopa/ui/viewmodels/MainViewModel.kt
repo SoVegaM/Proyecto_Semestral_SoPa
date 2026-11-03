@@ -1,19 +1,57 @@
 package com.example.app_gruposopa.ui.viewmodels
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.app_gruposopa.data.local.PreferencesManager
 import com.example.app_gruposopa.navigation.AppScreen
 import com.example.app_gruposopa.navigation.NavigationEvent
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 // Las pantallas le piden a este ViewModel que navegue y MainActivity hace la navegación
-class MainViewModel : ViewModel() {
+class MainViewModel(application: Application) : AndroidViewModel(application) {
+
+    private val preferencesManager = PreferencesManager(application)
+
+    // Ajustes de Accesibilidad, MainActivity los aplica a toda la app
+    val tamanoTexto: StateFlow<Float> = preferencesManager.tamanoTexto.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = 16f
+    )
+
+    val altoContraste: StateFlow<Boolean> = preferencesManager.altoContraste.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = false
+    )
+
+    val textoNegrita: StateFlow<Boolean> = preferencesManager.textoNegrita.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = false
+    )
+
+    // Nombre de usuario persistido en DataStore
+    val nombreUsuario: StateFlow<String> = preferencesManager.nombreUsuario.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = "Invitado"
+    )
+
+    fun guardarNombreUsuario(nombre: String) {
+        viewModelScope.launch {
+            preferencesManager.guardarNombreUsuario(nombre)
+        }
+    }
 
     private val _navigationEvents = MutableSharedFlow<NavigationEvent>()
     val navigationEvents: SharedFlow<NavigationEvent> = _navigationEvents.asSharedFlow()

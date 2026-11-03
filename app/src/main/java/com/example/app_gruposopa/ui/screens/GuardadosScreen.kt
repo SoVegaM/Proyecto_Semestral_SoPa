@@ -141,7 +141,7 @@ fun GuardadosScreen(
                         Icon(
                             imageVector = Icons.Outlined.BookmarkBorder,
                             contentDescription = null,
-                            tint = Dorado,
+                            tint = DoradoSobreClaro,
                             modifier = Modifier.size(64.dp)
                         )
                         Text(
@@ -162,7 +162,7 @@ fun GuardadosScreen(
                                 "Toca \"Guardar\" en una ${if (filtroSeleccionado == FiltroGuardados.RECETAS) "receta" else "técnica"} para verla en esta lista."
                             },
                             style = MaterialTheme.typography.bodyMedium,
-                            color = NegroLetra.copy(alpha = 0.7f),
+                            color = NegroLetra.suave(0.7f),
                             textAlign = TextAlign.Center
                         )
                     }
@@ -235,7 +235,7 @@ private fun TarjetaGuardado(
                 Text(
                     text = "${item.tipo.etiqueta} - ${item.duracion}",
                     style = MaterialTheme.typography.bodySmall,
-                    color = NegroLetra.copy(alpha = 0.6f)
+                    color = NegroLetra.suave(0.6f)
                 )
                 nota?.let { nota ->
                     Text(
