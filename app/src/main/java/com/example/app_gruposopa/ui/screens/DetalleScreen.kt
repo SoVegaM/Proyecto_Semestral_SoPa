@@ -3,6 +3,7 @@ package com.example.app_gruposopa.ui.screens
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
@@ -65,7 +66,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import com.example.app_gruposopa.domain.model.ContenidoMasterMartini
 import com.example.app_gruposopa.notificaciones.Recordatorio
 import com.example.app_gruposopa.ui.theme.*
 import com.example.app_gruposopa.ui.components.EtiquetaTipo
@@ -81,7 +81,6 @@ fun DetalleScreen(
     viewModel: DetalleViewModel = viewModel(),
     modifier: Modifier = Modifier,
     onVolverClick: () -> Unit = {},
-    onConsultarClick: ((ContenidoMasterMartini?) -> Unit)? = null,
     onVerCursoClick: ((String) -> Unit)? = null
 ) {
     val context = LocalContext.current
@@ -255,19 +254,14 @@ fun DetalleScreen(
                             fontWeight = FontWeight.Medium
                         )
                     }
-                    //TODO
-                    // Botón consultar temporal
+                    // Asesoría por WhatsApp, igual que en Eventos
                     Button(
                         onClick = {
-                            if (onConsultarClick != null) {
-                                onConsultarClick(video)
-                            } else {
-                                val prod = video?.producto ?: "producto"
-                                Toast.makeText(
-                                    context,
-                                    "Consultando asesoría técnica por $prod...",
-                                    Toast.LENGTH_SHORT
-                                ).show()
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://wa.me/56912345678?text=Hola,%20necesito%20asesoria"))
+                            try {
+                                context.startActivity(intent)
+                            } catch (e: ActivityNotFoundException) {
+                                Toast.makeText(context, "No se pudo abrir WhatsApp", Toast.LENGTH_SHORT).show()
                             }
                         },
                         modifier = Modifier

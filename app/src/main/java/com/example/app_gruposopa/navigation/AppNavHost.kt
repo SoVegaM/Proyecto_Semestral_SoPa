@@ -1,10 +1,8 @@
 package com.example.app_gruposopa.navigation
 
-import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -96,18 +94,10 @@ fun AppNavHost(
                 }
             )
         ) { backStackEntry ->
-            val context = LocalContext.current
             val videoId = backStackEntry.arguments?.getString(AppRoutes.ARG_VIDEO_ID) ?: "v01"
             DetalleScreen(
                 videoId = videoId,
                 onVolverClick = { mainViewModel.navigateBack() },
-                onConsultarClick = { video ->
-                    Toast.makeText(
-                        context,
-                        "Consultando sobre ${video?.producto ?: "insumo"}",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                },
                 onVerCursoClick = { cursoId -> mainViewModel.verCurso(cursoId) }
             )
         }
