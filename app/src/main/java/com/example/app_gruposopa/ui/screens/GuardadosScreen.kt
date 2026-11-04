@@ -25,6 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.app_gruposopa.domain.model.Configuracion
 import com.example.app_gruposopa.domain.model.ContenidoMasterMartini
 import com.example.app_gruposopa.ui.theme.*
 import com.example.app_gruposopa.ui.utils.esPantallaAncha
@@ -301,9 +302,9 @@ private fun DialogoNota(
         text = {
             OutlinedTextField(
                 value = texto,
-                onValueChange = { if (it.text.length <= GuardadosViewModel.Configuracion.largoMaximoNota) texto = it },
+                onValueChange = { if (it.text.length <= Configuracion.largoMaximoNota) texto = it },
                 placeholder = { Text("Ej: probar con menos azúcar") },
-                supportingText = { Text("${texto.text.length}/${GuardadosViewModel.Configuracion.largoMaximoNota}") },
+                supportingText = { Text("${texto.text.length}/${Configuracion.largoMaximoNota}") },
                 minLines = 3,
                 maxLines = 5,
                 modifier = Modifier.fillMaxWidth()

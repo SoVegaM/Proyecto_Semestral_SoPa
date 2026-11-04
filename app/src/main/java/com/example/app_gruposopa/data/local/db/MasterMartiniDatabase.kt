@@ -27,7 +27,7 @@ abstract class MasterMartiniDatabase : RoomDatabase() {
                 instancia ?: Room.databaseBuilder(
                     context.applicationContext,
                     MasterMartiniDatabase::class.java,
-                    "master_martini.db"
+                    Configuracion.nombreBaseDatos
                 ).build().also { instancia = it }
             }
     }

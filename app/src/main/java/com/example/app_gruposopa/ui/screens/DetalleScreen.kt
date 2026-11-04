@@ -66,6 +66,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import com.example.app_gruposopa.domain.model.Configuracion
 import com.example.app_gruposopa.notificaciones.Recordatorio
 import com.example.app_gruposopa.ui.theme.*
 import com.example.app_gruposopa.ui.components.EtiquetaTipo
@@ -77,7 +78,7 @@ import com.example.app_gruposopa.ui.viewmodels.DetalleViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetalleScreen(
-    videoId: String = "v01",
+    videoId: String = Configuracion.videoIdPorDefecto,
     viewModel: DetalleViewModel = viewModel(),
     modifier: Modifier = Modifier,
     onVolverClick: () -> Unit = {},
@@ -161,7 +162,7 @@ fun DetalleScreen(
             }
             addJavascriptInterface(
                 PuenteReproductor { viewModel.marcarComoVisto() },
-                PuenteReproductor.NOMBRE
+                Configuracion.nombrePuenteReproductor
             )
         }
     }
@@ -697,10 +698,6 @@ private class ClienteReproductor(
 private class PuenteReproductor(private val onReproducir: () -> Unit) {
     @JavascriptInterface
     fun alReproducir() = onReproducir()
-
-    companion object {
-        const val NOMBRE = "PuenteReproductor"
-    }
 }
 
 
@@ -736,7 +733,7 @@ private fun WebView.cargarVideoYoutube(youtubeVideoId: String) {
                   onStateChange: function (e) {
                     if (e.data === YT.PlayerState.PLAYING && !avisado) {
                       avisado = true;
-                      ${PuenteReproductor.NOMBRE}.alReproducir();
+                      ${Configuracion.nombrePuenteReproductor}.alReproducir();
                     }
                   }
                 }

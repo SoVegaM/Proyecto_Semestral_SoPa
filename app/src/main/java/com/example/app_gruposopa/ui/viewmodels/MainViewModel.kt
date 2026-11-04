@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.app_gruposopa.data.local.PreferencesManager
+import com.example.app_gruposopa.domain.model.Configuracion
 import com.example.app_gruposopa.navigation.AppScreen
 import com.example.app_gruposopa.navigation.NavigationEvent
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -25,7 +26,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val tamanoTexto: StateFlow<Float> = preferencesManager.tamanoTexto.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
-        initialValue = 16f
+        initialValue = Configuracion.tamanoTextoBase
     )
 
     val altoContraste: StateFlow<Boolean> = preferencesManager.altoContraste.stateIn(
@@ -44,7 +45,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val nombreUsuario: StateFlow<String> = preferencesManager.nombreUsuario.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
-        initialValue = "Invitado"
+        initialValue = Configuracion.nombreInvitado
     )
 
     fun guardarNombreUsuario(nombre: String) {

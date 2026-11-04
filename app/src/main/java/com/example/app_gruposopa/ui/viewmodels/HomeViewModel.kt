@@ -3,6 +3,7 @@ package com.example.app_gruposopa.ui.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.app_gruposopa.data.repository.ContenidosRepository
+import com.example.app_gruposopa.domain.model.Categorias
 import com.example.app_gruposopa.domain.model.ContenidoMasterMartini
 import com.example.app_gruposopa.domain.usecase.FiltrarContenidosUseCase
 import kotlinx.coroutines.delay

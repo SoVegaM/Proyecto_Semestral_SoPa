@@ -22,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.example.app_gruposopa.domain.model.Configuracion
 import com.example.app_gruposopa.R
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.app_gruposopa.domain.model.ContenidoMasterMartini
@@ -41,7 +42,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = viewModel(),
-    nombreUsuario: String = "Invitado",
+    nombreUsuario: String = Configuracion.nombreInvitado,
     onContenidoClick: (ContenidoMasterMartini) -> Unit = {},
     onNavigateTab: (String) -> Unit = {},
     onGuardadosClick: () -> Unit = {},

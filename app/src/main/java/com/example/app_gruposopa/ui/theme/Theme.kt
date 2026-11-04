@@ -7,6 +7,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
+import com.example.app_gruposopa.domain.model.Configuracion
 
 private fun esquemaDeColores() = lightColorScheme(
     primary = VerdeFondo,

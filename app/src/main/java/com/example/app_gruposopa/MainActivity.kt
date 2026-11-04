@@ -67,8 +67,8 @@ class MainActivity : ComponentActivity() {
                 // Si se abrió desde el recordatorio, va directo a ese video.
                 // Usa navController porque el ViewModel aún no tiene quién escuche sus eventos
                 LaunchedEffect(Unit) {
-                    intent.getStringExtra(Recordatorio.EXTRA_VIDEO_ID)?.let { videoId ->
-                        intent.removeExtra(Recordatorio.EXTRA_VIDEO_ID)
+                    intent.getStringExtra(Recordatorio.config.extraVideoId)?.let { videoId ->
+                        intent.removeExtra(Recordatorio.config.extraVideoId)
                         navController.navigate(AppScreen.Inicio.route) {
                             popUpTo(AppScreen.Bienvenida.route) { inclusive = true }
                         }

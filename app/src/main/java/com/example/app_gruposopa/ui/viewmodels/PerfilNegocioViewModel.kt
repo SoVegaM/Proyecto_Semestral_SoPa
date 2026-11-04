@@ -9,19 +9,20 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import com.example.app_gruposopa.domain.model.OpcionesDeNegocio
 
 // Vista 3 - Parte con lo último guardado y exige al menos un interés
 class PerfilNegocioViewModel(application: Application) : AndroidViewModel(application) {
 
     private val preferencesManager = PreferencesManager(application)
 
-    private val _tipo = MutableStateFlow(TIPOS.first())
+    private val _tipo = MutableStateFlow(OpcionesDeNegocio.tipos.first())
     val tipo: StateFlow<String> = _tipo.asStateFlow()
 
-    private val _tamano = MutableStateFlow(TAMANOS[1])
+    private val _tamano = MutableStateFlow(OpcionesDeNegocio.tamanos[1])
     val tamano: StateFlow<String> = _tamano.asStateFlow()
 
-    private val _intereses = MutableStateFlow(setOf(INTERESES[0], INTERESES[1]))
+    private val _intereses = MutableStateFlow(setOf(OpcionesDeNegocio.intereses[0], OpcionesDeNegocio.intereses[1]))
     val intereses: StateFlow<Set<String>> = _intereses.asStateFlow()
 
     private val _errorIntereses = MutableStateFlow<String?>(null)
@@ -60,10 +61,4 @@ class PerfilNegocioViewModel(application: Application) : AndroidViewModel(applic
 
     private fun validarIntereses(): String? =
         if (_intereses.value.isEmpty()) "Elige al menos un interés" else null
-
-    companion object {
-        val TIPOS = listOf("Panadería", "Pastelería", "Chocolatería", "Restaurante")
-        val TAMANOS = listOf("Pequeño", "Mediano", "Grande")
-        val INTERESES = listOf("Recetas", "Videos", "Cursos", "Eventos")
-    }
 }

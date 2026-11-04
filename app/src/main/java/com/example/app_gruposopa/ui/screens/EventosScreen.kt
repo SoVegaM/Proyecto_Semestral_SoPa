@@ -19,7 +19,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.app_gruposopa.navigation.AppScreen
 import com.example.app_gruposopa.ui.components.BarraNavegacionInferior
 import com.example.app_gruposopa.ui.theme.*
-import com.example.app_gruposopa.ui.viewmodels.Evento
+import com.example.app_gruposopa.domain.model.Evento
 import com.example.app_gruposopa.ui.viewmodels.EventosViewModel
 
 // Vista 7 - Eventos y contacto

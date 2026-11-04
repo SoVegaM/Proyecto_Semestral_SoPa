@@ -26,10 +26,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.app_gruposopa.domain.model.Configuracion
 import com.example.app_gruposopa.R
 import com.example.app_gruposopa.ui.theme.*
-
-private const val Configuracion.sitioWeb = "https://mastermartini.cl"
 
 // Sobre Master Martini. Se abre desde el menú lateral
 @OptIn(ExperimentalMaterial3Api::class)

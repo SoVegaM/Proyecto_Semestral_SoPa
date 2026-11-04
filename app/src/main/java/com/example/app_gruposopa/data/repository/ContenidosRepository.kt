@@ -5,6 +5,7 @@ import android.util.Log
 import com.example.app_gruposopa.data.local.db.GuardadoEntity
 import com.example.app_gruposopa.data.local.db.MasterMartiniDatabase
 import com.example.app_gruposopa.data.local.db.VistoEntity
+import com.example.app_gruposopa.domain.model.Categorias
 import com.example.app_gruposopa.domain.model.ContenidoMasterMartini
 import com.example.app_gruposopa.domain.model.Curso
 import com.example.app_gruposopa.domain.model.TipoContenido
@@ -17,18 +18,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import com.example.app_gruposopa.domain.model.Configuracion
 
 // Repositorio con los videos y cursos. Los guardados y vistos van en Room
 class ContenidosRepository {
 
     companion object {
-        // Categorías
-        const val Categorias.cremas = "Cremas Vegetales UHT"
-        const val Categorias.chocolates = "Chocolates & Sucedáneos"
-        const val Categorias.gelateria = "Gelatería"
-        const val Categorias.panaderia = "Panadería & Pastelería"
-
         // Una sola instancia, así todas las pantallas ven los mismos datos
         val instance: ContenidosRepository by lazy { ContenidosRepository() }
 

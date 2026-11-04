@@ -91,11 +91,11 @@ fun AppNavHost(
             arguments = listOf(
                 navArgument(Rutas.argVideoId) {
                     type = NavType.StringType
-                    defaultValue = "v01"
+                    defaultValue = Configuracion.videoIdPorDefecto
                 }
             )
         ) { backStackEntry ->
-            val videoId = backStackEntry.arguments?.getString(Rutas.argVideoId) ?: "v01"
+            val videoId = backStackEntry.arguments?.getString(Rutas.argVideoId) ?: Configuracion.videoIdPorDefecto
             DetalleScreen(
                 videoId = videoId,
                 onVolverClick = { mainViewModel.navigateBack() },

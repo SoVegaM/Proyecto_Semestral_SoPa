@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.app_gruposopa.domain.model.OpcionesDeNegocio
 import com.example.app_gruposopa.ui.theme.*
 import com.example.app_gruposopa.ui.viewmodels.PerfilNegocioViewModel
 
@@ -108,7 +109,7 @@ fun PerfilNegocioScreen(
 
                         TituloSeccion(Icons.Default.Groups, "Tamaño aproximado")
                         GrupoOpciones(
-                            opciones = PerfilNegocioViewModel.TAMANOS,
+                            opciones = OpcionesDeNegocio.tamanos,
                             estaElegida = { it == tamano },
                             onClick = viewModel::seleccionarTamano
                         )
@@ -117,7 +118,7 @@ fun PerfilNegocioScreen(
 
                         TituloSeccion(Icons.Default.Favorite, "Te interesa")
                         GrupoOpciones(
-                            opciones = PerfilNegocioViewModel.INTERESES,
+                            opciones = OpcionesDeNegocio.intereses,
                             estaElegida = { it in intereses },
                             onClick = viewModel::alternarInteres
                         )
